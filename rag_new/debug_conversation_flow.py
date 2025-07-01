@@ -75,19 +75,66 @@ Total documents: 5
         state['processed_query'] = "which are these?"
         state['search_results'] = []  # No search results to force general response
         
-        print("\n🧪 TESTING FOLLOW-UP DETECTION")
+        print("\n🧪 TESTING FOLLOW-UP DETECTION DETAILED")
         print("-" * 50)
         
-        # Test _is_simple_followup_question method directly
+        # Test _is_simple_followup_question method directly with more detail
         conversation_history = state.get('messages', [])
         query = "which are these?"
         
         print(f"🔧 Query: '{query}'")
         print(f"🔧 Conversation history length: {len(conversation_history)}")
         
-        # Test the method
+        # Let's manually test the LLM call in the _is_simple_followup_question method
+        recent_messages = conversation_history[-4:] if conversation_history else []
+        context = ""
+        
+        for msg in recent_messages:
+            role = "User" if msg.get('type') == MessageType.USER else "Assistant"
+            content = msg.get('content', '')[:200]  # Truncate for context
+            context += f"{role}: {content}\n"
+        
+        print(f"🔧 Context for LLM: {context[:300]}...")
+        
+        prompt = f"""Analyze this conversation to determine if the latest user query is a simple follow-up question that should get a concise, direct answer.
+
+Recent Conversation:
+{context}
+
+Latest User Query: "{query}"
+
+A simple follow-up question is one that:
+- Asks for clarification about something just mentioned (like "which are these?", "what are those?")
+- Requests a simple list or enumeration ("list them", "show me those", "name them")
+- Asks for basic identification without detailed analysis
+- Is clearly referencing something from the immediate conversation context
+
+Answer with just: YES or NO
+
+Analysis:"""
+        
+        print(f"🔧 Prompt length: {len(prompt)} chars")
+        
+        # Test the LLM call directly
+        try:
+            print("🔧 Testing LLM call for follow-up detection...")
+            if nodes.llm_client:
+                llm_response = nodes.llm_client.generate(prompt, max_tokens=10, temperature=0.1)
+                print(f"✅ LLM Response: '{llm_response}'")
+                print(f"🔧 Response stripped and upper: '{llm_response.strip().upper()}'")
+                is_yes = llm_response.strip().upper() == "YES"
+                print(f"🔧 Equals 'YES': {is_yes}")
+            else:
+                print("❌ No LLM client in nodes")
+        except Exception as e:
+            print(f"❌ LLM call failed: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        # Test the actual method
+        print("\n🔧 Testing actual _is_simple_followup_question method...")
         is_followup = nodes._is_simple_followup_question(query, conversation_history)
-        print(f"🔧 Is simple follow-up: {is_followup}")
+        print(f"🔧 Method result: {is_followup}")
         
         # Test the LLM-based context response manually
         print("\n🧪 TESTING LLM-BASED CONTEXT RESPONSE")
@@ -141,6 +188,8 @@ Provide a helpful response:"""
                 print(f"❌ LLM context call failed: {e}")
                 import traceback
                 traceback.print_exc()
+        else:
+            print(f"❌ Skipping context response test - is_followup: {is_followup}, has_history: {bool(conversation_history)}")
         
         # Test _generate_general_response directly
         print("\n🧪 TESTING GENERAL RESPONSE GENERATION")

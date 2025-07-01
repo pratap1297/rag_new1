@@ -516,22 +516,18 @@ class ConversationNodes:
             content = msg.get('content', '')[:200]  # Truncate for context
             context += f"{role}: {content}\n"
         
-        prompt = f"""Analyze this conversation to determine if the latest user query is a simple follow-up question that should get a concise, direct answer.
+        prompt = f"""Analyze this conversation to determine if the latest user query is a simple follow-up question.
 
 Recent Conversation:
 {context}
 
 Latest User Query: "{query}"
 
-A simple follow-up question is one that:
-- Asks for clarification about something just mentioned (like "which are these?", "what are those?")
-- Requests a simple list or enumeration ("list them", "show me those", "name them")
-- Asks for basic identification without detailed analysis
-- Is clearly referencing something from the immediate conversation context
+Is this a simple follow-up question asking for clarification about something just mentioned (like "which are these?", "what are those?", "list them", "show me those")?
 
-Answer with just: YES or NO
+IMPORTANT: Reply with ONLY the word YES or NO. Do not provide any explanation.
 
-Analysis:"""
+Answer:"""
         
         try:
             if self.llm_client:
