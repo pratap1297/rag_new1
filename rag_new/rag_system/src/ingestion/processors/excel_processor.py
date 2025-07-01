@@ -609,6 +609,18 @@ class ExcelProcessor(BaseProcessor):
         """Create text chunks for vector storage with flat metadata structure"""
         chunks = []
         
+        # ✅ FIX: Extract original file metadata to preserve source information
+        original_metadata = processed_data.get('metadata', {})
+        base_metadata = {
+            'upload_source': original_metadata.get('upload_source', 'unknown'),
+            'original_filename': original_metadata.get('original_filename'),
+            'filename': original_metadata.get('filename'),
+            'file_path': original_metadata.get('file_path'),
+            'content_type': original_metadata.get('content_type'),
+            'upload_timestamp': original_metadata.get('upload_timestamp'),
+            'source_type': original_metadata.get('source_type', 'file'),
+        }
+        
         # Chunk sheet data
         for sheet in processed_data['sheets']:
             sheet_text = f"Excel Sheet: {sheet['name']}\n"
@@ -631,30 +643,36 @@ class ExcelProcessor(BaseProcessor):
                 for formula in sheet['formulas'][:5]:  # Sample formulas
                     sheet_text += f"  {formula['cell']}: {formula['formula']}\n"
             
+            # ✅ FIX: Merge base metadata with chunk-specific metadata
+            chunk_metadata = {
+                **base_metadata,  # Include original file metadata
+                'source_type': 'excel_sheet',  # Override with specific source type
+                'sheet_name': sheet['name'],
+                'content_type': 'sheet_data',
+                'dimensions': sheet['dimensions'],
+                'formula_count': len(sheet.get('formulas', [])),
+                'data_rows': len(sheet.get('data', []))
+            }
+            
             chunks.append({
                 'text': sheet_text,
-                'metadata': {
-                    'source_type': 'excel_sheet',
-                    'sheet_name': sheet['name'],
-                    'content_type': 'sheet_data',
-                    'dimensions': sheet['dimensions'],
-                    'formula_count': len(sheet.get('formulas', [])),
-                    'data_rows': len(sheet.get('data', []))
-                }
+                'metadata': chunk_metadata
             })
         
         # Chunk embedded object texts
         for obj in processed_data['embedded_objects']:
             if 'extracted_text' in obj and obj['extracted_text']:
+                chunk_metadata = {
+                    **base_metadata,  # Include original file metadata
+                    'source_type': 'embedded_object',  # Override with specific source type
+                    'object_type': obj['type'],
+                    'content_type': 'embedded_content',
+                    'object_name': obj.get('name', 'unknown'),
+                    'object_size': obj.get('size', 0)
+                }
                 chunks.append({
                     'text': f"Embedded {obj['type']}: {obj['extracted_text']}",
-                    'metadata': {
-                        'source_type': 'embedded_object',
-                        'object_type': obj['type'],
-                        'content_type': 'embedded_content',
-                        'object_name': obj.get('name', 'unknown'),
-                        'object_size': obj.get('size', 0)
-                    }
+                    'metadata': chunk_metadata
                 })
         
         # Chunk image descriptions
@@ -669,16 +687,18 @@ class ExcelProcessor(BaseProcessor):
                 if captions:
                     img_text += f"\nImage description: {captions[0]['text']}"
             
+            chunk_metadata = {
+                **base_metadata,  # Include original file metadata
+                'source_type': 'excel_image',  # Override with specific source type
+                'sheet_name': img['sheet'],
+                'content_type': 'image_content',
+                'image_index': img.get('index', 0),
+                'has_extracted_text': 'extracted_text' in img,
+                'has_analysis': 'analysis' in img
+            }
             chunks.append({
                 'text': img_text,
-                'metadata': {
-                    'source_type': 'excel_image',
-                    'sheet_name': img['sheet'],
-                    'content_type': 'image_content',
-                    'image_index': img.get('index', 0),
-                    'has_extracted_text': 'extracted_text' in img,
-                    'has_analysis': 'analysis' in img
-                }
+                'metadata': chunk_metadata
             })
         
         # Chunk hierarchical data
@@ -693,15 +713,17 @@ class ExcelProcessor(BaseProcessor):
                     if 'departments' in floor_info:
                         hier_text += f"  Departments: {', '.join(floor_info['departments'])}\n"
                 
+                chunk_metadata = {
+                    **base_metadata,  # Include original file metadata
+                    'source_type': 'excel_hierarchy',  # Override with specific source type
+                    'sheet_name': sheet_name,
+                    'content_type': 'organizational_data',
+                    'hierarchy_type': hierarchy.get('type', 'unknown'),
+                    'structure_count': len(hierarchy.get('structure', []))
+                }
                 chunks.append({
                     'text': hier_text,
-                    'metadata': {
-                        'source_type': 'excel_hierarchy',
-                        'sheet_name': sheet_name,
-                        'content_type': 'organizational_data',
-                        'hierarchy_type': hierarchy.get('type', 'unknown'),
-                        'structure_count': len(hierarchy.get('structure', []))
-                    }
+                    'metadata': chunk_metadata
                 })
         
         # Add file-level metadata chunk
@@ -719,16 +741,18 @@ class ExcelProcessor(BaseProcessor):
             if props.get('description'):
                 meta_text += f"Description: {props['description']}\n"
         
+        chunk_metadata = {
+            **base_metadata,  # Include original file metadata
+            'source_type': 'excel_metadata',  # Override with specific source type
+            'content_type': 'file_metadata',
+            'total_sheets': len(processed_data['sheets']),
+            'total_embedded_objects': len(processed_data['embedded_objects']),
+            'total_images': len(processed_data['images']),
+            'has_properties': bool(processed_data['metadata'].get('properties'))
+        }
         chunks.append({
             'text': meta_text,
-            'metadata': {
-                'source_type': 'excel_metadata',
-                'content_type': 'file_metadata',
-                'total_sheets': len(processed_data['sheets']),
-                'total_embedded_objects': len(processed_data['embedded_objects']),
-                'total_images': len(processed_data['images']),
-                'has_properties': bool(processed_data['metadata'].get('properties'))
-            }
+            'metadata': chunk_metadata
         })
         
         return chunks

@@ -280,8 +280,34 @@ class IngestionEngine:
                     'duplicate_file_id': duplicate_file_id
                 }
             
-            self._current_metadata = metadata or {}
             old_vectors_deleted = self._handle_existing_file(str(file_path))
+            
+            # ✅ FIX: Prepare enhanced metadata BEFORE calling processor
+            # Get original filename for proper metadata handling
+            original_filename = metadata.get('original_filename', str(file_path)) if metadata else str(file_path)
+            
+            # Create enhanced metadata that includes source information for processors
+            enhanced_metadata = {
+                'file_path': original_filename,  # Use original filename for file_path
+                'original_filename': original_filename,
+                'filename': os.path.basename(original_filename),  # Extract filename from original path
+                'file_size': file_path.stat().st_size,
+                'file_type': Path(original_filename).suffix,  # Get extension from original filename
+                'source_type': metadata.get('source_type', 'file') if metadata else 'file',  # Respect input source_type
+                'upload_source': metadata.get('upload_source', 'unknown') if metadata else 'unknown',  # ✅ PRESERVE upload_source
+                'content_type': metadata.get('content_type') if metadata else None,
+                'upload_timestamp': metadata.get('upload_timestamp') if metadata else None,
+                'ingested_at': datetime.now().isoformat(),
+                'processor': 'ingestion_engine',
+                'is_update': old_vectors_deleted > 0,
+                'replaced_vectors': old_vectors_deleted,
+                'doc_hash': self._calculate_document_hash(file_path),
+                # Include any additional metadata from the API call
+                **(metadata or {})
+            }
+            
+            # Set enhanced metadata for processors to use
+            self._current_metadata = enhanced_metadata
             
             # Extraction stage
             extraction_start = datetime.now()
@@ -299,22 +325,8 @@ class IngestionEngine:
                     'file_path': str(file_path)
                 }
             
-            # Get original filename for proper metadata handling
-            original_filename = metadata.get('original_filename', str(file_path)) if metadata else str(file_path)
-            
-            file_metadata = {
-                'file_path': original_filename,  # Use original filename for file_path
-                'original_filename': original_filename,
-                'filename': os.path.basename(original_filename),  # Extract filename from original path
-                'file_size': file_path.stat().st_size,
-                'file_type': Path(original_filename).suffix,  # Get extension from original filename
-                'source_type': metadata.get('source_type', 'file') if metadata else 'file',  # Respect input source_type
-                'ingested_at': datetime.now().isoformat(),
-                'processor': 'ingestion_engine',
-                'is_update': old_vectors_deleted > 0,
-                'replaced_vectors': old_vectors_deleted,
-                'doc_hash': self._calculate_document_hash(file_path)
-            }
+            # Use the enhanced metadata as file_metadata
+            file_metadata = enhanced_metadata
             
             # Chunking stage
             chunking_start = datetime.now()
@@ -379,7 +391,8 @@ class IngestionEngine:
                                     if k not in chunk_meta:
                                         chunk_meta[k] = v
                             
-                            # Create base metadata for this chunk
+                            # ✅ FIX: Create base metadata that doesn't override processor metadata
+                            # Only include essential chunk metadata that should NOT override processor data
                             base_chunk_metadata = {
                                 'text': chunk['text'],
                                 'content': chunk['text'],  # For compatibility
@@ -388,19 +401,16 @@ class IngestionEngine:
                                 'chunk_size': len(chunk['text']),
                                 'doc_id': self._generate_consistent_doc_id(file_path, file_metadata),  # Use consistent ID
                                 'doc_path': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),  # Use original path for doc_path
-                                'filename': os.path.basename(metadata.get('original_filename', str(file_path))) if metadata else os.path.basename(file_path),
-                                'original_filename': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),
-                                'file_path': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),
                                 'chunking_method': getattr(self.chunker.__class__, '__name__', 'unknown'),
                                 'embedding_model': getattr(self.embedder, 'model_name', 'unknown')
                             }
                             
-                            # Merge all metadata sources using metadata manager
+                            # ✅ FIX: Change merge order - put base_chunk_metadata FIRST so processor metadata takes priority
                             merged_metadata = self.metadata_manager.merge_metadata(
-                                file_metadata,
-                                metadata or {},
-                                chunk_meta,  # Now guaranteed to be flat
-                                base_chunk_metadata
+                                base_chunk_metadata,  # 1st: Basic chunk info (lowest priority)
+                                file_metadata,        # 2nd: File metadata
+                                metadata or {},       # 3rd: API upload metadata 
+                                chunk_meta             # 4th: Processor chunk metadata (HIGHEST priority) ✅
                             )
                             
                             storage_metadata = self.metadata_manager.prepare_for_storage(merged_metadata)
@@ -443,7 +453,8 @@ class IngestionEngine:
                                 if k not in chunk_meta:
                                     chunk_meta[k] = v
                         
-                        # Create base metadata for this chunk
+                        # ✅ FIX: Create base metadata that doesn't override processor metadata
+                        # Only include essential chunk metadata that should NOT override processor data
                         base_chunk_metadata = {
                             'text': chunk['text'],
                             'content': chunk['text'],  # For compatibility
@@ -452,19 +463,16 @@ class IngestionEngine:
                             'chunk_size': len(chunk['text']),
                             'doc_id': self._generate_consistent_doc_id(file_path, file_metadata),  # Use consistent ID
                             'doc_path': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),  # Use original path for doc_path
-                            'filename': os.path.basename(metadata.get('original_filename', str(file_path))) if metadata else os.path.basename(file_path),
-                            'original_filename': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),
-                            'file_path': metadata.get('original_filename', str(file_path)) if metadata else str(file_path),
                             'chunking_method': getattr(self.chunker.__class__, '__name__', 'unknown'),
                             'embedding_model': getattr(self.embedder, 'model_name', 'unknown')
                         }
                         
-                        # Merge all metadata sources using metadata manager
+                        # ✅ FIX: Change merge order - put base_chunk_metadata FIRST so processor metadata takes priority
                         merged_metadata = self.metadata_manager.merge_metadata(
-                            file_metadata,
-                            metadata or {},
-                            chunk_meta,  # Now guaranteed to be flat
-                            base_chunk_metadata
+                            base_chunk_metadata,  # 1st: Basic chunk info (lowest priority)
+                            file_metadata,        # 2nd: File metadata
+                            metadata or {},       # 3rd: API upload metadata 
+                            chunk_meta             # 4th: Processor chunk metadata (HIGHEST priority) ✅
                         )
                         
                         storage_metadata = self.metadata_manager.prepare_for_storage(merged_metadata)
@@ -547,6 +555,148 @@ class IngestionEngine:
                     'reason': 'no_content'
                 }
             
+            # ✅ NEW: Check if text is JSON and can use a processor
+            text_stripped = text.strip()
+            if ((text_stripped.startswith('{') and text_stripped.endswith('}')) or
+                (text_stripped.startswith('[') and text_stripped.endswith(']'))):
+                
+                try:
+                    import json
+                    import tempfile
+                    import os
+                    
+                    # Parse JSON to validate
+                    json_data = json.loads(text)
+                    logging.info(f"🔍 Detected JSON content in ingest_text, attempting processor route")
+                    
+                    # Check if it looks like ServiceNow data
+                    def is_servicenow_json(data):
+                        servicenow_fields = ['number', 'sys_id', 'state', 'priority', 'category', 
+                                            'short_description', 'incident_number', 'created_by']
+                        
+                        if isinstance(data, list) and data:
+                            first_item = data[0]
+                            if isinstance(first_item, dict):
+                                return any(field in first_item for field in servicenow_fields)
+                        elif isinstance(data, dict):
+                            # Check direct fields
+                            if any(field in data for field in servicenow_fields):
+                                return True
+                            # Check nested structure (like {"incidents": [...]})
+                            for key in ['incidents', 'records', 'result', 'data']:
+                                if key in data and isinstance(data[key], list) and data[key]:
+                                    first_record = data[key][0]
+                                    if isinstance(first_record, dict):
+                                        return any(field in first_record for field in servicenow_fields)
+                        return False
+                    
+                    if is_servicenow_json(json_data):
+                        logging.info(f"🎯 Detected ServiceNow JSON, using processor")
+                        
+                        # Create temporary JSON file
+                        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False, encoding='utf-8') as tmp_file:
+                            json.dump(json_data, tmp_file, indent=2, ensure_ascii=False)
+                            tmp_file_path = tmp_file.name
+                        
+                        try:
+                            # Get processor for JSON files
+                            processor = self.processor_registry.get_processor(tmp_file_path)
+                            
+                            if processor:
+                                logging.info(f"📦 Using processor: {processor.__class__.__name__} for JSON content")
+                                
+                                # Use processor to get structured chunks
+                                processor_result = processor.process(tmp_file_path, metadata or {})
+                                
+                                if processor_result.get('status') == 'success' and processor_result.get('chunks'):
+                                    logging.info(f"✅ Processor created {len(processor_result['chunks'])} logical chunks")
+                                    
+                                    # Extract chunks and continue with normal ingestion flow
+                                    processor_chunks = processor_result['chunks']
+                                    
+                                    # Store original metadata but update processing info
+                                    base_metadata = {
+                                        'source_type': metadata.get('source_type', 'text') if metadata else 'text',
+                                        'ingested_at': datetime.now().isoformat(),
+                                        'processor': f'{processor.__class__.__name__}_via_ingest_text',
+                                        'text_length': len(text),
+                                        'processing_method': 'json_processor'
+                                    }
+                                    
+                                    # Preserve all other metadata fields
+                                    if metadata:
+                                        for key, value in metadata.items():
+                                            if key not in base_metadata:
+                                                base_metadata[key] = value
+                                    
+                                    # Generate embeddings for processor chunks
+                                    chunk_texts = [chunk.get('text', str(chunk)) for chunk in processor_chunks]
+                                    embeddings = self.embedder.embed_texts(chunk_texts)
+                                    
+                                    # Prepare chunk metadata using metadata manager
+                                    chunk_metadata_list = []
+                                    
+                                    for i, (chunk, embedding) in enumerate(zip(processor_chunks, embeddings)):
+                                        chunk_text = chunk.get('text', str(chunk))
+                                        chunk_meta = chunk.get('metadata', {})
+                                        
+                                        # Create base metadata for this chunk
+                                        base_chunk_metadata = {
+                                            'text': chunk_text,
+                                            'content': chunk_text,
+                                            'chunk_index': i,
+                                            'total_chunks': len(processor_chunks),
+                                            'chunk_size': len(chunk_text),
+                                            'doc_id': metadata.get('doc_path', metadata.get('title', 'json_document')) if metadata else 'json_document',
+                                            'doc_path': metadata.get('doc_path', metadata.get('title', 'json_document')) if metadata else 'json_document',
+                                            'chunking_method': f'{processor.__class__.__name__}_logical',
+                                            'embedding_model': getattr(self.embedder, 'model_name', 'unknown')
+                                        }
+                                        
+                                        # Merge metadata using the metadata manager
+                                        merged_metadata = self.metadata_manager.merge_metadata(
+                                            base_metadata,
+                                            metadata or {},
+                                            chunk_meta,
+                                            base_chunk_metadata
+                                        )
+                                        
+                                        storage_metadata = self.metadata_manager.prepare_for_storage(merged_metadata)
+                                        chunk_metadata_list.append(storage_metadata)
+                                    
+                                    # Add to vector store (using the actual vector store - Qdrant or FAISS)
+                                    vector_store = getattr(self, 'qdrant_store', None) or getattr(self, 'vector_store', None) or self.faiss_store
+                                    vector_ids = vector_store.add_vectors(embeddings, chunk_metadata_list)
+                                    
+                                    # Get doc_id for response
+                                    doc_id = chunk_metadata_list[0].get('doc_id', 'json_document') if chunk_metadata_list else 'json_document'
+                                    
+                                    logging.info(f"✅ Successfully processed JSON content with {processor.__class__.__name__} ({len(processor_chunks)} logical chunks)")
+                                    
+                                    return {
+                                        'status': 'success',
+                                        'doc_id': doc_id,
+                                        'chunks_created': len(processor_chunks),
+                                        'vectors_stored': len(vector_ids),
+                                        'text_length': len(text),
+                                        'processing_method': 'json_processor',
+                                        'processor_used': processor.__class__.__name__
+                                    }
+                                else:
+                                    logging.warning(f"⚠️ Processor failed or returned no chunks, falling back to text chunking")
+                            else:
+                                logging.info(f"🔄 No processor found for JSON file, using text chunking")
+                        finally:
+                            # Clean up temporary file
+                            if os.path.exists(tmp_file_path):
+                                os.unlink(tmp_file_path)
+                    else:
+                        logging.info(f"🔄 JSON content detected but not ServiceNow format, using text chunking")
+                        
+                except (json.JSONDecodeError, Exception) as e:
+                    logging.info(f"🔄 JSON parsing failed or processor error: {e}, using text chunking")
+            
+            # ✅ FALLBACK: Continue with normal text processing
             # Prepare base metadata - preserve existing fields from metadata input
             base_metadata = {
                 'source_type': metadata.get('source_type', 'text') if metadata else 'text',  # ✅ Preserve existing source_type

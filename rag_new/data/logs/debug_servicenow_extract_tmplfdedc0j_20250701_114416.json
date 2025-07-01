@@ -1,0 +1,47 @@
+{
+  "status": "success",
+  "file_path": "C:\\Users\\JAIDEE~2\\AppData\\Local\\Temp\\tmplfdedc0j.json",
+  "file_name": "tmplfdedc0j.json",
+  "file_size": 186,
+  "processing_start": "2025-07-01T11:44:16.495401",
+  "data_analysis": {
+    "data_type": "dict",
+    "record_count": 1,
+    "max_depth": 3,
+    "field_count": 1,
+    "sample_fields": [
+      "incidents"
+    ],
+    "is_servicenow": false,
+    "servicenow_indicators": []
+  },
+  "metadata": {
+    "processor": "servicenow",
+    "timestamp": "2025-07-01T11:44:16.507410",
+    "is_servicenow_data": false,
+    "record_count": 1,
+    "structure_type": "dict",
+    "doc_path": "Direct_Engine_Test.json",
+    "title": "Direct Engine Test",
+    "source_type": "web_upload",
+    "operation": "upload",
+    "source": "direct_test"
+  },
+  "processing_end": "2025-07-01T11:44:16.507410",
+  "processing_time_seconds": 0.012009,
+  "chunk_count": 1,
+  "chunk_preview": [
+    {
+      "text_length": 131,
+      "text_preview": "incidents: [{\"number\": \"INC999002\", \"priority\": \"High\", \"category\": \"Network\", \"short_description\": \"Direct engine test incident\"}]",
+      "metadata": {
+        "source_type": "json",
+        "content_type": "single_record",
+        "record_id": "single_record",
+        "processor": "servicenow",
+        "file_name": "tmplfdedc0j.json",
+        "is_servicenow_data": false
+      }
+    }
+  ]
+}

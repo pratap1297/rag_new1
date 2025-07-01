@@ -496,123 +496,15 @@ Answer:"""
             }, status_code=500)
     
     async def _process_text_ingestion_async(text: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
-        """Process text ingestion asynchronously with timeout"""
+        """Process text ingestion asynchronously with timeout - SIMPLIFIED"""
         def _process_text():
             try:
-                # Get components directly from container
-                embedder = container.get('embedder')
-                chunker = container.get('chunker')
-                faiss_store = container.get('faiss_store')
-                metadata_store = container.get('metadata_store')
+                # ✅ MUCH SIMPLER: Just use the ingestion engine directly
+                ingestion_engine = container.get('ingestion_engine')
+                result = ingestion_engine.ingest_text(text, metadata)
                 
-                # Check for existing documents and delete old vectors
-                old_vectors_deleted = 0
-                doc_path = metadata.get('doc_path')
-                if doc_path:
-                    # Search for existing vectors with this doc_path
-                    existing_vectors = []
-                    for vector_id, vector_metadata in faiss_store.id_to_metadata.items():
-                        if (not vector_metadata.get('deleted', False) and 
-                            vector_metadata.get('doc_path') == doc_path):
-                            existing_vectors.append(vector_id)
-                    
-                    if existing_vectors:
-                        logging.info(f"Found {len(existing_vectors)} existing vectors for doc_path: {doc_path}")
-                        faiss_store.delete_vectors(existing_vectors)
-                        old_vectors_deleted = len(existing_vectors)
-                        logging.info(f"Deleted {old_vectors_deleted} old vectors for text update")
-                
-                # Process the text
-                chunks = chunker.chunk_text(text)
-                
-                if not chunks:
-                    return {
-                        "status": "error",
-                        "message": "No chunks generated from text"
-                    }
-                
-                # Generate embeddings
-                chunk_texts = [chunk.get('text', str(chunk)) for chunk in chunks]
-                embeddings = embedder.embed_texts(chunk_texts)
-                
-                # Store in FAISS
-                chunk_metadata_list = []
-                
-                # Generate a better document identifier
-                def generate_doc_id(metadata, chunk_index):
-                    """Generate a meaningful document ID that includes doc_path"""
-                    doc_path = metadata.get('doc_path', '')
-                    
-                    if doc_path:
-                        # Use doc_path as the base for the ID
-                        # Remove leading slash and replace special chars
-                        doc_id_base = doc_path.strip('/').replace('/', '_').replace(' ', '_')
-                        return f"{doc_id_base}_chunk_{chunk_index}"
-                    
-                    # Fallback to existing logic if no doc_path
-                    title = metadata.get('title', '').strip()
-                    filename = metadata.get('filename', '').strip()
-                    description = metadata.get('description', '').strip()
-                    
-                    if title:
-                        doc_name = title.replace(' ', '_').replace('/', '_').replace('\\', '_')[:50]
-                    elif filename:
-                        import os
-                        doc_name = os.path.splitext(filename)[0].replace(' ', '_').replace('/', '_').replace('\\', '_')[:50]
-                    elif description:
-                        words = description.split()[:5]
-                        doc_name = '_'.join(words).replace('/', '_').replace('\\', '_')[:50]
-                    else:
-                        import hashlib
-                        import time
-                        content_hash = hashlib.md5(str(metadata).encode()).hexdigest()[:8]
-                        timestamp = str(int(time.time()))[-6:]
-                        doc_name = f"doc_{timestamp}_{content_hash}"
-                    
-                    return f"{doc_name}_chunk_{chunk_index}"
-                
-                for i, chunk in enumerate(chunks):
-                    chunk_text = chunk.get('text', str(chunk))
-                    # Create flat metadata structure - no nesting
-                    chunk_meta = {
-                        'text': chunk_text,
-                        'chunk_index': i,
-                        'doc_id': generate_doc_id(metadata, i),
-                        'doc_path': metadata.get('doc_path'),  # Ensure doc_path is at top level
-                        'filename': metadata.get('filename'),
-                        'title': metadata.get('title'),
-                        'description': metadata.get('description'),
-                        'source_type': metadata.get('source_type', 'text'),
-                        'timestamp': metadata.get('timestamp', time.time()),
-                        'operation': metadata.get('operation', 'ingest'),
-                        'source': metadata.get('source', 'api')
-                    }
-                    # Don't nest metadata within metadata
-                    chunk_metadata_list.append(chunk_meta)
-                
-                vector_ids = faiss_store.add_vectors(embeddings, chunk_metadata_list)
-                
-                # Store metadata
-                file_id = metadata_store.add_file_metadata("text_input", metadata)
-                for i, (chunk, vector_id) in enumerate(zip(chunks, vector_ids)):
-                    chunk_text = chunk.get('text', str(chunk))
-                    chunk_metadata = {
-                        "file_id": file_id,
-                        "chunk_index": i,
-                        "text": chunk_text,
-                        "vector_id": vector_id,
-                        "doc_id": generate_doc_id(metadata, i)
-                    }
-                    metadata_store.add_chunk_metadata(chunk_metadata)
-                
-                return {
-                    "status": "success",
-                    "file_id": file_id,
-                    "chunks_created": len(chunks),
-                    "embeddings_generated": len(embeddings),
-                    "is_update": old_vectors_deleted > 0,
-                    "old_vectors_deleted": old_vectors_deleted
-                }
+                # The ingestion engine handles everything (JSON processing, chunking, embeddings, storage)
+                return result
                 
             except Exception as e:
                 logging.error(f"Text ingestion error: {e}")
@@ -634,7 +526,7 @@ Answer:"""
         except asyncio.TimeoutError:
             raise HTTPException(status_code=408, detail="Text ingestion timed out")
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Text ingestion failed: {str(e)}")
+                         raise HTTPException(status_code=500, detail=f"Text ingestion failed: {str(e)}")
     
     # Text ingestion endpoint
     @app.post("/ingest")

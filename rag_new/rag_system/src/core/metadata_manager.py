@@ -29,6 +29,11 @@ class MetadataSchema:
     chunk_size: int = 0
     total_chunks: int = 0
     source_type: str = "unknown"
+    content_type: Optional[str] = None
+    
+    # Upload and source metadata  
+    upload_source: Optional[str] = None
+    upload_timestamp: Optional[str] = None
     
     # Timestamps
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
