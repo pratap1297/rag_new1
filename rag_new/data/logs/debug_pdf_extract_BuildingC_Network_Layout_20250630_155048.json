@@ -1,0 +1,126 @@
+{
+  "status": "success",
+  "file_path": "document_generator\\test_data\\BuildingC_Network_Layout.pdf",
+  "file_name": "BuildingC_Network_Layout.pdf",
+  "file_size": 6099,
+  "processing_start": "2025-06-30T15:50:48.863176",
+  "pages": [
+    {
+      "page_number": 1,
+      "text": "Building C - Shipping and Receiving\nFloor 1 - Pre-Deployment Signal Map\nPRE-DEPLOYMENT\nBuilding C - Floor 1\nToC\nSIGNAL MAP\n5.0 GHz Signal (RSSI) -65 dBm threshold\n06\n05\n04\n09\n03\nN\nSignal Strength (RSSI)\nCoverage Quality\n-30 to -50 dBm\nExcellent (Dark Green)\n-51 to -65 dBm\nGood (Green)\n-66 to -75 dBm\nFair (Yellow)\n-76 to -85 dBm\nPoor (Orange)\nBelow -85 dBm\nUnusable (Red)\nPRE-DEPLOYMENT\nBuilding C - Floor 1\nToC\nSIGNAL MAP\n2.4 GHz Signal (RSSI) -65 dBm threshold\n",
+      "images": [],
+      "tables": [],
+      "annotations": []
+    },
+    {
+      "page_number": 2,
+      "text": "06\n05\n04\n09\n03\nN\nSignal Strength (RSSI)\nCoverage Quality\n-30 to -50 dBm\nExcellent (Dark Green)\n-51 to -65 dBm\nGood (Green)\n-66 to -75 dBm\nFair (Yellow)\n-76 to -85 dBm\nPoor (Orange)\nBelow -85 dBm\nUnusable (Red)\nSITE PLAN\nBuilding C - Floor 1\nToC\nAP PLACEMENT\nAP MODEL\nAP/ANTENNA TYPE\nMDF/IDF\nCisco 3802I\nInternal G\nMDF\nCisco 3802E\nExt. Sector G\nIDF\nCisco 1562E\nExt. Omni G\nIDF\n",
+      "images": [],
+      "tables": [],
+      "annotations": []
+    },
+    {
+      "page_number": 3,
+      "text": "06\n07\n08\n09\n",
+      "images": [],
+      "tables": [],
+      "annotations": []
+    }
+  ],
+  "images": [],
+  "tables": [],
+  "metadata": {
+    "processor": "enhanced_pdf",
+    "timestamp": "2025-06-30T15:50:48.863176",
+    "file_size": 6099,
+    "file_name": "BuildingC_Network_Layout.pdf",
+    "title": "(anonymous)",
+    "author": "(anonymous)",
+    "subject": "(unspecified)",
+    "creator": "(unspecified)",
+    "producer": "ReportLab PDF Library - www.reportlab.com",
+    "creation_date": "D:20250616110500+00'00'",
+    "modification_date": "D:20250616110500+00'00'",
+    "keywords": "",
+    "page_count": 3,
+    "is_encrypted": false,
+    "pdf_version": "%PDF-1.4"
+  },
+  "processing_end": "2025-06-30T15:50:48.892874",
+  "processing_time_seconds": 0.029698,
+  "chunk_count": 3,
+  "chunk_preview": [
+    {
+      "text_length": 463,
+      "text_preview": "Building C - Shipping and Receiving\nFloor 1 - Pre-Deployment Signal Map\nPRE-DEPLOYMENT\nBuilding C - Floor 1\nToC\nSIGNAL MAP\n5.0 GHz Signal (RSSI) -65 dBm threshold\n06\n05\n04\n09\n03\nN\nSignal Strength (RSS...",
+      "metadata": {
+        "source_type": "pdf",
+        "content_type": "page_content",
+        "page_number": 1,
+        "has_images": false,
+        "image_count": 0,
+        "has_tables": false,
+        "table_count": 0,
+        "has_annotations": false,
+        "annotation_count": 0,
+        "extraction_method": "azure_computer_vision",
+        "pdf_title": "(anonymous)",
+        "pdf_author": "(anonymous)",
+        "pdf_page_count": 3,
+        "processor": "enhanced_pdf",
+        "original_text_length": 464,
+        "enriched_text_length": 463,
+        "ocr_text_added": 0,
+        "table_text_added": 0
+      }
+    },
+    {
+      "text_length": 375,
+      "text_preview": "06\n05\n04\n09\n03\nN\nSignal Strength (RSSI)\nCoverage Quality\n-30 to -50 dBm\nExcellent (Dark Green)\n-51 to -65 dBm\nGood (Green)\n-66 to -75 dBm\nFair (Yellow)\n-76 to -85 dBm\nPoor (Orange)\nBelow -85 dBm\nUnusa...",
+      "metadata": {
+        "source_type": "pdf",
+        "content_type": "page_content",
+        "page_number": 2,
+        "has_images": false,
+        "image_count": 0,
+        "has_tables": false,
+        "table_count": 0,
+        "has_annotations": false,
+        "annotation_count": 0,
+        "extraction_method": "azure_computer_vision",
+        "pdf_title": "(anonymous)",
+        "pdf_author": "(anonymous)",
+        "pdf_page_count": 3,
+        "processor": "enhanced_pdf",
+        "original_text_length": 376,
+        "enriched_text_length": 375,
+        "ocr_text_added": 0,
+        "table_text_added": 0
+      }
+    },
+    {
+      "text_length": 11,
+      "text_preview": "06\n07\n08\n09",
+      "metadata": {
+        "source_type": "pdf",
+        "content_type": "page_content",
+        "page_number": 3,
+        "has_images": false,
+        "image_count": 0,
+        "has_tables": false,
+        "table_count": 0,
+        "has_annotations": false,
+        "annotation_count": 0,
+        "extraction_method": "azure_computer_vision",
+        "pdf_title": "(anonymous)",
+        "pdf_author": "(anonymous)",
+        "pdf_page_count": 3,
+        "processor": "enhanced_pdf",
+        "original_text_length": 12,
+        "enriched_text_length": 11,
+        "ocr_text_added": 0,
+        "table_text_added": 0
+      }
+    }
+  ]
+}

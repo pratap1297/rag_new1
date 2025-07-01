@@ -1,0 +1,92 @@
+{
+  "status": "success",
+  "file_path": "document_generator\\test_data\\ServiceNow_Incidents_Last30Days.json",
+  "file_name": "ServiceNow_Incidents_Last30Days.json",
+  "file_size": 4961,
+  "processing_start": "2025-06-30T15:52:52.226262",
+  "data_analysis": {
+    "data_type": "list",
+    "record_count": 5,
+    "max_depth": 2,
+    "field_count": 15,
+    "sample_fields": [
+      "number",
+      "priority",
+      "category",
+      "subcategory",
+      "created",
+      "reporter",
+      "assigned_to",
+      "location",
+      "short_description",
+      "description",
+      "resolution",
+      "resolved",
+      "work_notes",
+      "related_manager",
+      "related_building"
+    ],
+    "is_servicenow": true,
+    "servicenow_indicators": [
+      "number",
+      "created",
+      "assigned_to",
+      "priority",
+      "category"
+    ]
+  },
+  "metadata": {
+    "processor": "servicenow",
+    "timestamp": "2025-06-30T15:52:52.227777",
+    "is_servicenow_data": true,
+    "record_count": 5,
+    "structure_type": "list"
+  },
+  "processing_end": "2025-06-30T15:52:52.227777",
+  "processing_time_seconds": 0.001515,
+  "chunk_count": 5,
+  "chunk_preview": [
+    {
+      "text_length": 786,
+      "text_preview": "Incident: INC030001\nPriority: High\nCategory: Network - Wireless Connectivity\nCreated: 2025-05-20 08:05:00\nResolved: 2025-05-21 01:05:00\nReporter: Night Shift Supervisor\nAssigned to: Sarah Johnson\nLoca...",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 0,
+        "record_id": "INC030001",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "text_length": 771,
+      "text_preview": "Incident: INC030002\nPriority: Medium\nCategory: Network - Signal Quality\nCreated: 2025-05-21 19:05:00\nResolved: 2025-05-23 01:05:00\nReporter: Security Team\nAssigned to: Robert Taylor\nLocation: Building...",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 1,
+        "record_id": "INC030002",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "text_length": 823,
+      "text_preview": "Incident: INC030003\nPriority: Critical\nCategory: Infrastructure - Environmental\nCreated: 2025-05-23 12:05:00\nResolved: 2025-05-25 12:05:00\nReporter: Security Team\nAssigned to: David Chen\nLocation: Bui...",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 2,
+        "record_id": "INC030003",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    }
+  ]
+}

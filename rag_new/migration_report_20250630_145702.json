@@ -1,0 +1,12 @@
+{
+  "migration_date": "2025-06-30T14:57:02.006899",
+  "success": true,
+  "backup_config": "rag_system/data/config/system_config_backup_20250630_145659.json",
+  "qdrant_server": "localhost:6333",
+  "collection_name": "rag_documents",
+  "notes": [
+    "Migration completed successfully",
+    "System is now using Qdrant for vector storage",
+    "Original FAISS files have been preserved"
+  ]
+}

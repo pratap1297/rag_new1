@@ -1,0 +1,23 @@
+{
+  "migration_date": "2025-06-30 16:11:10",
+  "vector_store_type": "QdrantVectorStore",
+  "query_engine_type": "QdrantQueryEngine",
+  "collection_info": {
+    "vectors_count": null,
+    "indexed_vectors_count": 0,
+    "points_count": 21,
+    "segments_count": 2,
+    "status": "green",
+    "config": {
+      "dimension": 1024,
+      "distance": "Cosine",
+      "on_disk": true
+    }
+  },
+  "total_documents": 21,
+  "qdrant_features": [
+    "Unlimited incident listing: 5 incidents",
+    "Native aggregation: 5 documents by type",
+    "Pattern search: 2 network-related docs"
+  ]
+}

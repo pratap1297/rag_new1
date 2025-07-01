@@ -1,0 +1,126 @@
+{
+  "status": "success",
+  "file_path": "document_generator\\test_data\\ServiceNow_Incidents_Last30Days.json",
+  "file_name": "ServiceNow_Incidents_Last30Days.json",
+  "file_size": 4961,
+  "processing_start": "2025-06-30T15:50:49.843725",
+  "data_analysis": {
+    "data_type": "list",
+    "record_count": 5,
+    "max_depth": 2,
+    "field_count": 15,
+    "sample_fields": [
+      "number",
+      "priority",
+      "category",
+      "subcategory",
+      "created",
+      "reporter",
+      "assigned_to",
+      "location",
+      "short_description",
+      "description",
+      "resolution",
+      "resolved",
+      "work_notes",
+      "related_manager",
+      "related_building"
+    ],
+    "is_servicenow": true,
+    "servicenow_indicators": [
+      "number",
+      "created",
+      "assigned_to",
+      "priority",
+      "category"
+    ]
+  },
+  "metadata": {
+    "processor": "servicenow",
+    "timestamp": "2025-06-30T15:50:49.845728",
+    "is_servicenow_data": true,
+    "record_count": 5,
+    "structure_type": "list"
+  },
+  "processing_end": "2025-06-30T15:50:49.845728",
+  "processing_time_seconds": 0.003511,
+  "chunk_count": 5,
+  "processor_name": "ServiceNowProcessor",
+  "chunks_detail": [
+    {
+      "chunk_index": 0,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 0,
+        "record_id": "INC030001",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "chunk_index": 1,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 1,
+        "record_id": "INC030002",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "chunk_index": 2,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 2,
+        "record_id": "INC030003",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "chunk_index": 3,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 3,
+        "record_id": "INC030004",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    },
+    {
+      "chunk_index": 4,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "servicenow",
+        "content_type": "record",
+        "record_index": 4,
+        "record_id": "INC030005",
+        "total_records": 5,
+        "processor": "servicenow",
+        "file_name": "ServiceNow_Incidents_Last30Days.json",
+        "is_servicenow_data": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,3673 @@
+{
+  "files": {
+    "rag_new/rag_system/src/api/enhanced_folder_endpoints.py": {
+      "classes": {
+        "FolderMonitorConnectionManager": {
+          "methods": [
+            "__init__",
+            "connect",
+            "disconnect",
+            "broadcast"
+          ]
+        },
+        "AddFolderRequest": {
+          "fields": [
+            "folder_path",
+            "auto_start_monitoring"
+          ]
+        },
+        "ProcessFileRequest": {
+          "fields": [
+            "file_path"
+          ]
+        },
+        "MonitoringConfigRequest": {
+          "fields": [
+            "check_interval",
+            "max_concurrent_processors",
+            "auto_ingest"
+          ]
+        }
+      },
+      "functions": [
+        "websocket_endpoint",
+        "get_enhanced_status",
+        "get_enhanced_dashboard"
+      ],
+      "dependencies": [
+        "asyncio",
+        "json",
+        "logging",
+        "datetime",
+        "pathlib",
+        "fastapi",
+        "pydantic",
+        "rag_system.src.monitoring.enhanced_folder_monitor",
+        "rag_system.src.core.dependency_container"
+      ]
+    },
+    "rag_new/rag_system/src/api/main.py": {
+      "classes": {
+        "FileUploadHandler": {
+          "methods": [
+            "__init__",
+            "upload_and_ingest",
+            "format_search_result"
+          ]
+        }
+      },
+      "functions": [
+        "safe_import",
+        "create_api_app"
+      ],
+      "endpoints": [
+        {
+          "path": "/health",
+          "method": "GET"
+        },
+        {
+          "path": "/query",
+          "method": "POST"
+        },
+        {
+          "path": "/ingest",
+          "method": "POST"
+        },
+        {
+          "path": "/upload",
+          "method": "POST"
+        },
+        {
+          "path": "/upload/enhanced",
+          "method": "POST"
+        },
+        {
+          "path": "/health/detailed",
+          "method": "GET"
+        },
+        {
+          "path": "/stats",
+          "method": "GET"
+        },
+        {
+          "path": "/documents",
+          "method": "GET"
+        },
+        {
+          "path": "/config",
+          "method": "GET"
+        },
+        {
+          "path": "/heartbeat",
+          "method": "GET"
+        },
+        {
+          "path": "/health/summary",
+          "method": "GET"
+        },
+        {
+          "path": "/health/components",
+          "method": "GET"
+        },
+        {
+          "path": "/health/history",
+          "method": "GET"
+        },
+        {
+          "path": "/health/check",
+          "method": "POST"
+        },
+        {
+          "path": "/heartbeat/start",
+          "method": "POST"
+        },
+        {
+          "path": "/heartbeat/stop",
+          "method": "POST"
+        },
+        {
+          "path": "/heartbeat/status",
+          "method": "GET"
+        },
+        {
+          "path": "/heartbeat/logs",
+          "method": "GET"
+        },
+        {
+          "path": "/folder-monitor/status",
+          "method": "GET"
+        },
+        {
+          "path": "/folder-monitor/add",
+          "method": "POST"
+        },
+        {
+          "path": "/folder-monitor/remove",
+          "method": "POST"
+        },
+        {
+          "path": "/folder-monitor/folders",
+          "method": "GET"
+        },
+        {
+          "path": "/folder-monitor/start",
+          "method": "POST"
+        },
+        {
+          "path": "/folder-monitor/stop",
+          "method": "POST"
+        },
+        {
+          "path": "/folder-monitor/scan",
+          "method": "POST"
+        },
+        {
+          "path": "/folder-monitor/files",
+          "method": "GET"
+        },
+        {
+          "path": "/folder-monitor/retry",
+          "method": "POST"
+        },
+        {
+          "path": "/documents/{doc_path:path}",
+          "method": "DELETE"
+        },
+        {
+          "path": "/clear",
+          "method": "POST"
+        },
+        {
+          "path": "/health/performance",
+          "method": "GET"
+        },
+        {
+          "path": "/feedback",
+          "method": "POST"
+        },
+        {
+          "path": "/feedback/stats",
+          "method": "GET"
+        },
+        {
+          "path": "/feedback/suggestions",
+          "method": "GET"
+        },
+        {
+          "path": "/feedback/recent",
+          "method": "GET"
+        },
+        {
+          "path": "/feedback/export",
+          "method": "POST"
+        },
+        {
+          "path": "/vectors",
+          "method": "GET"
+        },
+        {
+          "path": "/vectors/{vector_id}",
+          "method": "GET"
+        }
+      ],
+      "dependencies": [
+        "fastapi",
+        "logging",
+        "asyncio",
+        "time",
+        "datetime",
+        "pathlib",
+        "concurrent.futures",
+        "atexit",
+        "tempfile",
+        "shutil",
+        "os",
+        "rag_system.src.api.models.requests",
+        "rag_system.src.api.models.responses",
+        "rag_system.src.core.error_handling",
+        "rag_system.src.core.unified_error_handling",
+        "rag_system.src.core.resource_manager",
+        "rag_system.src.storage.feedback_store",
+        "rag_system.src.api.management_api",
+        "rag_system.src.api.verification_endpoints",
+        "rag_system.src.core.progress_tracker",
+        "rag_system.src.ui.progress_monitor",
+        "rag_system.src.monitoring.folder_monitor",
+        "rag_system.src.api.simple_enhanced_endpoints"
+      ]
+    },
+    "rag_new/rag_system/src/api/management_api.py": {
+      "classes": {
+        "VectorInfo": {
+          "fields": [
+            "vector_id",
+            "doc_id",
+            "text_preview",
+            "metadata",
+            "similarity_score"
+          ]
+        },
+        "DocumentInfo": {
+          "fields": [
+            "doc_id",
+            "title",
+            "filename",
+            "chunk_count",
+            "total_text_length",
+            "metadata",
+            "created_at"
+          ]
+        },
+        "CleanupResult": {
+          "fields": [
+            "action",
+            "affected_count",
+            "details"
+          ]
+        },
+        "UpdateRequest": {
+          "fields": [
+            "vector_ids",
+            "doc_ids",
+            "updates"
+          ]
+        }
+      },
+      "functions": [
+        "create_management_router"
+      ],
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "json",
+        "re",
+        "fastapi",
+        "pydantic"
+      ]
+    },
+    "rag_new/rag_system/src/api/models/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/api/models/requests.py": {
+      "classes": {
+        "QueryRequest": {
+          "fields": [
+            "query",
+            "filters",
+            "top_k"
+          ]
+        },
+        "UploadRequest": {
+          "fields": [
+            "metadata"
+          ]
+        },
+        "ConfigUpdateRequest": {
+          "fields": [
+            "component",
+            "updates"
+          ]
+        }
+      },
+      "dependencies": [
+        "pydantic",
+        "typing"
+      ]
+    },
+    "rag_new/rag_system/src/api/models/responses.py": {
+      "classes": {
+        "SourceInfo": {
+          "fields": [
+            "text",
+            "similarity_score",
+            "metadata",
+            "source_type"
+          ]
+        },
+        "QueryResponse": {
+          "fields": [
+            "query",
+            "response",
+            "sources",
+            "total_sources",
+            "timestamp"
+          ]
+        },
+        "UploadResponse": {
+          "fields": [
+            "status",
+            "file_id",
+            "file_path",
+            "chunks_created",
+            "vectors_stored",
+            "reason",
+            "is_update",
+            "old_vectors_deleted"
+          ]
+        },
+        "HealthResponse": {
+          "fields": [
+            "status",
+            "timestamp",
+            "components",
+            "issues"
+          ]
+        },
+        "StatsResponse": {
+          "fields": [
+            "total_files",
+            "total_chunks",
+            "total_vectors",
+            "collections",
+            "active_vectors"
+          ]
+        }
+      },
+      "dependencies": [
+        "pydantic",
+        "typing"
+      ]
+    },
+    "rag_new/rag_system/src/api/routes/conversation.py": {
+      "classes": {
+        "ConversationStartRequest": {
+          "fields": [
+            "thread_id",
+            "session_id",
+            "user_preferences"
+          ]
+        },
+        "ConversationMessageRequest": {
+          "fields": [
+            "message",
+            "thread_id",
+            "session_id",
+            "metadata"
+          ]
+        },
+        "ConversationResponse": {
+          "fields": [
+            "response",
+            "thread_id",
+            "conversation_id",
+            "turn_count",
+            "current_phase",
+            "confidence_score",
+            "timestamp",
+            "suggested_questions",
+            "related_topics",
+            "sources",
+            "total_sources",
+            "errors"
+          ]
+        },
+        "ConversationHistoryResponse": {
+          "fields": [
+            "messages",
+            "thread_id",
+            "conversation_id",
+            "turn_count",
+            "current_phase",
+            "topics_discussed"
+          ]
+        }
+      },
+      "functions": [
+        "get_conversation_manager",
+        "start_conversation",
+        "send_message",
+        "send_message_stream",
+        "get_conversation_history",
+        "get_conversation_history_by_session",
+        "end_conversation",
+        "end_conversation_by_session",
+        "get_active_conversations",
+        "get_active_sessions",
+        "conversation_health_check"
+      ],
+      "dependencies": [
+        "logging",
+        "json",
+        "asyncio",
+        "typing",
+        "fastapi",
+        "pydantic",
+        "rag_system.src.core.dependency_container"
+      ]
+    },
+    "rag_new/rag_system/src/api/routes/powerbi.py": {
+      "classes": {
+        "SyncRequest": {
+          "fields": [
+            "workspace_id",
+            "report_ids",
+            "extract_raw_data",
+            "extract_visuals"
+          ]
+        },
+        "ScheduleConfigRequest": {
+          "fields": [
+            "workspace_id",
+            "report_ids",
+            "interval_minutes",
+            "extract_raw_data",
+            "extract_visuals",
+            "max_reports"
+          ]
+        },
+        "SyncJobUpdateRequest": {
+          "fields": [
+            "interval_minutes",
+            "is_active",
+            "extract_raw_data",
+            "extract_visuals",
+            "max_reports",
+            "report_ids"
+          ]
+        }
+      },
+      "functions": [
+        "get_scheduler",
+        "test_connection",
+        "list_workspaces",
+        "list_reports",
+        "list_datasets",
+        "sync_powerbi_workspace",
+        "get_sync_status",
+        "configure_schedule",
+        "list_sync_jobs",
+        "update_sync_job",
+        "delete_sync_job",
+        "run_sync_job",
+        "get_sync_history",
+        "clear_sync_history",
+        "start_scheduler",
+        "stop_scheduler",
+        "get_report_structure",
+        "execute_dax_query",
+        "extract_report_data",
+        "upload_pbix_file"
+      ],
+      "dependencies": [
+        "fastapi",
+        "typing",
+        "pydantic",
+        "logging",
+        "asyncio",
+        "datetime"
+      ]
+    },
+    "rag_new/rag_system/src/api/routes/servicenow.py": {
+      "classes": {
+        "ServiceNowConfig": {
+          "fields": [
+            "enabled",
+            "fetch_interval_minutes",
+            "batch_size",
+            "max_incidents_per_fetch",
+            "priority_filter",
+            "state_filter",
+            "days_back",
+            "network_only",
+            "auto_ingest",
+            "cache_enabled",
+            "cache_ttl_hours"
+          ]
+        },
+        "SyncFilters": {
+          "fields": [
+            "priority_filter",
+            "state_filter",
+            "days_back",
+            "network_only",
+            "limit"
+          ]
+        },
+        "ServiceNowStatus": {
+          "fields": [
+            "initialized",
+            "connection_healthy",
+            "scheduler_running",
+            "last_sync_time",
+            "statistics",
+            "connection_info"
+          ]
+        },
+        "SyncResult": {
+          "fields": [
+            "incidents_fetched",
+            "incidents_processed",
+            "incidents_ingested",
+            "new_incidents",
+            "updated_incidents",
+            "duration"
+          ]
+        }
+      },
+      "functions": [
+        "get_servicenow_integration",
+        "get_servicenow_status",
+        "initialize_servicenow",
+        "start_automated_sync",
+        "stop_automated_sync",
+        "manual_sync",
+        "sync_specific_incident",
+        "get_recent_tickets",
+        "get_sync_history",
+        "update_servicenow_config",
+        "get_servicenow_config",
+        "test_servicenow_integration",
+        "get_connection_info",
+        "test_connection"
+      ],
+      "dependencies": [
+        "logging",
+        "typing",
+        "fastapi",
+        "pydantic",
+        "rag_system.src.core.dependency_container",
+        "rag_system.src.integrations.servicenow",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/api/servicenow_ui.py": {
+      "classes": {
+        "ServiceNowUI": {
+          "methods": [
+            "__init__",
+            "_make_request",
+            "_get_servicenow_connector",
+            "fetch_servicenow_tickets",
+            "_get_priority_label",
+            "_get_state_label",
+            "_create_ticket_checkboxes",
+            "_get_pagination_info",
+            "update_ticket_selection",
+            "ingest_selected_tickets",
+            "get_servicenow_stats",
+            "_get_sample_tickets",
+            "_apply_filters"
+          ]
+        }
+      },
+      "functions": [
+        "create_servicenow_interface"
+      ],
+      "dependencies": [
+        "gradio",
+        "pandas",
+        "requests",
+        "json",
+        "typing",
+        "datetime",
+        "os",
+        "dotenv"
+      ]
+    },
+    "rag_new/rag_system/src/api/simple_enhanced_endpoints.py": {
+      "classes": {
+        "ConnectionManager": {
+          "methods": [
+            "__init__",
+            "connect",
+            "disconnect",
+            "broadcast"
+          ]
+        },
+        "AddFolderRequest": {
+          "fields": [
+            "folder_path",
+            "auto_start_monitoring"
+          ]
+        },
+        "ProcessFileRequest": {
+          "fields": [
+            "file_path"
+          ]
+        }
+      },
+      "functions": [
+        "get_mock_enhanced_status",
+        "get_mock_file_states",
+        "websocket_endpoint",
+        "get_enhanced_status",
+        "get_file_states",
+        "add_folder",
+        "process_file",
+        "get_enhanced_dashboard",
+        "test_endpoint"
+      ],
+      "dependencies": [
+        "json",
+        "logging",
+        "os",
+        "time",
+        "datetime",
+        "typing",
+        "pathlib",
+        "fastapi",
+        "pydantic"
+      ]
+    },
+    "rag_new/rag_system/src/api/verification_endpoints.py": {
+      "classes": {
+        "ConnectionManager": {
+          "methods": [
+            "__init__",
+            "connect",
+            "disconnect",
+            "send_personal_message",
+            "broadcast"
+          ]
+        },
+        "FileValidationRequest": {
+          "fields": [
+            "file_path"
+          ]
+        },
+        "TestExtractionRequest": {
+          "fields": [
+            "file_path"
+          ]
+        },
+        "TestChunkingRequest": {
+          "fields": [
+            "text",
+            "method"
+          ]
+        },
+        "TestEmbeddingRequest": {
+          "fields": [
+            "text"
+          ]
+        },
+        "VerifiedIngestionRequest": {
+          "fields": [
+            "file_path",
+            "metadata"
+          ]
+        },
+        "AnalyzeChunksRequest": {
+          "fields": [
+            "file_id"
+          ]
+        },
+        "SimilarityTestRequest": {
+          "fields": [
+            "query_text",
+            "vector_id"
+          ]
+        }
+      },
+      "functions": [
+        "run_verified_ingestion",
+        "websocket_endpoint",
+        "validate_file",
+        "test_extraction",
+        "test_chunking",
+        "test_embedding",
+        "verify_vector",
+        "ingest_with_verification",
+        "get_session_status",
+        "list_sessions",
+        "analyze_chunks",
+        "test_similarity",
+        "get_performance_stats",
+        "debug_file_access",
+        "verification_health_check",
+        "get_verification_dashboard"
+      ],
+      "dependencies": [
+        "asyncio",
+        "json",
+        "logging",
+        "datetime",
+        "typing",
+        "pathlib",
+        "uuid",
+        "fastapi",
+        "pydantic",
+        "rag_system.src.core.pipeline_verifier",
+        "rag_system.src.core.verified_ingestion_engine",
+        "rag_system.src.core.dependency_container"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/__init__.py": {
+      "constants": [
+        "__all__"
+      ],
+      "dependencies": [
+        "rag_system.src.conversation.conversation_manager",
+        "rag_system.src.conversation.conversation_graph",
+        "rag_system.src.conversation.conversation_state",
+        "rag_system.src.conversation.conversation_nodes"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_graph.py": {
+      "classes": {
+        "ConversationGraph": {
+          "methods": [
+            "__init__",
+            "_build_graph",
+            "_route_after_understanding",
+            "_route_after_search",
+            "_route_conversation_end",
+            "process_message",
+            "_get_or_create_state",
+            "get_conversation_history",
+            "list_conversation_threads"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "langgraph.graph",
+        "langgraph.prebuilt",
+        "langgraph.checkpoint.memory",
+        "os",
+        "rag_system.src.conversation.conversation_state",
+        "rag_system.src.conversation.conversation_nodes"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_manager.py": {
+      "classes": {
+        "ConversationManager": {
+          "methods": [
+            "__init__",
+            "start_conversation",
+            "process_user_message",
+            "get_conversation_history",
+            "end_conversation",
+            "list_active_conversations",
+            "cleanup_old_conversations",
+            "get_memory_stats",
+            "_format_response",
+            "_generate_conversation_summary",
+            "get_or_create_conversation",
+            "get_active_sessions"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "uuid",
+        "rag_system.src.conversation.conversation_state",
+        "rag_system.src.conversation.conversation_graph"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_nodes.py": {
+      "classes": {
+        "ConversationNodes": {
+          "methods": [
+            "__init__",
+            "greet_user",
+            "understand_intent",
+            "search_knowledge",
+            "generate_response",
+            "handle_clarification",
+            "check_conversation_end",
+            "_is_contextual_query",
+            "_build_contextual_query",
+            "_extract_keywords",
+            "_generate_contextual_response",
+            "_build_conversation_context",
+            "_generate_no_results_contextual_response",
+            "_generate_greeting_response",
+            "_generate_farewell_response",
+            "_generate_help_response",
+            "_generate_general_response",
+            "_generate_follow_up_questions",
+            "_extract_related_topics",
+            "_build_suggestion_context",
+            "_parse_follow_up_questions",
+            "_generate_fallback_follow_up_questions",
+            "_is_complex_correlation_query"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "re",
+        "datetime",
+        "rag_system.src.conversation.conversation_state"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_state.py": {
+      "classes": {
+        "MessageType": {
+          "enum_members": [
+            "USER",
+            "ASSISTANT",
+            "SYSTEM",
+            "TOOL"
+          ]
+        },
+        "ConversationPhase": {
+          "enum_members": [
+            "GREETING",
+            "UNDERSTANDING",
+            "SEARCHING",
+            "RESPONDING",
+            "CLARIFYING",
+            "FOLLOW_UP",
+            "ENDING"
+          ]
+        },
+        "Message": {},
+        "SearchResult": {},
+        "ConversationState": {}
+      },
+      "functions": [
+        "create_conversation_state",
+        "add_message_to_state",
+        "_apply_memory_management",
+        "get_conversation_history",
+        "get_context_summary",
+        "should_end_conversation"
+      ],
+      "dependencies": [
+        "typing",
+        "typing_extensions",
+        "datetime",
+        "enum",
+        "uuid"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_suggestions.py": {
+      "classes": {
+        "EnhancedConversationSuggestions": {
+          "methods": [
+            "__init__",
+            "generate_enhanced_response",
+            "_generate_contextual_followups",
+            "_extract_explorable_topics",
+            "_generate_conversation_insights",
+            "_format_enhanced_response",
+            "_create_ui_elements",
+            "_create_interaction_hints",
+            "_get_intent_icon",
+            "_get_button_variant",
+            "_calculate_question_priority",
+            "_can_answer_quickly",
+            "_extract_keywords",
+            "_parse_questions_json",
+            "_extract_questions_from_text",
+            "_generate_fallback_questions",
+            "_generate_fallback_response",
+            "_enhance_topics",
+            "_enhance_entities",
+            "_enhance_technical_terms",
+            "_enhance_related_areas",
+            "_summarize_search_results",
+            "_get_conversation_context",
+            "_categorize_question",
+            "_estimate_response_length",
+            "_calculate_topic_continuity",
+            "_estimate_information_coverage",
+            "_assess_conversation_depth",
+            "_suggest_exploration_path",
+            "_assess_conversation_health",
+            "_suggest_next_actions",
+            "_create_exploration_summary",
+            "_create_conversation_guidance",
+            "_fallback_topic_extraction"
+          ]
+        }
+      },
+      "dependencies": [
+        "asyncio",
+        "concurrent.futures",
+        "logging",
+        "json",
+        "re",
+        "typing",
+        "datetime",
+        "uuid"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/conversation_utils.py": {
+      "classes": {
+        "ConversationUtils": {
+          "methods": [
+            "extract_entities",
+            "calculate_conversation_quality",
+            "suggest_conversation_improvements",
+            "format_conversation_export",
+            "_generate_summary"
+          ]
+        },
+        "ConversationAnalytics": {
+          "methods": [
+            "__init__",
+            "log_conversation_end",
+            "_estimate_satisfaction",
+            "_update_daily_stats",
+            "get_conversation_insights",
+            "_generate_insights"
+          ]
+        }
+      },
+      "dependencies": [
+        "re",
+        "typing",
+        "collections",
+        "datetime",
+        "rag_system.src.conversation.conversation_state"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/enhanced_suggestions.py": {
+      "classes": {
+        "EnhancedConversationSuggestions": {
+          "methods": [
+            "__init__",
+            "generate_enhanced_response",
+            "_generate_contextual_followups",
+            "_extract_explorable_topics",
+            "_generate_conversation_insights",
+            "_format_enhanced_response",
+            "_create_ui_elements",
+            "_create_interaction_hints",
+            "_get_intent_icon",
+            "_get_button_variant",
+            "_calculate_question_priority",
+            "_can_answer_quickly",
+            "_extract_keywords",
+            "_parse_questions_json",
+            "_extract_questions_from_text",
+            "_generate_fallback_questions",
+            "_generate_fallback_response",
+            "_enhance_topics",
+            "_enhance_entities",
+            "_enhance_technical_terms",
+            "_enhance_related_areas",
+            "_summarize_search_results",
+            "_get_conversation_context",
+            "_categorize_question",
+            "_estimate_response_length",
+            "_calculate_topic_continuity",
+            "_estimate_information_coverage",
+            "_assess_conversation_depth",
+            "_suggest_exploration_path",
+            "_assess_conversation_health",
+            "_suggest_next_actions",
+            "_create_exploration_summary",
+            "_create_conversation_guidance",
+            "_fallback_topic_extraction"
+          ]
+        }
+      },
+      "dependencies": [
+        "asyncio",
+        "concurrent.futures",
+        "logging",
+        "json",
+        "re",
+        "typing",
+        "datetime",
+        "uuid"
+      ]
+    },
+    "rag_new/rag_system/src/conversation/enhanced_suggestions_demo.py": {
+      "classes": {
+        "MockLLMClient": {
+          "methods": [
+            "generate"
+          ]
+        }
+      },
+      "functions": [
+        "demo_enhanced_suggestions",
+        "demo_ui_integration"
+      ],
+      "dependencies": [
+        "json",
+        "typing",
+        "rag_system.src.conversation.enhanced_suggestions"
+      ]
+    },
+    "rag_new/rag_system/src/core/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/core/config_manager.py": {
+      "classes": {
+        "VectorStoreConfig": {
+          "fields": [
+            "type",
+            "dimension",
+            "backup_enabled",
+            "backup_interval",
+            "faiss_index_path",
+            "index_type",
+            "nprobe",
+            "enable_gpu",
+            "url",
+            "collection_name",
+            "on_disk_storage",
+            "distance"
+          ]
+        },
+        "DatabaseConfig": {
+          "fields": [
+            "faiss_index_path",
+            "metadata_path",
+            "backup_path",
+            "max_backup_count",
+            "backup_enabled",
+            "backup_interval",
+            "index_type",
+            "nprobe",
+            "enable_gpu"
+          ]
+        },
+        "EmbeddingConfig": {
+          "fields": [
+            "provider",
+            "model_name",
+            "dimension",
+            "batch_size",
+            "device",
+            "api_key"
+          ]
+        },
+        "LLMConfig": {
+          "fields": [
+            "provider",
+            "model_name",
+            "api_key",
+            "temperature",
+            "max_tokens"
+          ]
+        },
+        "APIConfig": {
+          "fields": [
+            "host",
+            "port",
+            "workers",
+            "reload",
+            "cors_origins",
+            "health_check_timeout",
+            "stats_timeout",
+            "llm_test_timeout"
+          ]
+        },
+        "IngestionConfig": {
+          "fields": [
+            "chunk_size",
+            "chunk_overlap",
+            "supported_formats",
+            "max_file_size_mb",
+            "batch_size",
+            "timeout",
+            "file_timeout"
+          ]
+        },
+        "RetrievalConfig": {
+          "fields": [
+            "top_k",
+            "similarity_threshold",
+            "rerank_top_k",
+            "enable_reranking"
+          ]
+        },
+        "MonitoringConfig": {
+          "fields": [
+            "enable_metrics",
+            "metrics_port",
+            "log_level",
+            "log_format"
+          ]
+        },
+        "FolderMonitoringConfig": {
+          "fields": [
+            "enabled",
+            "check_interval_seconds",
+            "monitored_folders",
+            "supported_extensions",
+            "max_file_size_mb",
+            "auto_ingest",
+            "recursive"
+          ]
+        },
+        "AzureAIConfig": {
+          "fields": [
+            "computer_vision_endpoint",
+            "computer_vision_key",
+            "document_intelligence_endpoint",
+            "document_intelligence_key",
+            "max_image_size_mb",
+            "ocr_language",
+            "enable_handwriting",
+            "enable_document_intelligence"
+          ]
+        },
+        "SystemConfig": {
+          "fields": [
+            "environment",
+            "debug",
+            "data_dir",
+            "log_dir",
+            "vector_store",
+            "database",
+            "embedding",
+            "llm",
+            "api",
+            "ingestion",
+            "retrieval",
+            "monitoring",
+            "folder_monitoring",
+            "azure_ai"
+          ]
+        },
+        "ConfigManager": {
+          "methods": [
+            "__init__",
+            "_load_config",
+            "_dict_to_config",
+            "_safe_create_config",
+            "_apply_env_overrides",
+            "get_config",
+            "save_config",
+            "update_config",
+            "validate_config"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "os",
+        "dataclasses",
+        "pathlib",
+        "typing",
+        "dotenv"
+      ]
+    },
+    "rag_new/rag_system/src/core/constants.py": {
+      "constants": [
+        "EMBEDDING_DIMENSIONS",
+        "DEFAULT_EMBEDDING_CONFIG",
+        "MAX_FILE_SIZE_MB",
+        "MAX_CHUNK_SIZE",
+        "MIN_CHUNK_SIZE",
+        "DEFAULT_CHUNK_SIZE",
+        "DEFAULT_CHUNK_OVERLAP",
+        "MAX_QUERY_LENGTH",
+        "MAX_RESULTS_PER_QUERY",
+        "DEFAULT_TOP_K",
+        "DEFAULT_THREAD_POOL_SIZE",
+        "MAX_THREAD_POOL_SIZE"
+      ],
+      "functions": [
+        "get_embedding_dimension",
+        "get_default_model_for_provider",
+        "safe_import_and_call"
+      ]
+    },
+    "rag_new/rag_system/src/core/dependency_container.py": {
+      "classes": {
+        "DependencyContainer": {
+          "methods": [
+            "__init__",
+            "register",
+            "register_instance",
+            "get",
+            "has",
+            "list_services"
+          ]
+        }
+      },
+      "functions": [
+        "inject",
+        "create_config_manager",
+        "create_json_store",
+        "create_metadata_store",
+        "create_log_store",
+        "create_vector_store",
+        "create_faiss_store",
+        "create_embedder",
+        "create_chunker",
+        "create_llm_client",
+        "create_reranker",
+        "create_query_enhancer",
+        "create_query_engine",
+        "create_ingestion_engine",
+        "create_verified_ingestion_engine",
+        "create_servicenow_integration",
+        "create_conversation_manager",
+        "create_ingestion_verifier",
+        "create_ingestion_debugger",
+        "register_core_services",
+        "get_dependency_container",
+        "set_dependency_container"
+      ],
+      "dependencies": [
+        "typing",
+        "threading",
+        "functools",
+        "json",
+        "pathlib",
+        "datetime"
+      ]
+    },
+    "rag_new/rag_system/src/core/error_handling.py": {
+      "classes": {
+        "ErrorCode": {
+          "enum_members": [
+            "INTERNAL_ERROR",
+            "CONFIGURATION_ERROR",
+            "VECTOR_STORE_ERROR",
+            "EMBEDDING_ERROR",
+            "INGESTION_ERROR",
+            "RETRIEVAL_ERROR",
+            "CHUNKING_ERROR",
+            "PROCESSING_ERROR",
+            "LLM_ERROR",
+            "API_KEY_ERROR",
+            "METADATA_ERROR",
+            "RESOURCE_ERROR",
+            "SERVICENOW_ERROR",
+            "AZURE_AI_ERROR",
+            "CONVERSATION_ERROR",
+            "FAISS_ERROR",
+            "STORAGE_ERROR",
+            "FILE_PROCESSING_ERROR",
+            "QUERY_ERROR",
+            "MISSING_PARAMETER",
+            "INVALID_PARAMETER",
+            "NOT_FOUND"
+          ]
+        },
+        "ErrorInfo": {
+          "methods": [
+            "__init__",
+            "from_exception",
+            "to_user_message"
+          ]
+        },
+        "ErrorContext": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "Result": {
+          "methods": [
+            "__init__",
+            "ok",
+            "fail"
+          ]
+        },
+        "UnifiedError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ErrorHandler": {
+          "methods": [
+            "__init__",
+            "handle_error"
+          ]
+        },
+        "RAGSystemError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ConfigurationError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "VectorStoreError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "EmbeddingError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "IngestionError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "RetrievalError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "QueryError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ChunkingError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ProcessingError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "FileProcessingError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "LLMError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "APIKeyError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "MetadataError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ResourceError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ServiceNowError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "AzureAIError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ConversationError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "FAISSError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "StorageError": {
+          "methods": [
+            "__init__"
+          ]
+        },
+        "ErrorTracker": {
+          "methods": [
+            "__init__",
+            "track_error",
+            "get_error_stats",
+            "clear_stats"
+          ]
+        }
+      },
+      "functions": [
+        "with_error_handling",
+        "safe_execute",
+        "get_error_handler",
+        "get_error_tracker",
+        "set_error_tracker",
+        "handle_error",
+        "create_error_response",
+        "log_error",
+        "handle_vector_store_errors",
+        "handle_embedding_errors",
+        "handle_ingestion_errors",
+        "handle_retrieval_errors",
+        "handle_chunking_errors",
+        "handle_llm_errors",
+        "handle_configuration_errors",
+        "handle_servicenow_errors",
+        "handle_azure_ai_errors",
+        "validate_required_params",
+        "validate_file_path",
+        "validate_query",
+        "validate_config"
+      ],
+      "dependencies": [
+        "logging",
+        "typing",
+        "enum",
+        "datetime",
+        "traceback"
+      ]
+    },
+    "rag_new/rag_system/src/core/ingestion_debug_tools.py": {
+      "classes": {
+        "IngestionDebugger": {
+          "methods": [
+            "__init__",
+            "trace_ingestion",
+            "_trace_step",
+            "_validate_file",
+            "_extract_text",
+            "_chunk_text",
+            "_generate_embeddings",
+            "_store_vectors",
+            "analyze_document_coverage"
+          ]
+        },
+        "IngestionMonitor": {
+          "methods": [
+            "__init__",
+            "record_ingestion",
+            "generate_report",
+            "visualize_performance"
+          ]
+        },
+        "ChunkAnalyzer": {
+          "methods": [
+            "analyze_chunks",
+            "_find_overlap_length"
+          ]
+        }
+      },
+      "functions": [
+        "quick_verify_ingestion"
+      ],
+      "dependencies": [
+        "json",
+        "typing",
+        "pathlib",
+        "pandas",
+        "datetime",
+        "matplotlib.pyplot",
+        "seaborn"
+      ]
+    },
+    "rag_new/rag_system/src/core/ingestion_verification_system.py": {
+      "classes": {
+        "IngestionTestResult": {
+          "methods": [
+            "to_dict"
+          ]
+        },
+        "IngestionVerifier": {
+          "methods": [
+            "__init__",
+            "verify_file_ingestion",
+            "_calculate_file_hash",
+            "_verify_text_extraction",
+            "_verify_chunking",
+            "_verify_embeddings",
+            "_verify_vector_storage",
+            "_verify_retrieval",
+            "run_comprehensive_test"
+          ]
+        }
+      },
+      "functions": [
+        "create_test_files"
+      ],
+      "dependencies": [
+        "json",
+        "hashlib",
+        "pathlib",
+        "typing",
+        "datetime",
+        "numpy",
+        "dataclasses",
+        "logging",
+        "collections"
+      ]
+    },
+    "rag_new/rag_system/src/core/json_store.py": {
+      "classes": {
+        "JSONStore": {
+          "methods": [
+            "__init__",
+            "_get_file_lock",
+            "_file_lock",
+            "_backup_file",
+            "read",
+            "write",
+            "append",
+            "update",
+            "delete",
+            "search",
+            "list_collections",
+            "collection_stats",
+            "backup_collection",
+            "restore_collection",
+            "_generate_id",
+            "cleanup_old_backups"
+          ]
+        },
+        "MetadataStore": {
+          "methods": [
+            "__init__",
+            "add_file_metadata",
+            "add_chunk_metadata",
+            "get_file_chunks"
+          ]
+        },
+        "LogStore": {
+          "methods": [
+            "__init__",
+            "log_event",
+            "get_recent_logs"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "os",
+        "shutil",
+        "threading",
+        "pathlib",
+        "typing",
+        "datetime",
+        "contextlib",
+        "msvcrt"
+      ]
+    },
+    "rag_new/rag_system/src/core/logging_config.py": {
+      "classes": {
+        "LoggingConfigManager": {
+          "methods": [
+            "__init__",
+            "_load_config",
+            "_load_default_config",
+            "is_enabled",
+            "get_log_level",
+            "should_save_dumps",
+            "get_dump_location",
+            "configure_logger",
+            "get_config_summary",
+            "update_config",
+            "enable_component",
+            "disable_component",
+            "set_log_level",
+            "create_extraction_dump_file",
+            "_cleanup_old_dumps"
+          ]
+        }
+      },
+      "functions": [
+        "get_logging_config_manager",
+        "configure_extraction_logging"
+      ],
+      "dependencies": [
+        "os",
+        "json",
+        "logging",
+        "logging.handlers",
+        "pathlib",
+        "typing",
+        "datetime"
+      ]
+    },
+    "rag_new/rag_system/src/core/metadata_manager.py": {
+      "classes": {
+        "MetadataSchema": {
+          "methods": [
+            "to_dict",
+            "from_dict",
+            "validate"
+          ]
+        },
+        "MetadataValidator": {
+          "methods": [
+            "validate",
+            "normalize"
+          ]
+        },
+        "MetadataManager": {
+          "methods": [
+            "__init__",
+            "generate_vector_id",
+            "generate_doc_id",
+            "merge_metadata",
+            "prepare_for_storage",
+            "recover_from_storage",
+            "_migrate_legacy_metadata",
+            "get_metadata_stats",
+            "clear_cache"
+          ]
+        }
+      },
+      "functions": [
+        "get_metadata_manager"
+      ],
+      "dependencies": [
+        "typing",
+        "dataclasses",
+        "datetime",
+        "hashlib",
+        "json",
+        "logging",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/core/model_memory_manager.py": {
+      "classes": {
+        "ModelWrapper": {
+          "methods": [
+            "__init__",
+            "__getattr__",
+            "__getitem__",
+            "__setitem__",
+            "__contains__",
+            "__call__",
+            "__len__",
+            "__str__",
+            "__repr__"
+          ]
+        },
+        "ModelMemoryManager": {
+          "methods": [
+            "__init__",
+            "get_model",
+            "_create_cleanup_callback",
+            "_check_memory_available",
+            "_get_memory_info",
+            "_evict_models_for_memory",
+            "_evict_oldest_model",
+            "_unload_model",
+            "_cleanup_model_resources",
+            "_cleanup_dead_reference",
+            "_on_model_deleted",
+            "_cleanup_idle_models",
+            "_start_cleanup_thread",
+            "get_stats",
+            "force_cleanup",
+            "unload_model",
+            "shutdown",
+            "__del__"
+          ]
+        }
+      },
+      "functions": [
+        "get_model_memory_manager",
+        "shutdown_model_memory_manager"
+      ],
+      "dependencies": [
+        "weakref",
+        "gc",
+        "typing",
+        "threading",
+        "time",
+        "logging",
+        "atexit",
+        "datetime",
+        "psutil",
+        "torch"
+      ]
+    },
+    "rag_new/rag_system/src/core/pipeline_verifier.py": {
+      "classes": {
+        "PipelineStage": {
+          "enum_members": [
+            "FILE_VALIDATION",
+            "PROCESSOR_SELECTION",
+            "CONTENT_EXTRACTION",
+            "TEXT_CHUNKING",
+            "EMBEDDING_GENERATION",
+            "VECTOR_STORAGE",
+            "METADATA_STORAGE"
+          ]
+        },
+        "VerificationStatus": {
+          "enum_members": [
+            "PASSED",
+            "FAILED",
+            "WARNING",
+            "SKIPPED",
+            "PENDING",
+            "RUNNING"
+          ]
+        },
+        "VerificationResult": {
+          "methods": [
+            "__post_init__",
+            "to_dict"
+          ]
+        },
+        "EnumJSONEncoder": {
+          "methods": [
+            "default"
+          ]
+        },
+        "PipelineVerifier": {
+          "methods": [
+            "__init__",
+            "add_event_callback",
+            "_emit_event",
+            "_start_stage_timing",
+            "_end_stage_timing",
+            "verify_file_input",
+            "verify_processor_selection",
+            "verify_extracted_content",
+            "verify_chunks",
+            "verify_embeddings",
+            "verify_vector_storage",
+            "verify_metadata_storage",
+            "generate_verification_report",
+            "add_error_trace"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "json",
+        "traceback",
+        "typing",
+        "datetime",
+        "pathlib",
+        "dataclasses",
+        "enum",
+        "time"
+      ]
+    },
+    "rag_new/rag_system/src/core/progress_tracker.py": {
+      "classes": {
+        "ProgressStatus": {
+          "enum_members": [
+            "PENDING",
+            "RUNNING",
+            "COMPLETED",
+            "FAILED",
+            "CANCELLED",
+            "PAUSED"
+          ]
+        },
+        "ProgressStage": {
+          "enum_members": [
+            "QUEUED",
+            "VALIDATING",
+            "EXTRACTING",
+            "CHUNKING",
+            "EMBEDDING",
+            "STORING",
+            "INDEXING",
+            "FINALIZING",
+            "COMPLETED"
+          ]
+        },
+        "StageInfo": {
+          "properties": [
+            "duration"
+          ]
+        },
+        "FileProgress": {
+          "properties": [
+            "overall_progress",
+            "estimated_time_remaining"
+          ]
+        },
+        "ProgressTracker": {
+          "methods": [
+            "__init__",
+            "register_progress_callback",
+            "register_completion_callback",
+            "register_error_callback",
+            "start_file",
+            "update_stage",
+            "complete_stage",
+            "fail_file",
+            "complete_file",
+            "get_progress",
+            "get_all_progress",
+            "get_batch_progress",
+            "get_system_metrics",
+            "create_batch",
+            "_trigger_progress_callbacks",
+            "_save_progress",
+            "_load_progress",
+            "_start_auto_save",
+            "shutdown"
+          ]
+        }
+      },
+      "dependencies": [
+        "time",
+        "threading",
+        "logging",
+        "typing",
+        "dataclasses",
+        "datetime",
+        "enum",
+        "pathlib",
+        "json",
+        "collections",
+        "psutil",
+        "traceback"
+      ]
+    },
+    "rag_new/rag_system/src/core/resource_manager.py": {
+      "classes": {
+        "ResourceManager": {
+          "methods": [
+            "__init__",
+            "register_resource",
+            "get_resource",
+            "cleanup_resource",
+            "_generic_cleanup",
+            "cleanup_all",
+            "_signal_handler",
+            "get_resource_stats",
+            "cleanup_all_instances"
+          ]
+        },
+        "ManagedThreadPool": {
+          "methods": [
+            "__init__",
+            "submit",
+            "map",
+            "shutdown",
+            "__enter__",
+            "__exit__"
+          ]
+        },
+        "ManagedModelLoader": {
+          "methods": [
+            "__init__",
+            "load_model",
+            "unload_model",
+            "get_model_stats"
+          ]
+        },
+        "ApplicationLifecycle": {
+          "methods": [
+            "__init__",
+            "startup",
+            "shutdown",
+            "get_thread_pool",
+            "create_custom_thread_pool",
+            "managed_operation",
+            "get_system_stats",
+            "health_check"
+          ]
+        }
+      },
+      "functions": [
+        "managed_file_handle",
+        "get_global_app",
+        "create_managed_app"
+      ],
+      "dependencies": [
+        "atexit",
+        "weakref",
+        "threading",
+        "signal",
+        "sys",
+        "time",
+        "gc",
+        "logging",
+        "psutil",
+        "contextlib",
+        "typing",
+        "concurrent.futures",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/core/system_init.py": {
+      "functions": [
+        "setup_logging",
+        "create_data_directories",
+        "validate_system_requirements",
+        "initialize_error_tracking",
+        "verify_dependencies",
+        "initialize_system",
+        "log_system_info",
+        "health_check"
+      ],
+      "dependencies": [
+        "logging",
+        "os",
+        "pathlib",
+        "typing",
+        "json",
+        "rag_system.src.core.dependency_container",
+        "rag_system.src.core.error_handling",
+        "rag_system.src.core.config_manager"
+      ]
+    },
+    "rag_new/rag_system/src/core/unified_error_handling.py": {
+      "classes": {
+        "ErrorCode": {
+          "enum_members": [
+            "SUCCESS",
+            "INVALID_REQUEST",
+            "MISSING_PARAMETER",
+            "INVALID_PARAMETER",
+            "NOT_FOUND",
+            "ALREADY_EXISTS",
+            "RATE_LIMITED",
+            "UNAUTHORIZED",
+            "FORBIDDEN",
+            "INTERNAL_ERROR",
+            "SERVICE_UNAVAILABLE",
+            "TIMEOUT",
+            "DEPENDENCY_ERROR",
+            "RESOURCE_EXHAUSTED",
+            "VECTOR_STORE_ERROR",
+            "EMBEDDING_ERROR",
+            "LLM_ERROR",
+            "INGESTION_ERROR",
+            "RETRIEVAL_ERROR",
+            "PROCESSING_ERROR",
+            "CHUNKING_ERROR",
+            "CONFIGURATION_ERROR",
+            "RESOURCE_ERROR",
+            "METADATA_ERROR",
+            "AZURE_AI_ERROR",
+            "SERVICENOW_ERROR",
+            "CONVERSATION_ERROR"
+          ]
+        },
+        "ErrorContext": {
+          "methods": [
+            "__post_init__",
+            "to_dict"
+          ]
+        },
+        "ErrorInfo": {
+          "methods": [
+            "__post_init__",
+            "from_exception",
+            "to_dict",
+            "to_user_message"
+          ]
+        },
+        "Result": {
+          "methods": [
+            "ok",
+            "fail",
+            "from_exception",
+            "unwrap",
+            "unwrap_or",
+            "map",
+            "and_then",
+            "add_warning"
+          ]
+        },
+        "UnifiedError": {
+          "methods": [
+            "__init__",
+            "to_dict"
+          ]
+        },
+        "ErrorHandler": {
+          "methods": [
+            "__init__",
+            "register_callback",
+            "handle_error",
+            "_log_error",
+            "get_error_stats"
+          ]
+        },
+        "VectorStoreErrorHandler": {
+          "methods": [
+            "add_vectors",
+            "search"
+          ]
+        },
+        "IngestionErrorHandler": {
+          "methods": [
+            "ingest_file"
+          ]
+        },
+        "QueryErrorHandler": {
+          "methods": [
+            "process_query"
+          ]
+        },
+        "ChunkingErrorHandler": {
+          "methods": [
+            "chunk_text"
+          ]
+        }
+      },
+      "functions": [
+        "_map_exception_to_code",
+        "get_error_handler",
+        "with_error_handling",
+        "safe_execute",
+        "format_api_response",
+        "get_http_status_code"
+      ],
+      "dependencies": [
+        "typing",
+        "enum",
+        "dataclasses",
+        "logging",
+        "traceback",
+        "functools",
+        "json",
+        "datetime",
+        "uuid"
+      ]
+    },
+    "rag_new/rag_system/src/core/verified_ingestion_engine.py": {
+      "classes": {
+        "VerifiedIngestionEngine": {
+          "methods": [
+            "__init__",
+            "ingest_file_with_verification",
+            "ingest_text_with_verification",
+            "ingest_directory",
+            "get_verification_summary"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "os",
+        "typing",
+        "pathlib",
+        "datetime",
+        "rag_system.src.core.pipeline_verifier",
+        "rag_system.src.ingestion.ingestion_engine"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/ingestion/chunker.py": {
+      "classes": {
+        "Chunker": {
+          "methods": [
+            "__init__",
+            "chunk_text",
+            "_clean_text",
+            "chunk_by_sentences",
+            "_split_sentences",
+            "_get_overlap_text"
+          ]
+        }
+      },
+      "dependencies": [
+        "re",
+        "logging",
+        "typing",
+        "langchain.text_splitter",
+        "rag_system.src.core.error_handling",
+        "rag_system.src.core.metadata_manager"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/embedder.py": {
+      "classes": {
+        "BaseEmbedder": {
+          "methods": [
+            "embed_texts",
+            "get_dimension"
+          ]
+        },
+        "SentenceTransformerEmbedder": {
+          "methods": [
+            "__init__",
+            "_load_model",
+            "embed_texts",
+            "get_dimension"
+          ]
+        },
+        "CohereEmbedder": {
+          "methods": [
+            "__init__",
+            "_load_client",
+            "embed_texts",
+            "get_dimension"
+          ]
+        },
+        "AzureEmbedder": {
+          "methods": [
+            "__init__",
+            "_load_client",
+            "embed_texts",
+            "get_dimension"
+          ]
+        },
+        "Embedder": {
+          "methods": [
+            "__init__",
+            "_initialize_embedder",
+            "calculate_optimal_batch_size",
+            "embed_text",
+            "embed_texts",
+            "get_dimension",
+            "similarity"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "numpy",
+        "os",
+        "typing",
+        "abc",
+        "rag_system.src.core.error_handling",
+        "pathlib",
+        "sentence_transformers",
+        "cohere",
+        "azure.ai.inference",
+        "azure.core.credentials"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/ingestion_engine.py": {
+      "classes": {
+        "IngestionEngine": {
+          "methods": [
+            "__init__",
+            "_register_excel_processor",
+            "_generate_consistent_doc_id",
+            "_generate_doc_id",
+            "_calculate_document_hash",
+            "check_duplicate",
+            "ingest_file",
+            "ingest_text",
+            "_handle_existing_file",
+            "ingest_directory",
+            "_extract_text",
+            "_extract_text_file",
+            "_extract_pdf_file",
+            "_extract_docx_file",
+            "_extract_markdown_file",
+            "_extract_excel_basic",
+            "delete_file",
+            "get_ingestion_stats",
+            "_validate_chunk_structure",
+            "ingest_file_stream",
+            "_extract_complete_sentences"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "mimetypes",
+        "hashlib",
+        "os",
+        "pathlib",
+        "typing",
+        "datetime",
+        "rag_system.src.core.error_handling",
+        "rag_system.src.core.unified_error_handling",
+        "rag_system.src.core.metadata_manager",
+        "rag_system.src.ingestion.processors.base_processor",
+        "rag_system.src.ingestion.processors.excel_processor",
+        "rag_system.src.ingestion.processors",
+        "rag_system.src.core.progress_tracker",
+        "rag_system.src.ingestion.progress_integration",
+        "PyPDF2",
+        "docx",
+        "pandas"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/memory_efficient_semantic_chunker.py": {
+      "classes": {
+        "ChunkBoundary": {},
+        "MemoryEfficientSemanticChunker": {
+          "methods": [
+            "__init__",
+            "_get_model",
+            "chunk_text",
+            "_process_text_semantic",
+            "_hybrid_chunking",
+            "_rough_chunk_by_size",
+            "_get_embeddings_batched",
+            "_find_semantic_boundaries",
+            "_create_semantic_chunks",
+            "_calculate_overlap_sentences",
+            "_split_into_sentences",
+            "_simple_chunk_fallback",
+            "_simple_chunk_sentences",
+            "_get_overlap_sentences",
+            "get_stats",
+            "cleanup",
+            "__del__"
+          ]
+        },
+        "ChunkerFactory": {
+          "methods": [
+            "get_chunker",
+            "get_stats",
+            "cleanup",
+            "force_cleanup"
+          ]
+        }
+      },
+      "functions": [
+        "create_semantic_chunker"
+      ],
+      "dependencies": [
+        "gc",
+        "typing",
+        "threading",
+        "time",
+        "logging",
+        "numpy",
+        "pathlib",
+        "rag_system.src.core.model_memory_manager",
+        "sentence_transformers",
+        "torch",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/__init__.py": {
+      "constants": [
+        "__version__",
+        "AVAILABLE_PROCESSORS",
+        "PROCESSOR_FACTORIES",
+        "__all__"
+      ],
+      "functions": [
+        "create_processor_registry",
+        "get_processor_for_file",
+        "list_supported_extensions",
+        "get_processor_capabilities"
+      ],
+      "dependencies": [
+        "rag_system.src.ingestion.processors.base_processor",
+        "rag_system.src.ingestion.processors.excel_processor",
+        "rag_system.src.ingestion.processors.pdf_processor",
+        "rag_system.src.ingestion.processors.word_processor",
+        "rag_system.src.ingestion.processors.image_processor",
+        "rag_system.src.ingestion.processors.servicenow_processor",
+        "rag_system.src.ingestion.processors.text_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/base_processor.py": {
+      "classes": {
+        "BaseProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process",
+            "validate_file",
+            "get_file_info"
+          ]
+        },
+        "ProcessorRegistry": {
+          "methods": [
+            "__init__",
+            "register",
+            "get_processor",
+            "list_processors"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "abc",
+        "typing",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/excel_processor.py": {
+      "classes": {
+        "NumpyEncoder": {
+          "methods": [
+            "default"
+          ]
+        },
+        "ExcelProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process",
+            "_extract_workbook_properties",
+            "_process_sheet",
+            "_extract_embedded_objects",
+            "_identify_embedded_type",
+            "_extract_charts",
+            "_describe_chart",
+            "_extract_images",
+            "_extract_hierarchical_data",
+            "_analyze_hierarchical_sheet",
+            "_extract_sheet_relationships",
+            "_create_chunks"
+          ]
+        }
+      },
+      "functions": [
+        "create_excel_processor"
+      ],
+      "dependencies": [
+        "os",
+        "logging",
+        "hashlib",
+        "json",
+        "tempfile",
+        "base64",
+        "pathlib",
+        "typing",
+        "datetime",
+        "zipfile",
+        "io",
+        "numpy",
+        "openpyxl",
+        "openpyxl.drawing.image",
+        "pandas",
+        "PIL.Image",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/enhanced_pdf_processor.py": {
+      "classes": {
+        "EnhancedPDFProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "_process_image_with_azure",
+            "process",
+            "_extract_pdf_metadata",
+            "_extract_image",
+            "_extract_tables_from_page",
+            "_extract_annotations",
+            "_create_enriched_chunks"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "logging",
+        "os",
+        "pathlib",
+        "typing",
+        "datetime",
+        "fitz",
+        "PyPDF2",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/image_processor.py": {
+      "classes": {
+        "ImageProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process"
+          ]
+        }
+      },
+      "functions": [
+        "create_image_processor"
+      ],
+      "dependencies": [
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/pdf_processor.py": {
+      "classes": {
+        "PDFProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process"
+          ]
+        }
+      },
+      "functions": [
+        "create_pdf_processor"
+      ],
+      "dependencies": [
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "rag_system.src.ingestion.processors.base_processor",
+        "rag_system.src.ingestion.processors.enhanced_pdf_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/robust_excel_processor.py": {
+      "classes": {
+        "RobustExcelProcessor": {
+          "methods": [
+            "__init__",
+            "_initialize_azure_client",
+            "_validate_dependencies",
+            "can_process",
+            "process",
+            "_validate_file",
+            "_process_workbook",
+            "_process_worksheet",
+            "_extract_cell_value",
+            "_looks_like_headers",
+            "_format_as_table",
+            "_format_as_text",
+            "_process_sheet_images",
+            "_process_workbook_images",
+            "_process_sheet_charts",
+            "_extract_chart_data",
+            "_process_embedded_image",
+            "_extract_image_data",
+            "_local_image_processing",
+            "get_supported_extensions",
+            "get_processor_info"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "logging",
+        "os",
+        "typing",
+        "pathlib",
+        "io",
+        "base64",
+        "datetime",
+        "rag_system.src.ingestion.processors.base_processor",
+        "rag_system.src.integrations.azure_ai.robust_azure_client",
+        "rag_system.src.integrations.azure_ai.config_validator",
+        "openpyxl",
+        "openpyxl.drawing.image",
+        "PIL.Image"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/servicenow_processor.py": {
+      "classes": {
+        "ProcessedTicket": {
+          "methods": [
+            "to_document"
+          ]
+        },
+        "ServiceNowProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process",
+            "_analyze_json_structure",
+            "_calculate_depth",
+            "_create_chunks_from_json",
+            "_format_record_as_text",
+            "_format_servicenow_record",
+            "_format_generic_record",
+            "is_network_related",
+            "extract_technical_details",
+            "process_incident",
+            "process_incidents",
+            "get_processing_stats"
+          ]
+        }
+      },
+      "functions": [
+        "create_servicenow_processor"
+      ],
+      "dependencies": [
+        "json",
+        "logging",
+        "os",
+        "pathlib",
+        "typing",
+        "datetime",
+        "dataclasses",
+        "hashlib",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/text_processor.py": {
+      "classes": {
+        "TextProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "detect_language",
+            "detect_content_type",
+            "process"
+          ]
+        }
+      },
+      "functions": [
+        "create_text_processor"
+      ],
+      "dependencies": [
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "re",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/processors/word_processor.py": {
+      "classes": {
+        "WordProcessor": {
+          "methods": [
+            "__init__",
+            "can_process",
+            "process"
+          ]
+        }
+      },
+      "functions": [
+        "create_word_processor"
+      ],
+      "dependencies": [
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/progress_integration.py": {
+      "classes": {
+        "ProgressTrackedIngestion": {
+          "methods": [
+            "__init__",
+            "track_stage",
+            "update_progress"
+          ]
+        }
+      },
+      "dependencies": [
+        "time",
+        "typing",
+        "contextlib",
+        "rag_system.src.core.progress_tracker"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/scheduler.py": {
+      "classes": {
+        "IngestionScheduler": {
+          "methods": [
+            "__init__",
+            "start",
+            "stop",
+            "_run_scheduler",
+            "_cleanup_old_files",
+            "_backup_data"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "schedule",
+        "time",
+        "threading",
+        "typing"
+      ]
+    },
+    "rag_new/rag_system/src/ingestion/semantic_chunker.py": {
+      "classes": {
+        "ChunkBoundary": {},
+        "SemanticChunker": {
+          "methods": [
+            "__init__",
+            "_init_content_patterns",
+            "_calculate_dynamic_overlap",
+            "_detect_content_type",
+            "_score_code_content",
+            "_score_structured_content",
+            "_score_technical_content",
+            "_score_list_content",
+            "_score_dialogue_content",
+            "_adjust_overlap_by_characteristics",
+            "_is_code",
+            "_is_structured_data",
+            "_initialize_model",
+            "cleanup",
+            "__del__",
+            "chunk_text",
+            "_split_into_sentences",
+            "_find_semantic_boundaries",
+            "_find_paragraph_boundaries",
+            "_create_chunks_from_boundaries",
+            "_create_size_based_chunks",
+            "_calculate_overlap_sentences",
+            "_get_overlap_sentences",
+            "_create_chunk_object",
+            "_create_single_chunk",
+            "_clean_text",
+            "_fallback_chunking",
+            "get_chunker_info"
+          ]
+        },
+        "ChunkerFactory": {
+          "methods": [
+            "get_chunker",
+            "get_stats",
+            "cleanup",
+            "force_cleanup"
+          ]
+        }
+      },
+      "functions": [
+        "create_semantic_chunker"
+      ],
+      "dependencies": [
+        "logging",
+        "re",
+        "typing",
+        "numpy",
+        "dataclasses",
+        "sentence_transformers",
+        "rag_system.src.core.error_handling",
+        "rag_system.src.core.resource_manager",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/__init__.py": {
+      "constants": [
+        "__all__"
+      ],
+      "dependencies": [
+        "rag_system.src.integrations.servicenow.connector",
+        "rag_system.src.integrations.servicenow.processor"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/azure_ai/azure_client.py": {
+      "classes": {
+        "AzureAIClient": {
+          "methods": [
+            "__init__",
+            "_initialize_clients",
+            "is_available",
+            "process_image",
+            "_process_with_read_api",
+            "_process_with_ocr",
+            "analyze_image",
+            "process_document_layout",
+            "_process_with_document_intelligence",
+            "batch_process_images",
+            "get_service_info"
+          ]
+        }
+      },
+      "dependencies": [
+        "os",
+        "logging",
+        "time",
+        "typing",
+        "pathlib",
+        "base64",
+        "io",
+        "azure.cognitiveservices.vision.computervision",
+        "azure.cognitiveservices.vision.computervision.models",
+        "msrest.authentication",
+        "azure.ai.documentintelligence",
+        "azure.core.credentials"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/azure_ai/config_validator.py": {
+      "classes": {
+        "AzureAIConfigValidator": {
+          "methods": [
+            "validate_and_fix",
+            "_apply_environment_variables",
+            "_apply_defaults",
+            "_validate_and_fix_endpoints",
+            "_validate_keys",
+            "_check_service_completeness",
+            "get_configuration_status",
+            "create_sample_config",
+            "generate_env_file_template"
+          ]
+        }
+      },
+      "dependencies": [
+        "os",
+        "logging",
+        "typing",
+        "urllib.parse"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/azure_ai/robust_azure_client.py": {
+      "classes": {
+        "AzureServiceStatus": {
+          "enum_members": [
+            "AVAILABLE",
+            "DEGRADED",
+            "UNAVAILABLE",
+            "NOT_CONFIGURED"
+          ]
+        },
+        "AzureServiceHealth": {},
+        "RobustAzureAIClient": {
+          "methods": [
+            "__init__",
+            "_initialize_azure_client",
+            "_validate_dependencies",
+            "can_process",
+            "process",
+            "_validate_file",
+            "_process_workbook",
+            "_process_worksheet",
+            "_extract_cell_value",
+            "_looks_like_headers",
+            "_format_as_table",
+            "_format_as_text",
+            "_process_sheet_images",
+            "_process_workbook_images",
+            "_process_sheet_charts",
+            "_extract_chart_data",
+            "_process_embedded_image",
+            "_extract_image_data",
+            "_local_image_processing",
+            "get_supported_extensions",
+            "get_processor_info",
+            "_initialize_services",
+            "_init_computer_vision",
+            "_init_document_intelligence",
+            "_init_embeddings",
+            "_init_chat",
+            "_validate_config",
+            "health_check",
+            "_check_service_health",
+            "process_image_with_fallback",
+            "_process_with_computer_vision",
+            "_process_with_document_intelligence",
+            "_basic_image_processing",
+            "embed_with_retry",
+            "_fallback_embeddings",
+            "get_service_status",
+            "_calculate_overall_health",
+            "_get_config_status",
+            "is_healthy",
+            "get_available_services",
+            "close"
+          ]
+        }
+      },
+      "dependencies": [
+        "typing",
+        "dataclasses",
+        "enum",
+        "datetime",
+        "logging",
+        "os",
+        "time",
+        "asyncio",
+        "pathlib",
+        "rag_system.src.integrations.azure_ai.config_validator",
+        "azure.ai.vision.imageanalysis",
+        "azure.core.credentials",
+        "azure.cognitiveservices.vision.computervision",
+        "msrest.authentication",
+        "azure.ai.formrecognizer",
+        "azure.ai.inference",
+        "openai"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/servicenow/__init__.py": {
+      "constants": [
+        "__all__"
+      ],
+      "dependencies": [
+        "rag_system.src.integrations.servicenow.connector",
+        "rag_system.src.integrations.servicenow.scheduler",
+        "rag_system.src.integrations.servicenow.processor",
+        "rag_system.src.integrations.servicenow.integration"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/servicenow/connector.py": {
+      "classes": {
+        "ServiceNowConnector": {
+          "methods": [
+            "__init__",
+            "_validate_sys_id",
+            "_validate_number",
+            "_validate_filters",
+            "test_connection",
+            "get_incidents",
+            "get_incident",
+            "get_incident_by_number",
+            "get_recent_incidents",
+            "get_connection_info",
+            "_ensure_authenticated",
+            "_handle_error_response",
+            "_enforce_rate_limit"
+          ]
+        }
+      },
+      "dependencies": [
+        "os",
+        "json",
+        "requests",
+        "logging",
+        "datetime",
+        "pathlib",
+        "typing",
+        "dotenv",
+        "urllib.parse",
+        "re",
+        "time",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/servicenow/integration.py": {
+      "classes": {
+        "ServiceNowIntegration": {
+          "methods": [
+            "__init__",
+            "initialize",
+            "start_automated_sync",
+            "stop_automated_sync",
+            "manual_sync",
+            "sync_specific_incident",
+            "get_integration_status",
+            "get_recent_tickets",
+            "get_sync_history",
+            "update_configuration",
+            "test_integration",
+            "cleanup",
+            "__enter__",
+            "__exit__"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "rag_system.src.integrations.servicenow.connector",
+        "rag_system.src.integrations.servicenow.processor",
+        "rag_system.src.integrations.servicenow.scheduler",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/servicenow/processor.py": {
+      "classes": {
+        "ProcessedTicket": {
+          "methods": [
+            "to_document"
+          ]
+        },
+        "ServiceNowTicketProcessor": {
+          "methods": [
+            "__init__",
+            "is_network_related",
+            "extract_technical_details",
+            "process_incident",
+            "process_incidents",
+            "get_processing_stats"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "hashlib",
+        "datetime",
+        "typing",
+        "dataclasses",
+        "rag_system.src.ingestion.processors.base_processor"
+      ]
+    },
+    "rag_new/rag_system/src/integrations/servicenow/scheduler.py": {
+      "classes": {
+        "ServiceNowScheduler": {
+          "methods": [
+            "__init__",
+            "_load_config",
+            "_setup_database",
+            "add_ticket_callback",
+            "_cache_incident",
+            "_is_incident_cached_and_unchanged",
+            "_record_ingestion_result",
+            "fetch_and_process_incidents",
+            "_ingest_tickets",
+            "_record_fetch_history",
+            "start_scheduler",
+            "_run_scheduler",
+            "stop_scheduler",
+            "get_statistics",
+            "get_fetch_history",
+            "cleanup_old_cache"
+          ]
+        }
+      },
+      "dependencies": [
+        "asyncio",
+        "schedule",
+        "time",
+        "logging",
+        "sqlite3",
+        "threading",
+        "datetime",
+        "typing",
+        "pathlib",
+        "json",
+        "concurrent.futures",
+        "rag_system.src.integrations.servicenow.connector",
+        "rag_system.src.integrations.servicenow.processor",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/main_managed.py": {
+      "classes": {
+        "ManagedRAGSystem": {
+          "methods": [
+            "__init__",
+            "initialize",
+            "start_services",
+            "_load_managed_models",
+            "run_server",
+            "shutdown"
+          ]
+        }
+      },
+      "functions": [
+        "main"
+      ],
+      "dependencies": [
+        "logging",
+        "sys",
+        "signal",
+        "asyncio",
+        "pathlib",
+        "rag_system.src.core.resource_manager",
+        "rag_system.src.core.config_manager",
+        "rag_system.src.core.dependency_container",
+        "rag_system.src.api.main",
+        "rag_system.src.monitoring.heartbeat_monitor",
+        "uvicorn"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/__init__.py": {
+      "constants": [
+        "__all__"
+      ],
+      "dependencies": [
+        "rag_system.src.monitoring.heartbeat_monitor"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/enhanced_folder_monitor.py": {
+      "classes": {
+        "FileProcessingState": {
+          "methods": [
+            "__post_init__"
+          ]
+        },
+        "EnhancedFolderMonitor": {
+          "methods": [
+            "__init__",
+            "add_event_callback",
+            "_emit_event",
+            "get_enhanced_status",
+            "_get_recent_file_states",
+            "get_file_processing_details",
+            "get_all_file_processing_states",
+            "_process_changes",
+            "_queue_file_for_processing",
+            "_process_queue",
+            "_process_file_with_verification",
+            "_handle_verification_event",
+            "_get_verified_ingestion_engine",
+            "_handle_deleted_file_enhanced",
+            "force_process_file",
+            "get_pipeline_visualization_data"
+          ]
+        }
+      },
+      "functions": [
+        "initialize_enhanced_folder_monitor",
+        "get_enhanced_folder_monitor"
+      ],
+      "dependencies": [
+        "asyncio",
+        "json",
+        "logging",
+        "os",
+        "threading",
+        "time",
+        "datetime",
+        "typing",
+        "pathlib",
+        "dataclasses",
+        "enum",
+        "rag_system.src.monitoring.folder_monitor",
+        "rag_system.src.core.pipeline_verifier",
+        "rag_system.src.core.verified_ingestion_engine"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/folder_monitor.py": {
+      "classes": {
+        "FileState": {},
+        "FolderMonitorStats": {},
+        "FolderMonitor": {
+          "methods": [
+            "__init__",
+            "_load_config",
+            "add_folder",
+            "remove_folder",
+            "get_monitored_folders",
+            "_save_monitored_folders",
+            "start_monitoring",
+            "stop_monitoring",
+            "pause_monitoring",
+            "resume_monitoring",
+            "get_status",
+            "_monitoring_loop",
+            "_scan_all_folders",
+            "_scan_folder",
+            "_should_monitor_file",
+            "_get_file_info",
+            "_get_file_hash",
+            "_create_file_state",
+            "_update_file_state",
+            "_generate_doc_path",
+            "_process_changes",
+            "_process_pending_files",
+            "_ingest_file",
+            "_handle_deleted_file",
+            "_get_parent_folder",
+            "get_file_states",
+            "force_scan",
+            "retry_failed_files"
+          ]
+        }
+      },
+      "functions": [
+        "initialize_folder_monitor"
+      ],
+      "dependencies": [
+        "os",
+        "time",
+        "threading",
+        "hashlib",
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "dataclasses",
+        "json"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/heartbeat_monitor.py": {
+      "classes": {
+        "HealthStatus": {
+          "enum_members": [
+            "HEALTHY",
+            "WARNING",
+            "CRITICAL",
+            "UNKNOWN"
+          ]
+        },
+        "ComponentHealth": {
+          "methods": [
+            "to_dict"
+          ]
+        },
+        "SystemHealth": {
+          "methods": [
+            "to_dict"
+          ]
+        },
+        "HeartbeatMonitor": {
+          "methods": [
+            "__init__",
+            "comprehensive_health_check",
+            "_check_api_server",
+            "_check_storage_layer",
+            "_check_vector_store",
+            "_check_embeddings",
+            "_check_llm_service",
+            "_check_dependency_container",
+            "_check_ingestion_engine",
+            "_check_query_engine",
+            "_check_system_resources",
+            "_get_performance_metrics",
+            "_store_health_history",
+            "get_health_summary",
+            "start_monitoring",
+            "stop_monitoring"
+          ]
+        }
+      },
+      "functions": [
+        "initialize_heartbeat_monitor"
+      ],
+      "dependencies": [
+        "asyncio",
+        "logging",
+        "time",
+        "psutil",
+        "json",
+        "datetime",
+        "typing",
+        "pathlib",
+        "dataclasses",
+        "enum",
+        "requests",
+        "threading",
+        "contextlib",
+        "os",
+        "rag_system.src.core.constants"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/logger.py": {
+      "classes": {
+        "JSONFormatter": {
+          "methods": [
+            "format"
+          ]
+        },
+        "RAGLogger": {
+          "methods": [
+            "__init__",
+            "setup_logging",
+            "get_logger",
+            "log_with_context"
+          ]
+        }
+      },
+      "functions": [
+        "setup_logging"
+      ],
+      "dependencies": [
+        "logging",
+        "logging.handlers",
+        "json",
+        "sys",
+        "pathlib",
+        "datetime",
+        "typing"
+      ]
+    },
+    "rag_new/rag_system/src/monitoring/setup.py": {
+      "functions": [
+        "setup_monitoring"
+      ],
+      "dependencies": [
+        "logging",
+        "typing"
+      ]
+    },
+    "rag_new/rag_system/src/retrieval/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/retrieval/llm_client.py": {
+      "classes": {
+        "BaseLLMClient": {
+          "methods": [
+            "generate"
+          ]
+        },
+        "GroqClient": {
+          "methods": [
+            "__init__",
+            "_initialize_client",
+            "_apply_rate_limiting",
+            "generate"
+          ]
+        },
+        "OpenAIClient": {
+          "methods": [
+            "__init__",
+            "_initialize_client",
+            "generate"
+          ]
+        },
+        "AzureClient": {
+          "methods": [
+            "__init__",
+            "_initialize_client",
+            "generate"
+          ]
+        },
+        "LLMClient": {
+          "methods": [
+            "__init__",
+            "_get_api_key",
+            "_get_endpoint",
+            "_initialize_client",
+            "generate",
+            "test_connection"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "os",
+        "time",
+        "typing",
+        "abc",
+        "rag_system.src.core.error_handling",
+        "groq",
+        "openai",
+        "azure.ai.inference",
+        "azure.core.credentials",
+        "azure.ai.inference.models"
+      ]
+    },
+    "rag_new/rag_system/src/retrieval/qdrant_query_engine.py": {
+      "classes": {
+        "QdrantQueryEngine": {
+          "methods": [
+            "__init__",
+            "process_query",
+            "_detect_query_type",
+            "_handle_listing_query",
+            "_handle_filtered_search",
+            "_handle_aggregation_query",
+            "_handle_semantic_search",
+            "_extract_filters_from_query",
+            "_extract_search_terms",
+            "_format_listing_response",
+            "_generate_filtered_response",
+            "_format_aggregation_response",
+            "_generate_llm_response",
+            "_calculate_confidence",
+            "_extract_item_type",
+            "_get_filters_for_item_type",
+            "_get_all_by_filter"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "re"
+      ]
+    },
+    "rag_new/rag_system/src/retrieval/query_engine.py": {
+      "classes": {
+        "QueryEngine": {
+          "methods": [
+            "__init__",
+            "process_query",
+            "_generate_llm_response",
+            "_get_source_label",
+            "_format_sources",
+            "_create_empty_response",
+            "_merge_search_results",
+            "_calculate_confidence",
+            "get_similar_queries",
+            "_apply_source_diversity_scoring",
+            "_calculate_diversity_scores",
+            "_calculate_content_diversity_score",
+            "_calculate_text_similarity",
+            "_select_diverse_sources",
+            "_prioritize_diverse_sources",
+            "_calculate_diversity_metrics"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "collections",
+        "math",
+        "pathlib",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/retrieval/query_enhancer.py": {
+      "classes": {
+        "QueryType": {
+          "enum_members": [
+            "FACTUAL",
+            "PROCEDURAL",
+            "COMPARATIVE",
+            "CAUSAL",
+            "TEMPORAL",
+            "LOCATION",
+            "GENERAL"
+          ]
+        },
+        "QueryIntent": {},
+        "EnhancedQuery": {},
+        "QueryEnhancer": {
+          "methods": [
+            "__init__",
+            "_initialize_model",
+            "enhance_query",
+            "_detect_intent",
+            "_extract_keywords",
+            "_extract_entities",
+            "_extract_context_hints",
+            "_expand_query",
+            "_reformulate_query",
+            "_generate_semantic_variants",
+            "_calculate_confidence_scores",
+            "_calculate_overlap",
+            "_clean_query",
+            "_create_fallback_enhancement",
+            "get_all_query_variants",
+            "get_enhancer_info"
+          ]
+        }
+      },
+      "functions": [
+        "create_query_enhancer"
+      ],
+      "dependencies": [
+        "logging",
+        "re",
+        "typing",
+        "dataclasses",
+        "enum",
+        "sentence_transformers",
+        "rag_system.src.core.error_handling",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/retrieval/reranker.py": {
+      "classes": {
+        "Reranker": {
+          "methods": [
+            "__init__",
+            "_initialize_model",
+            "rerank",
+            "_predict_scores",
+            "get_model_info",
+            "is_enabled"
+          ]
+        },
+        "FallbackReranker": {
+          "methods": [
+            "__init__",
+            "rerank",
+            "is_enabled",
+            "get_model_info"
+          ]
+        }
+      },
+      "functions": [
+        "create_reranker"
+      ],
+      "dependencies": [
+        "logging",
+        "typing",
+        "numpy",
+        "sentence_transformers",
+        "rag_system.src.core.error_handling",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/storage/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/storage/faiss_store.py": {
+      "classes": {
+        "IndexType": {
+          "enum_members": [
+            "FLAT",
+            "IVF",
+            "HNSW",
+            "LSH",
+            "COMPOSITE"
+          ]
+        },
+        "OptimizedFAISSIndex": {
+          "methods": [
+            "__init__",
+            "_create_index",
+            "_create_flat_index",
+            "_create_ivf_index",
+            "_create_hnsw_index",
+            "_create_composite_index",
+            "add_vectors",
+            "_train_index",
+            "optimize_for_current_size",
+            "_determine_optimal_type",
+            "_migrate_to_new_index_type",
+            "search",
+            "get_index_stats",
+            "_estimate_index_size",
+            "_estimate_compression_ratio"
+          ]
+        },
+        "FAISSStore": {
+          "methods": [
+            "__init__",
+            "_read_lock",
+            "_write_lock_context",
+            "_initialize_index",
+            "_cleanup_deleted_vectors",
+            "_efficient_rebuild_index",
+            "_create_new_index",
+            "_load_metadata",
+            "_save_atomic",
+            "_normalize_vectors",
+            "validate_dimension",
+            "get_current_dimension",
+            "migrate_to_new_dimension",
+            "force_rebuild_for_new_dimension",
+            "check_dimension_compatibility",
+            "add_vectors",
+            "search",
+            "search_with_metadata",
+            "_matches_filter",
+            "get_vector_metadata",
+            "update_metadata",
+            "delete_vectors",
+            "find_vectors_by_doc_path",
+            "delete_vectors_by_doc_path",
+            "save_index",
+            "get_index_info",
+            "backup_index",
+            "restore_index",
+            "clear_index",
+            "get_stats",
+            "get_all_metadata",
+            "get_metadata",
+            "mark_deleted"
+          ]
+        }
+      },
+      "dependencies": [
+        "faiss",
+        "numpy",
+        "pickle",
+        "logging",
+        "threading",
+        "tempfile",
+        "shutil",
+        "time",
+        "pathlib",
+        "typing",
+        "datetime",
+        "contextlib",
+        "enum",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/storage/faiss_to_qdrant_migration.py": {
+      "classes": {
+        "FAISSToQdrantMigration": {
+          "methods": [
+            "__init__",
+            "migrate"
+          ]
+        }
+      },
+      "functions": [
+        "migrate_to_qdrant"
+      ],
+      "dependencies": [
+        "logging",
+        "json",
+        "tqdm",
+        "numpy",
+        "typing",
+        "pathlib",
+        "rag_system.src.storage.faiss_store",
+        "rag_system.src.storage.qdrant_store"
+      ]
+    },
+    "rag_new/rag_system/src/storage/feedback_store.py": {
+      "classes": {
+        "FeedbackStore": {
+          "methods": [
+            "__init__",
+            "_init_database",
+            "_get_connection",
+            "add_feedback",
+            "_update_analytics",
+            "_extract_query_pattern",
+            "_update_common_issues",
+            "get_feedback_stats",
+            "get_improvement_suggestions",
+            "_get_pattern_recommendation",
+            "get_recent_feedback",
+            "export_feedback"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "logging",
+        "pathlib",
+        "typing",
+        "datetime",
+        "uuid",
+        "sqlite3",
+        "threading",
+        "contextlib",
+        "csv"
+      ]
+    },
+    "rag_new/rag_system/src/storage/persistent_metadata_store.py": {
+      "classes": {
+        "PersistentJSONMetadataStore": {
+          "methods": [
+            "__init__",
+            "_load_all_data",
+            "_load_json",
+            "_save_json",
+            "add_file_metadata",
+            "find_by_hash",
+            "add_chunk_metadata",
+            "get_metadata_by_vector_id",
+            "get_file_metadata",
+            "get_all_files",
+            "get_all_chunks",
+            "get_file_chunks",
+            "get_stats",
+            "clear_all_data",
+            "backup_metadata"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "uuid",
+        "os",
+        "datetime",
+        "typing",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/storage/qdrant_store.py": {
+      "classes": {
+        "QdrantVectorStore": {
+          "methods": [
+            "__init__",
+            "_init_collection",
+            "add_vectors",
+            "search",
+            "search_with_metadata",
+            "list_all_incidents",
+            "get_by_pattern",
+            "aggregate_by_type",
+            "hybrid_search",
+            "_extract_doc_type",
+            "_contains_incident",
+            "_extract_incident_ids",
+            "_build_filter",
+            "delete_by_filter",
+            "get_collection_info",
+            "get_stats",
+            "delete_vectors",
+            "get_vector_by_id",
+            "update_metadata",
+            "find_vectors_by_doc_path",
+            "delete_vectors_by_doc_path",
+            "clear_index",
+            "backup_index",
+            "restore_index",
+            "id_to_metadata",
+            "get_all_metadata",
+            "get_metadata_by_id",
+            "get_vector_metadata",
+            "mark_deleted"
+          ]
+        }
+      },
+      "dependencies": [
+        "logging",
+        "typing",
+        "datetime",
+        "uuid",
+        "pathlib",
+        "json",
+        "re",
+        "qdrant_client",
+        "qdrant_client.models",
+        "numpy",
+        "rag_system.src.core.error_handling"
+      ]
+    },
+    "rag_new/rag_system/src/ui/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/ui/gradio_app.py": {
+      "functions": [
+        "create_gradio_app"
+      ],
+      "dependencies": [
+        "logging",
+        "typing",
+        "uuid",
+        "time",
+        "threading",
+        "datetime",
+        "gradio",
+        "rag_system.src.core.progress_tracker",
+        "rag_system.src.ui.progress_monitor",
+        "pathlib"
+      ]
+    },
+    "rag_new/rag_system/src/ui/progress_monitor.py": {
+      "classes": {
+        "ProgressMonitor": {
+          "methods": [
+            "__init__",
+            "connect",
+            "disconnect",
+            "_send_full_state",
+            "_serialize_progress",
+            "_on_progress_update",
+            "_on_file_complete",
+            "_on_error"
+          ]
+        }
+      },
+      "dependencies": [
+        "json",
+        "typing",
+        "datetime",
+        "logging",
+        "fastapi",
+        "rag_system.src.core.progress_tracker"
+      ]
+    },
+    "rag_new/rag_system/src/utils/__init__.py": {
+      "dependencies": []
+    },
+    "rag_new/rag_system/src/utils/source_formatter.py": {
+      "functions": [
+        "format_source_display",
+        "get_source_metadata_summary",
+        "format_search_result_for_display",
+        "is_temp_file_path",
+        "get_original_filename"
+      ],
+      "dependencies": [
+        "pathlib",
+        "typing"
+      ]
+    }
+  }
+}

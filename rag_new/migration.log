@@ -1,0 +1,61 @@
+2025-06-30 14:56:25,334 - INFO - Loading faiss with AVX512 support.
+2025-06-30 14:56:25,337 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-30 14:56:25,337 - INFO - Loading faiss with AVX2 support.
+2025-06-30 14:56:25,366 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-30 14:56:25,566 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-30 14:56:26,822 - INFO - Created FLAT index for dimension 1024
+2025-06-30 14:56:26,823 - INFO - Loaded existing FAISS index with 1 vectors
+2025-06-30 14:56:26,823 - INFO - Thread-safe optimized FAISS store initialized with dimension 1024
+2025-06-30 14:56:26,823 - ERROR - Migration failed: 'vector_count'
+2025-06-30 14:56:59,210 - INFO - Configuration backed up to: rag_system/data/config/system_config_backup_20250630_145659.json
+2025-06-30 14:56:59,902 - INFO - Loading faiss with AVX512 support.
+2025-06-30 14:56:59,902 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-30 14:56:59,902 - INFO - Loading faiss with AVX2 support.
+2025-06-30 14:56:59,922 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-30 14:56:59,926 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-30 14:57:00,885 - INFO - Created FLAT index for dimension 1024
+2025-06-30 14:57:00,885 - INFO - Loaded existing FAISS index with 1 vectors
+2025-06-30 14:57:00,886 - INFO - Thread-safe optimized FAISS store initialized with dimension 1024
+2025-06-30 14:57:01,529 - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,537 - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,913 - INFO - HTTP Request: PUT http://localhost:6333/collections/rag_documents "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,915 - INFO - Created collection: rag_documents
+2025-06-30 14:57:01,915 - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-06-30 14:57:01,915 - INFO - Starting migration from FAISS to Qdrant...
+2025-06-30 14:57:01,915 - INFO - Total vectors to migrate: 1
+2025-06-30 14:57:01,939 - INFO - HTTP Request: PUT http://localhost:6333/collections/rag_documents/points?wait=true "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,941 - INFO - Added 1 vectors to Qdrant
+2025-06-30 14:57:01,944 - INFO - Migration completed: 1 vectors migrated, 0 failed
+2025-06-30 14:57:01,950 - INFO - HTTP Request: GET http://localhost:6333/collections/rag_documents "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,953 - INFO - Qdrant collection now has None vectors
+2025-06-30 14:57:01,957 - INFO - HTTP Request: GET http://localhost:6333/collections/rag_documents "HTTP/1.1 200 OK"
+2025-06-30 14:57:01,980 - INFO - Created FLAT index for dimension 1024
+2025-06-30 14:57:01,980 - INFO - Loaded existing FAISS index with 1 vectors
+2025-06-30 14:57:01,980 - INFO - Thread-safe optimized FAISS store initialized with dimension 1024
+2025-06-30 15:09:20,611 - INFO - Configuration backed up to: rag_system/data/config/system_config_backup_20250630_150920.json
+2025-06-30 15:09:21,317 - INFO - Loading faiss with AVX512 support.
+2025-06-30 15:09:21,317 - INFO - Could not load library with AVX512 support due to:
+ModuleNotFoundError("No module named 'faiss.swigfaiss_avx512'")
+2025-06-30 15:09:21,317 - INFO - Loading faiss with AVX2 support.
+2025-06-30 15:09:21,339 - INFO - Successfully loaded faiss with AVX2 support.
+2025-06-30 15:09:21,346 - INFO - Failed to load GPU Faiss: name 'GpuIndexIVFFlat' is not defined. Will not load constructor refs for GPU indexes. This is only an error if you're trying to use GPU Faiss.
+2025-06-30 15:09:22,316 - INFO - Created FLAT index for dimension 1024
+2025-06-30 15:09:22,317 - INFO - Loaded existing FAISS index with 1 vectors
+2025-06-30 15:09:22,317 - INFO - Thread-safe optimized FAISS store initialized with dimension 1024
+2025-06-30 15:09:22,926 - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-06-30 15:09:22,933 - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-06-30 15:09:22,935 - INFO - Using existing collection: rag_documents
+2025-06-30 15:09:22,936 - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-06-30 15:09:22,936 - INFO - Starting migration from FAISS to Qdrant...
+2025-06-30 15:09:22,937 - INFO - Total vectors to migrate: 1
+2025-06-30 15:09:22,972 - INFO - HTTP Request: PUT http://localhost:6333/collections/rag_documents/points?wait=true "HTTP/1.1 200 OK"
+2025-06-30 15:09:22,974 - INFO - Added 1 vectors to Qdrant
+2025-06-30 15:09:22,974 - INFO - Migration completed: 1 vectors migrated, 0 failed
+2025-06-30 15:09:22,988 - INFO - HTTP Request: GET http://localhost:6333/collections/rag_documents "HTTP/1.1 200 OK"
+2025-06-30 15:09:22,991 - INFO - Qdrant collection now has None vectors
+2025-06-30 15:09:22,998 - INFO - HTTP Request: GET http://localhost:6333/collections/rag_documents "HTTP/1.1 200 OK"
+2025-06-30 15:09:23,015 - INFO - Created FLAT index for dimension 1024
+2025-06-30 15:09:23,016 - INFO - Loaded existing FAISS index with 1 vectors
+2025-06-30 15:09:23,016 - INFO - Thread-safe optimized FAISS store initialized with dimension 1024

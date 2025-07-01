@@ -1,0 +1,74 @@
+{
+  "file_progress": {
+    "document_generator\\test_data\\BuildingA_Network_Layout.pdf": {
+      "file_path": "document_generator\\test_data\\BuildingA_Network_Layout.pdf",
+      "file_size": 11206,
+      "status": "completed",
+      "current_stage": "finalizing",
+      "started_at": "2025-06-30T15:52:51.173589",
+      "completed_at": "2025-06-30T15:52:51.820090",
+      "error": null,
+      "chunks_created": 6,
+      "vectors_created": 6,
+      "overall_progress": 1.0
+    },
+    "document_generator\\test_data\\BuildingB_Network_Layout.pdf": {
+      "file_path": "document_generator\\test_data\\BuildingB_Network_Layout.pdf",
+      "file_size": 6255,
+      "status": "completed",
+      "current_stage": "finalizing",
+      "started_at": "2025-06-30T15:52:51.820616",
+      "completed_at": "2025-06-30T15:52:51.945839",
+      "error": null,
+      "chunks_created": 3,
+      "vectors_created": 3,
+      "overall_progress": 1.0
+    },
+    "document_generator\\test_data\\BuildingC_Network_Layout.pdf": {
+      "file_path": "document_generator\\test_data\\BuildingC_Network_Layout.pdf",
+      "file_size": 6099,
+      "status": "completed",
+      "current_stage": "finalizing",
+      "started_at": "2025-06-30T15:52:51.949873",
+      "completed_at": "2025-06-30T15:52:52.069428",
+      "error": null,
+      "chunks_created": 3,
+      "vectors_created": 3,
+      "overall_progress": 1.0
+    },
+    "document_generator\\test_data\\Facility_Managers_2024.xlsx": {
+      "file_path": "document_generator\\test_data\\Facility_Managers_2024.xlsx",
+      "file_size": 8588,
+      "status": "completed",
+      "current_stage": "finalizing",
+      "started_at": "2025-06-30T15:52:52.070428",
+      "completed_at": "2025-06-30T15:52:52.219651",
+      "error": null,
+      "chunks_created": 4,
+      "vectors_created": 4,
+      "overall_progress": 1.0
+    },
+    "document_generator\\test_data\\ServiceNow_Incidents_Last30Days.json": {
+      "file_path": "document_generator\\test_data\\ServiceNow_Incidents_Last30Days.json",
+      "file_size": 4961,
+      "status": "completed",
+      "current_stage": "finalizing",
+      "started_at": "2025-06-30T15:52:52.219651",
+      "completed_at": "2025-06-30T15:52:52.352946",
+      "error": null,
+      "chunks_created": 5,
+      "vectors_created": 5,
+      "overall_progress": 1.0
+    }
+  },
+  "system_metrics": {
+    "total_files_processed": 15,
+    "total_bytes_processed": 110869,
+    "total_chunks_created": 63,
+    "total_vectors_created": 63,
+    "total_errors": 0,
+    "start_time": "2025-06-30T15:52:51.173589",
+    "last_update": "2025-06-30T15:52:52.219651"
+  },
+  "saved_at": "2025-06-30T15:53:01.115145"
+}

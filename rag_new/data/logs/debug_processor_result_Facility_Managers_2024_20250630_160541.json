@@ -1,0 +1,540 @@
+{
+  "status": "success",
+  "file_path": "document_generator\\test_data\\Facility_Managers_2024.xlsx",
+  "file_name": "Facility_Managers_2024.xlsx",
+  "sheets": [
+    {
+      "name": "Manager Roster",
+      "dimensions": "1:9x1:11",
+      "data": [
+        [
+          "id",
+          "name",
+          "title",
+          "building",
+          "floor",
+          "area",
+          "phone",
+          "email",
+          "start_date",
+          "certifications",
+          "shift"
+        ],
+        [
+          "EMP001",
+          "John Smith",
+          "Senior Floor Manager",
+          "Building A",
+          1,
+          "Main Warehouse, Loading Docks",
+          "555-0101",
+          "jsmith@company.com",
+          "2019-03-15",
+          "OSHA, Forklift",
+          "Day"
+        ],
+        [
+          "EMP002",
+          "Maria Garcia",
+          "Floor Manager",
+          "Building A",
+          2,
+          "Administrative Offices",
+          "555-0102",
+          "mgarcia@company.com",
+          "2020-07-22",
+          "Six Sigma",
+          "Day"
+        ],
+        [
+          "EMP003",
+          "David Chen",
+          "Cold Storage Manager",
+          "Building B",
+          1,
+          "Freezer Zones 1-4",
+          "555-0103",
+          "dchen@company.com",
+          "2018-11-10",
+          "HACCP, Cold Chain",
+          "Day"
+        ],
+        [
+          "EMP004",
+          "Sarah Johnson",
+          "Shipping Manager",
+          "Building C",
+          1,
+          "Loading Bays 1-10",
+          "555-0104",
+          "sjohnson@company.com",
+          "2021-02-28",
+          "DOT, Hazmat",
+          "Day"
+        ],
+        [
+          "EMP005",
+          "Michael Brown",
+          "IT Infrastructure Manager",
+          "Building A",
+          2,
+          "IT Department, MDF/IDF",
+          "555-0105",
+          "mbrown@company.com",
+          "2017-09-05",
+          "CCNA, ITIL",
+          "Day"
+        ],
+        [
+          "EMP006",
+          "Lisa Wong",
+          "Night Shift Supervisor",
+          "Building A",
+          1,
+          "All Areas",
+          "555-0106",
+          "lwong@company.com",
+          "2020-01-15",
+          "OSHA, Emergency Response",
+          "Night"
+        ],
+        [
+          "EMP007",
+          "Robert Taylor",
+          "Cold Storage Specialist",
+          "Building B",
+          1,
+          "Refrigerated Zones 5-8",
+          "555-0107",
+          "rtaylor@company.com",
+          "2019-08-12",
+          "HACCP, Temperature Control",
+          "Evening"
+        ],
+        [
+          "EMP008",
+          "Amanda Rodriguez",
+          "Receiving Manager",
+          "Building C",
+          1,
+          "Loading Bays 11-20",
+          "555-0108",
+          "arodriguez@company.com",
+          "2021-06-03",
+          "Inventory Management",
+          "Day"
+        ]
+      ],
+      "formulas": [],
+      "merged_cells": [],
+      "comments": [],
+      "hyperlinks": [],
+      "summary": {
+        "rows": 9,
+        "columns": 11,
+        "non_null_cells": 99,
+        "data_types": {
+          "object": 11
+        }
+      }
+    },
+    {
+      "name": "Area Coverage Schedule",
+      "dimensions": "1:22x1:6",
+      "data": [
+        [
+          "Day",
+          "Shift",
+          "Primary Manager",
+          "Building",
+          "Contact",
+          "Backup"
+        ],
+        [
+          "Monday",
+          "Day (6AM-2PM)",
+          "John Smith",
+          "Building A",
+          "555-0101",
+          "Michael Brown"
+        ],
+        [
+          "Monday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "Michael Brown"
+        ],
+        [
+          "Monday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "Michael Brown"
+        ],
+        [
+          "Tuesday",
+          "Day (6AM-2PM)",
+          "Michael Brown",
+          "Building A",
+          "555-0105",
+          "Maria Garcia"
+        ],
+        [
+          "Tuesday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "John Smith"
+        ],
+        [
+          "Tuesday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "Sarah Johnson"
+        ],
+        [
+          "Wednesday",
+          "Day (6AM-2PM)",
+          "Sarah Johnson",
+          "Building C",
+          "555-0104",
+          "Michael Brown"
+        ],
+        [
+          "Wednesday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "Lisa Wong"
+        ],
+        [
+          "Wednesday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "Sarah Johnson"
+        ],
+        [
+          "Thursday",
+          "Day (6AM-2PM)",
+          "John Smith",
+          "Building A",
+          "555-0101",
+          "Lisa Wong"
+        ],
+        [
+          "Thursday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "John Smith"
+        ],
+        [
+          "Thursday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "David Chen"
+        ],
+        [
+          "Friday",
+          "Day (6AM-2PM)",
+          "David Chen",
+          "Building B",
+          "555-0103",
+          "Lisa Wong"
+        ],
+        [
+          "Friday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "Maria Garcia"
+        ],
+        [
+          "Friday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "John Smith"
+        ],
+        [
+          "Saturday",
+          "Day (6AM-2PM)",
+          "Sarah Johnson",
+          "Building C",
+          "555-0104",
+          "Amanda Rodriguez"
+        ],
+        [
+          "Saturday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "Sarah Johnson"
+        ],
+        [
+          "Saturday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "John Smith"
+        ],
+        [
+          "Sunday",
+          "Day (6AM-2PM)",
+          "Maria Garcia",
+          "Building A",
+          "555-0102",
+          "Robert Taylor"
+        ],
+        [
+          "Sunday",
+          "Evening (2PM-10PM)",
+          "Robert Taylor",
+          "Building B",
+          "555-0107",
+          "David Chen"
+        ],
+        [
+          "Sunday",
+          "Night (10PM-6AM)",
+          "Lisa Wong",
+          "Building A",
+          "555-0106",
+          "Sarah Johnson"
+        ]
+      ],
+      "formulas": [],
+      "merged_cells": [],
+      "comments": [],
+      "hyperlinks": [],
+      "summary": {
+        "rows": 22,
+        "columns": 6,
+        "non_null_cells": 132,
+        "data_types": {
+          "object": 6
+        }
+      }
+    },
+    {
+      "name": "Contact Matrix",
+      "dimensions": "1:12x1:7",
+      "data": [
+        [
+          "Contact Type",
+          "Name",
+          "Title",
+          "Area",
+          "Primary Phone",
+          "Email",
+          "Escalation Level"
+        ],
+        [
+          "Internal",
+          "John Smith",
+          "Senior Floor Manager",
+          "Building A - Main Warehouse, Loading Docks",
+          "555-0101",
+          "jsmith@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Maria Garcia",
+          "Floor Manager",
+          "Building A - Administrative Offices",
+          "555-0102",
+          "mgarcia@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "David Chen",
+          "Cold Storage Manager",
+          "Building B - Freezer Zones 1-4",
+          "555-0103",
+          "dchen@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Sarah Johnson",
+          "Shipping Manager",
+          "Building C - Loading Bays 1-10",
+          "555-0104",
+          "sjohnson@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Michael Brown",
+          "IT Infrastructure Manager",
+          "Building A - IT Department, MDF/IDF",
+          "555-0105",
+          "mbrown@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Lisa Wong",
+          "Night Shift Supervisor",
+          "Building A - All Areas",
+          "555-0106",
+          "lwong@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Robert Taylor",
+          "Cold Storage Specialist",
+          "Building B - Refrigerated Zones 5-8",
+          "555-0107",
+          "rtaylor@company.com",
+          "Primary"
+        ],
+        [
+          "Internal",
+          "Amanda Rodriguez",
+          "Receiving Manager",
+          "Building C - Loading Bays 11-20",
+          "555-0108",
+          "arodriguez@company.com",
+          "Primary"
+        ],
+        [
+          "Vendor",
+          "Cisco TAC",
+          "Technical Support",
+          "Network Equipment",
+          "1-800-553-2447",
+          "tac@cisco.com",
+          "L1 Support"
+        ],
+        [
+          "Vendor",
+          "DataCenter Solutions",
+          "Field Engineer",
+          "Infrastructure",
+          "555-DATACTR",
+          "support@dcsi.com",
+          "Emergency"
+        ],
+        [
+          "Emergency",
+          "Facilities Emergency",
+          "Emergency Response",
+          "All Buildings",
+          "911",
+          "emergency@company.com",
+          "Critical"
+        ]
+      ],
+      "formulas": [],
+      "merged_cells": [],
+      "comments": [],
+      "hyperlinks": [],
+      "summary": {
+        "rows": 12,
+        "columns": 7,
+        "non_null_cells": 84,
+        "data_types": {
+          "object": 7
+        }
+      }
+    }
+  ],
+  "embedded_objects": [],
+  "charts": [],
+  "images": [],
+  "hierarchical_data": {},
+  "metadata": {
+    "processor": "excel",
+    "timestamp": "2025-06-30T16:05:41.643022",
+    "file_size": 8588,
+    "properties": {
+      "title": null,
+      "creator": "openpyxl",
+      "created": "2025-06-16 11:05:00",
+      "modified": "2025-06-16 11:05:00",
+      "last_modified_by": null,
+      "description": null,
+      "keywords": null,
+      "category": null,
+      "company": null
+    },
+    "sheet_relationships": {}
+  },
+  "chunk_count": 4,
+  "processing_time_seconds": 0.027994,
+  "processor_name": "ExcelProcessor",
+  "chunks_detail": [
+    {
+      "chunk_index": 0,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "excel_sheet",
+        "sheet_name": "Manager Roster",
+        "content_type": "sheet_data",
+        "dimensions": "1:9x1:11",
+        "formula_count": 0,
+        "data_rows": 9
+      }
+    },
+    {
+      "chunk_index": 1,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "excel_sheet",
+        "sheet_name": "Area Coverage Schedule",
+        "content_type": "sheet_data",
+        "dimensions": "1:22x1:6",
+        "formula_count": 0,
+        "data_rows": 22
+      }
+    },
+    {
+      "chunk_index": 2,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "excel_sheet",
+        "sheet_name": "Contact Matrix",
+        "content_type": "sheet_data",
+        "dimensions": "1:12x1:7",
+        "formula_count": 0,
+        "data_rows": 12
+      }
+    },
+    {
+      "chunk_index": 3,
+      "content_length": 0,
+      "content_preview": "",
+      "metadata": {
+        "source_type": "excel_metadata",
+        "content_type": "file_metadata",
+        "total_sheets": 3,
+        "total_embedded_objects": 0,
+        "total_images": 0,
+        "has_properties": true
+      }
+    }
+  ]
+}
