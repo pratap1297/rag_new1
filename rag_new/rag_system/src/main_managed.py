@@ -16,14 +16,15 @@ from core.config_manager import ConfigManager
 from core.dependency_container import DependencyContainer
 from api.main import create_api_app
 from monitoring.heartbeat_monitor import HeartbeatMonitor
+from ingestion.embedder import SentenceTransformerEmbedder
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler('logs/rag_system.log')
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('logs/rag_system.log', encoding='utf-8')
     ]
 )
 
@@ -42,7 +43,7 @@ class ManagedRAGSystem:
     def initialize(self):
         """Initialize the RAG system with managed resources"""
         try:
-            logger.info("🚀 Initializing Managed RAG System...")
+            logger.info("Initializing Managed RAG System...")
             
             # Start application lifecycle
             self.app_lifecycle.startup()
@@ -87,61 +88,65 @@ class ManagedRAGSystem:
                 heartbeat_monitor_instance=self.heartbeat_monitor
             )
             
-            logger.info("✅ Managed RAG System initialized successfully")
+            logger.info("Managed RAG System initialized successfully")
             
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Managed RAG System: {e}")
+            logger.error(f"Failed to initialize Managed RAG System: {e}")
             self.shutdown()
             raise
     
     def start_services(self):
         """Start all managed services"""
         try:
-            logger.info("🔄 Starting managed services...")
+            logger.info("Starting managed services...")
             
             # Start heartbeat monitor
             if self.heartbeat_monitor:
                 self.heartbeat_monitor.start_monitoring()
-                logger.info("✅ Heartbeat monitor started")
+                logger.info("Heartbeat monitor started")
             
             # Load models through managed model loader
             self._load_managed_models()
             
-            logger.info("✅ All managed services started")
+            logger.info("All managed services started")
             
         except Exception as e:
-            logger.error(f"❌ Failed to start services: {e}")
+            logger.error(f"Failed to start services: {e}")
             raise
     
     def _load_managed_models(self):
         """Load ML models through managed model loader"""
         try:
-            logger.info("🤖 Loading managed models...")
+            logger.info("Loading managed models...")
             
-            # Load embedding model
+            # Load embedding model - only for sentence-transformers
             embedder = self.container.get('embedder')
-            if hasattr(embedder, 'model_name'):
-                from sentence_transformers import SentenceTransformer
-                model = self.app_lifecycle.model_loader.load_model(
-                    f"embedder_{embedder.model_name}",
-                    SentenceTransformer,
-                    embedder.model_name
-                )
-                # Replace the embedder's model with managed model
-                embedder.model = model
-                logger.info(f"✅ Loaded managed embedding model: {embedder.model_name}")
+            if hasattr(embedder, 'embedder') and hasattr(embedder.embedder, 'model_name'):
+                # Only load SentenceTransformer models through managed loader
+                if isinstance(embedder.embedder, SentenceTransformerEmbedder):
+                    from sentence_transformers import SentenceTransformer
+                    model = self.app_lifecycle.model_loader.load_model(
+                        f"embedder_{embedder.embedder.model_name}",
+                        SentenceTransformer,
+                        embedder.embedder.model_name
+                    )
+                    # Replace the embedder's model with managed model
+                    embedder.embedder.model = model
+                    logger.info(f"Loaded managed embedding model: {embedder.embedder.model_name}")
+                else:
+                    logger.info(f"Using {type(embedder.embedder).__name__} - no managed model loading needed")
             
             # Load other models as needed
             # This can be extended for other ML models in the system
             
         except Exception as e:
-            logger.error(f"❌ Failed to load managed models: {e}")
+            logger.error(f"Failed to load managed models: {e}")
             # Don't raise - system can still work without models
     
     def run_server(self, host: str = "0.0.0.0", port: int = 8000):
         """Run the FastAPI server with managed resources"""
         try:
-            logger.info(f"🌐 Starting managed server on {host}:{port}")
+            logger.info(f"Starting managed server on {host}:{port}")
             
             import uvicorn
             
@@ -169,9 +174,9 @@ class ManagedRAGSystem:
             server.run()
             
         except KeyboardInterrupt:
-            logger.info("🛑 Server interrupted by user")
+            logger.info("Server interrupted by user")
         except Exception as e:
-            logger.error(f"❌ Server error: {e}")
+            logger.error(f"Server error: {e}")
             raise
         finally:
             self.shutdown()
@@ -179,16 +184,16 @@ class ManagedRAGSystem:
     def shutdown(self):
         """Shutdown the RAG system with comprehensive cleanup"""
         try:
-            logger.info("🛑 Shutting down Managed RAG System...")
+            logger.info("Shutting down Managed RAG System...")
             
             # Application lifecycle will handle all cleanup automatically
             if self.app_lifecycle:
                 self.app_lifecycle.shutdown()
             
-            logger.info("✅ Managed RAG System shutdown complete")
+            logger.info("Managed RAG System shutdown complete")
             
         except Exception as e:
-            logger.error(f"❌ Error during shutdown: {e}")
+            logger.error(f"Error during shutdown: {e}")
 
 def main():
     """Main function with comprehensive resource management"""
@@ -209,15 +214,15 @@ def main():
         host = getattr(config.api, 'host', '0.0.0.0')
         port = getattr(config.api, 'port', 8000)
         
-        logger.info("🎯 Managed RAG System ready!")
+        logger.info("Managed RAG System ready!")
         
         # Run server
         managed_system.run_server(host=host, port=port)
         
     except KeyboardInterrupt:
-        logger.info("🛑 Application interrupted by user")
+        logger.info("Application interrupted by user")
     except Exception as e:
-        logger.error(f"❌ Application error: {e}")
+        logger.error(f"Application error: {e}")
         sys.exit(1)
     finally:
         if managed_system:

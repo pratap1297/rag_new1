@@ -111,7 +111,7 @@ class ConversationManager:
                 'message': 'Conversation ended',
                 'summary': summary,
                 'thread_id': thread_id,
-                'total_turns': final_state.get('turn_count', 0)
+                'total_turns': final_state.turn_count
             }
         except Exception as e:
             self.logger.error(f"Error ending conversation: {e}")
@@ -155,10 +155,10 @@ class ConversationManager:
                     # Get conversation history to check age
                     history = self.get_conversation_history(thread_id, max_messages=1)
                     
-                    if history.get('messages'):
+                    if history.messages:
                         # Check if conversation is old
-                        last_message = history['messages'][-1]
-                        last_activity = datetime.fromisoformat(last_message['timestamp'])
+                        last_message = history.messages[-1]
+                        last_activity = last_message.timestamp
                         
                         if (current_time - last_activity).total_seconds() > MAX_CONVERSATION_AGE_HOURS * 3600:
                             # Remove old conversation
@@ -197,8 +197,8 @@ class ConversationManager:
             for thread_id in threads:
                 try:
                     history = self.get_conversation_history(thread_id)
-                    total_messages += len(history.get('messages', []))
-                    total_topics += len(history.get('topics_discussed', []))
+                    total_messages += len(history.messages)
+                    total_topics += len(history.topics_discussed)
                 except:
                     continue
             
@@ -222,44 +222,42 @@ class ConversationManager:
         """Format conversation state into response"""
         
         # Get the latest assistant message
-        assistant_messages = [msg for msg in state.get('messages', []) if msg.get('type') == MessageType.ASSISTANT]
-        latest_response = assistant_messages[-1]['content'] if assistant_messages else ""
+        assistant_messages = [msg for msg in state.messages if msg.type == MessageType.ASSISTANT]
+        latest_response = assistant_messages[-1].content if assistant_messages else ""
         
         response = {
             'response': latest_response,
             'thread_id': thread_id,
-            'conversation_id': state.get('conversation_id', ''),
-            'turn_count': state.get('turn_count', 0),
-            'current_phase': state.get('current_phase', ConversationPhase.UNDERSTANDING).value if hasattr(state.get('current_phase'), 'value') else str(state.get('current_phase', 'understanding')),
-            'confidence_score': state.get('response_confidence', 0.0),
-            'confidence': state.get('response_confidence', 0.0),  # Add alias for compatibility
+            'conversation_id': state.conversation_id,
+            'turn_count': state.turn_count,
+            'current_phase': state.current_phase.value,
+            'confidence_score': state.response_confidence,
+            'confidence': state.response_confidence,  # Add alias for compatibility
             'timestamp': datetime.now().isoformat()
         }
         
         # Add optional fields if available
-        if state.get('suggested_questions'):
-            response['suggested_questions'] = state['suggested_questions']
+        if state.suggested_questions:
+            response['suggested_questions'] = state.suggested_questions
         
-        if state.get('related_topics'):
-            response['related_topics'] = state['related_topics']
+        if state.related_topics:
+            response['related_topics'] = state.related_topics
         
         # For sources, provide clean metadata only (no content snippets)
-        if state.get('search_results'):
+        if state.search_results:
             response['sources'] = [
                 {
-                    'title': result.get('source', 'Unknown Document'),
-                    'score': result['score'],
-                    'type': self._get_source_type(result.get('source', '')),
-                    'relevance': self._format_relevance_score(result['score'])
-                }
-                for result in state['search_results'][:3]
+                    'title': result.source,
+                    'doc_id': result.doc_id,
+                    'relevance': self._format_relevance_score(result.relevance_score)
+                } for result in state.search_results
             ]
-            response['total_sources'] = len(state['search_results'])
+            response['total_sources'] = len(state.search_results)
         else:
             response['total_sources'] = 0
         
-        if state.get('has_errors'):
-            response['errors'] = state.get('error_messages', [])
+        if state.has_errors:
+            response['errors'] = state.error_messages
         
         return response
     
@@ -298,11 +296,11 @@ class ConversationManager:
     def _generate_conversation_summary(self, state: ConversationState) -> str:
         """Generate a summary of the conversation"""
         
-        if not state.get('messages'):
+        if not state.messages:
             return "No conversation content"
         
-        user_messages = [msg['content'] for msg in state.get('messages', []) if msg.get('type') == MessageType.USER]
-        topics = state.get('topics_discussed', [])
+        user_messages = [msg.content for msg in state.messages if msg.type == MessageType.USER]
+        topics = state.topics_discussed
         
         summary_parts = []
         
@@ -312,7 +310,7 @@ class ConversationManager:
         if user_messages:
             summary_parts.append(f"Total user messages: {len(user_messages)}")
         
-        summary_parts.append(f"Conversation turns: {state.get('turn_count', 0)}")
+        summary_parts.append(f"Conversation turns: {state.turn_count}")
         
         return "; ".join(summary_parts)
     

@@ -8,9 +8,9 @@ from typing import Dict, List, Any, Optional
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from pydantic import BaseModel, Field
 
-from ...core.dependency_container import get_dependency_container
-from ...integrations.servicenow import ServiceNowIntegration
-from ...core.error_handling import IntegrationError
+from rag_system.src.core.dependency_container import get_dependency_container
+from rag_system.src.integrations.servicenow import ServiceNowIntegration
+from rag_system.src.core.error_handling import IntegrationError
 
 # Create router
 router = APIRouter(prefix="/servicenow", tags=["ServiceNow Integration"])

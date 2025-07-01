@@ -105,44 +105,65 @@ class ConversationGraph:
         return compiled_graph
     
     def _route_after_understanding(self, state: ConversationState) -> Literal["search", "respond", "end"]:
-        """Route after understanding user intent"""
+        """Route after understanding user intent - ENHANCED VERSION"""
         
         try:
-            user_intent = state.get('user_intent', 'general')
-            turn_count = state.get('turn_count', 0)
+            user_intent = state.user_intent
+            turn_count = state.turn_count
+            current_phase = state.current_phase
             
-            self.logger.info(f"Routing after understanding - intent: {user_intent}, turn: {turn_count}")
+            self.logger.info(f"Routing after understanding - intent: {user_intent}, turn: {turn_count}, phase: {current_phase}")
             
             # Check if this is a goodbye message
             if user_intent == "goodbye":
+                self.logger.info("Routing to END - goodbye intent")
                 return "end"
                 
-            # For greetings and help, go directly to respond
+            # For greetings and help, go directly to respond ONLY if they're simple
             elif user_intent in ["greeting", "help"]:
-                return "respond"
+                # Check if it's a simple greeting/help or if it contains a question
+                original_query = state.original_query.lower()
                 
-            # For information seeking or any query that might need knowledge retrieval
-            elif user_intent in ["information_seeking", "question", "search", "explanation"]:
+                # If the greeting/help message also contains a question, search
+                if any(word in original_query for word in ['what', 'how', 'when', 'where', 'why', 'which', '?']):
+                    self.logger.info("Greeting/help contains question - routing to SEARCH")
+                    return "search"
+                else:
+                    self.logger.info(f"Simple {user_intent} - routing to RESPOND")
+                    return "respond"
+                
+            # CRITICAL FIX: For information seeking, ALWAYS search
+            elif user_intent == "information_seeking":
+                self.logger.info("Information seeking intent - routing to SEARCH")
+                return "search"
+                
+            # For questions, search, or explanation intents
+            elif user_intent in ["question", "search", "explanation"]:
+                self.logger.info(f"{user_intent} intent - routing to SEARCH")
                 return "search"
                 
             # For follow-up questions, always search to maintain context
-            elif user_intent == "follow_up" or state.get('is_contextual', False):
+            elif user_intent == "follow_up" or state.is_contextual:
+                self.logger.info("Follow-up or contextual query - routing to SEARCH")
                 return "search"
                 
-            # Default to search for most intents to provide knowledge-based responses
+            # DEFAULT: When in doubt, search!
+            # This is the key fix - we default to searching rather than responding
             else:
+                self.logger.info(f"Unknown/general intent '{user_intent}' - defaulting to SEARCH")
                 return "search"
                 
         except Exception as e:
             self.logger.error(f"Error in routing after understanding: {e}")
-            return "respond"
+            # On error, default to search to try to find information
+            return "search"
     
     def _route_after_search(self, state: ConversationState) -> Literal["respond", "clarify"]:
         """Route after searching knowledge base"""
         
         try:
-            requires_clarification = state.get('requires_clarification', False)
-            search_results = state.get('search_results', [])
+            requires_clarification = state.requires_clarification
+            search_results = state.search_results
             
             # Only go to clarify if explicitly requested, not just because no results
             if requires_clarification:
@@ -158,9 +179,9 @@ class ConversationGraph:
         """Route to determine if conversation should end"""
         
         try:
-            current_phase = state.get('current_phase', ConversationPhase.UNDERSTANDING)
-            user_intent = state.get('user_intent', None)
-            turn_count = state.get('turn_count', 0)
+            current_phase = state.current_phase
+            user_intent = state.user_intent
+            turn_count = state.turn_count
             
             # End conversation if:
             # 1. Explicitly in ending phase or goodbye intent
@@ -170,8 +191,8 @@ class ConversationGraph:
             if (current_phase == ConversationPhase.ENDING or 
                 user_intent == "goodbye" or
                 turn_count > 20 or  # Limit total turns to prevent loops
-                state.get('retry_count', 0) > 3 or  # Too many retries
-                len(state.get('error_messages', [])) > 5 or  # Too many errors
+                state.retry_count > 3 or  # Too many retries
+                len(state.error_messages) > 5 or  # Too many errors
                 current_phase == ConversationPhase.RESPONDING):  # End after response is generated
                 
                 self.logger.info(f"Ending conversation: phase={current_phase}, intent={user_intent}, turns={turn_count}")
@@ -201,20 +222,20 @@ class ConversationGraph:
             if user_message.strip():
                 current_state = add_message_to_state(current_state, MessageType.USER, user_message)
             
-            # Run the graph with LangGraph state management
-            result = self.graph.invoke(
-                current_state, 
+            # Get the last user message from the state
+            last_message = current_state.messages[-1] if current_state.messages else None
+            
+            if not last_message or last_message.type != MessageType.USER:
+                # If there is no user message, we can't proceed.
+                return {"messages": current_state.messages, "phase": ConversationPhase.ENDED}
+
+            # Invoke the graph
+            final_state = self.graph.invoke(
+                {"messages": [last_message]},
                 config=config
             )
             
-            # Apply memory management to prevent leaks
-            result = _apply_memory_management(result)
-            
-            # Safely access current_phase with a default value if it doesn't exist
-            current_phase = result.get('current_phase', 'UNKNOWN')
-            self.logger.info(f"Conversation processed successfully for thread {thread_id}, phase: {current_phase}")
-            return result
-            
+            return final_state
         except Exception as e:
             self.logger.error(f"Error processing conversation: {e}")
             
