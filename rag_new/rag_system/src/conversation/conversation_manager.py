@@ -243,12 +243,14 @@ class ConversationManager:
         if state.get('related_topics'):
             response['related_topics'] = state['related_topics']
         
+        # For sources, provide clean metadata only (no content snippets)
         if state.get('search_results'):
             response['sources'] = [
                 {
-                    'content': result['content'][:300] + "..." if len(result['content']) > 300 else result['content'],
+                    'title': result.get('source', 'Unknown Document'),
                     'score': result['score'],
-                    'source': result['source']
+                    'type': self._get_source_type(result.get('source', '')),
+                    'relevance': self._format_relevance_score(result['score'])
                 }
                 for result in state['search_results'][:3]
             ]
@@ -260,6 +262,38 @@ class ConversationManager:
             response['errors'] = state.get('error_messages', [])
         
         return response
+    
+    def _get_source_type(self, source: str) -> str:
+        """Determine source type based on filename"""
+        if not source:
+            return "Document"
+        
+        source_lower = source.lower()
+        if '.xlsx' in source_lower or '.xls' in source_lower:
+            return "Excel File"
+        elif '.pdf' in source_lower:
+            return "PDF Document"
+        elif '.txt' in source_lower:
+            return "Text File"
+        elif '.json' in source_lower:
+            return "Data File"
+        elif '.md' in source_lower:
+            return "Markdown Document"
+        else:
+            return "Document"
+    
+    def _format_relevance_score(self, score: float) -> str:
+        """Format relevance score as user-friendly text"""
+        if score >= 0.8:
+            return "Highly Relevant"
+        elif score >= 0.6:
+            return "Very Relevant"
+        elif score >= 0.4:
+            return "Relevant"
+        elif score >= 0.2:
+            return "Somewhat Relevant"
+        else:
+            return "Low Relevance"
     
     def _generate_conversation_summary(self, state: ConversationState) -> str:
         """Generate a summary of the conversation"""

@@ -504,170 +504,207 @@ class ConversationNodes:
         keywords = [word for word in words if len(word) > 2 and word not in common_words]
         return keywords[:10]  # Return top 10 keywords
     
+    def _is_simple_followup_question(self, query: str, conversation_history: List[Dict]) -> bool:
+        """Use LLM to detect if this is a simple follow-up question requiring concise answer"""
+        
+        # Get recent conversation context
+        recent_messages = conversation_history[-4:] if conversation_history else []
+        context = ""
+        
+        for msg in recent_messages:
+            role = "User" if msg.get('type') == MessageType.USER else "Assistant"
+            content = msg.get('content', '')[:200]  # Truncate for context
+            context += f"{role}: {content}\n"
+        
+        prompt = f"""Analyze this conversation to determine if the latest user query is a simple follow-up question that should get a concise, direct answer.
+
+Recent Conversation:
+{context}
+
+Latest User Query: "{query}"
+
+A simple follow-up question is one that:
+- Asks for clarification about something just mentioned (like "which are these?", "what are those?")
+- Requests a simple list or enumeration ("list them", "show me those", "name them")
+- Asks for basic identification without detailed analysis
+- Is clearly referencing something from the immediate conversation context
+
+Answer with just: YES or NO
+
+Analysis:"""
+        
+        try:
+            if self.llm_client:
+                response = self.llm_client.generate(prompt, max_tokens=10, temperature=0.1)
+                return response.strip().upper() == "YES"
+        except Exception as e:
+            self.logger.error(f"LLM intent detection failed: {e}")
+            
+        # Fallback to basic keyword detection
+        query_lower = query.lower().strip()
+        simple_keywords = ['which', 'what', 'list', 'show', 'name', 'these', 'those', 'them']
+        return len(query.split()) <= 4 and any(keyword in query_lower for keyword in simple_keywords)
+
     def _generate_contextual_response(self, state: ConversationState) -> str:
-        """Generate response based on search results and context"""
+        """Generate a contextual response based on search results and conversation history"""
         
-        # First check if we have a response from the query engine
-        query_engine_response = state.get('query_engine_response')
-        if query_engine_response and isinstance(query_engine_response, str) and query_engine_response.strip():
-            self.logger.info("Using query engine response directly")
-            return query_engine_response
-        
-        # Check if this is a contextual query that needs conversation awareness
-        if state.get('is_contextual', False):
-            self.logger.info("Generating context-aware response")
-            
-            # Build conversation history for context
-            conversation_context = self._build_conversation_context(state)
-            
-            # If we have search results, use them with conversation context
-            if state.get('search_results') and state['search_results']:
-                # Enhanced search results context with source information
-                context_parts = []
-                for i, result in enumerate(state['search_results'][:3], 1):
-                    content = result.get('content', '')[:400] if result.get('content') else ''
-                    source = result.get('source', 'Unknown')
-                    score = result.get('score', 0)
-                    
-                    context_parts.append(f"Source {i} ({source}, relevance: {score:.2f}):\n{content}")
-                
-                context_text = "\n\n".join(context_parts)
-                
-                original_query = state.get('original_query', '')
-                prompt = f"""You are having a conversation with a user. Here is the recent conversation:
-
-{conversation_context}
-
-The user's latest question is: "{original_query}"
-
-Based on the following information from the knowledge base, provide a helpful response:
-
-{context_text}
-
-Important instructions:
-- This is a follow-up question in an ongoing conversation
-- Consider what has already been discussed and provide NEW or ADDITIONAL information
-- If the user is asking for "more" information, provide details that weren't mentioned before
-- Reference specific sources when mentioning facts or data (e.g., "According to the Facility_Managers_2024.xlsx file...")
-- If information comes from a specific document, mention it by name
-- If the information requested isn't available in the knowledge base, acknowledge this clearly
-- Be conversational and reference the previous discussion naturally
-
-Response:"""
-                
-                try:
-                    if self.llm_client:
-                        response = self.llm_client.generate(prompt, max_tokens=500, temperature=0.7)
-                        return response.strip()
-                except Exception as e:
-                    self.logger.error(f"LLM generation failed: {e}")
+        # If no search results, use the query engine response directly
+        if not state.get('search_results'):
+            if state.get('query_engine_response'):
+                return state['query_engine_response']
             else:
-                # No search results for contextual query
-                return self._generate_no_results_contextual_response(state)
+                return self._generate_general_response(state)
         
-        # If no query engine response, generate from search results
-        if state.get('search_results') and state['search_results']:
-            self.logger.info("Generating response from search results")
+        search_results = state['search_results']
+        original_query = state.get('original_query', '')
+        conversation_history = state.get('messages', [])
+        
+        # Log for debugging
+        self.logger.info(f"Generating contextual response with {len(search_results)} search results")
+        
+        # Use LLM to detect simple follow-up questions
+        is_simple_followup = self._is_simple_followup_question(original_query, conversation_history)
+        
+        if is_simple_followup:
+            # For simple follow-up questions, provide a concise list
+            context_parts = []
+            for i, result in enumerate(search_results[:3], 1):
+                content = result['content'][:300]  # Reduced content for concise responses
+                source = result.get('source', 'Unknown')
+                context_parts.append(f"Source {i} ({source}):\n{content}")
             
-            # Check if this is a complex query requiring data correlation
-            if self._is_complex_correlation_query(state['original_query']):
-                # For complex queries, use enhanced context with source attribution
-                context_parts = []
-                for i, result in enumerate(state['search_results'], 1):
-                    content = result['content'][:500]
-                    source = result.get('source', 'Unknown')
-                    score = result.get('score', 0)
-                    
-                    context_parts.append(f"Source {i} ({source}, relevance: {score:.2f}):\n{content}")
-                
-                context_text = "\n\n".join(context_parts)
-                
-                prompt = f"""You need to answer a complex query that requires correlating information from multiple sources.
+            context_text = "\n\n".join(context_parts)
+            
+            # Get conversation context for the LLM
+            recent_context = ""
+            for msg in conversation_history[-4:]:
+                role = "User" if msg.get('type') == MessageType.USER else "Assistant"
+                content = msg.get('content', '')[:150]
+                recent_context += f"{role}: {content}\n"
+            
+            prompt = f"""The user is asking a simple follow-up question that needs a CONCISE, DIRECT answer.
 
-Query: "{state['original_query']}"
+Recent Conversation:
+{recent_context}
 
-Available Information from Multiple Sources:
+Current Question: "{original_query}"
+
+Available Information:
 {context_text}
 
 Instructions:
-1. Identify all the pieces of information needed to answer the query
-2. Extract relevant data from the provided sources, noting which source each piece comes from
-3. Connect the information logically across sources
-4. Reference specific sources in your answer (e.g., "According to Source 1 (filename.xlsx)...")
-5. Provide a clear, concise final answer with source attribution
+1. Provide a SHORT, DIRECT answer - maximum 3-4 lines
+2. Use bullet points or simple list format
+3. Focus ONLY on answering what they're asking for
+4. NO verbose explanations, analysis, or source details
+5. NO "comprehensive answer" or "let's analyze" phrases
+6. Be conversational and natural
 
-If you can find all the required information, format your response with "The final answer is:" followed by the specific details requested with source references.
+Examples:
+- If they ask "which are these?" after mentioning 5 documents, list the 5 documents
+- If they ask "what are those?" about incidents, list the incidents briefly
+- If they ask "show them", display what was just referenced
 
-Response:"""
+Provide a concise, direct response:"""
+            
+            try:
+                if self.llm_client:
+                    response = self.llm_client.generate(prompt, max_tokens=200, temperature=0.1)
+                    return response.strip()
+            except Exception as e:
+                self.logger.error(f"LLM generation failed: {e}")
+        
+        # Check if this is a complex correlation query
+        is_complex_query = self._is_complex_correlation_query(state['original_query'])
+        
+        if is_complex_query:
+            # For complex queries that need to correlate data across sources
+            if len(search_results) > 1:
+                # Multi-source correlation
+                context_parts = []
+                for i, result in enumerate(search_results[:3], 1):
+                    content = result['content'][:400]
+                    source = result.get('source', 'Unknown')
+                    score = result.get('score', 0)
+                    
+                    context_parts.append(f"Source {i} ({source}, relevance: {score:.2f}):\n{content}")
+                
+                context_text = "\n\n".join(context_parts)
+                
+                prompt = f"""You are a professional assistant that provides clean, well-formatted responses. Based on the context provided, answer the user's query with a clear, structured response.
+
+Query: "{state['original_query']}"
+
+Available Information:
+{context_text}
+
+Instructions for Response Format:
+1. Provide a direct, professional answer
+2. When presenting data, use clean formatting:
+   - For assignments/lists: Use tables with | separators
+   - For status information: Use bullet points or structured lists
+   - For comparisons: Use clear categorization
+3. Do NOT include raw source snippets or technical metadata
+4. Do NOT show relevance scores or source numbers
+5. Reference documents naturally (e.g., "According to the network data..." instead of "Source 1 (file.xlsx)")
+6. Focus on the actual answer, not the search process
+
+Example format for assignments:
+> Incident Assignments:
+>
+> | Incident | Priority | Assigned To | Category |
+> |----------|----------|-------------|----------|
+> | INC030001 | High | Sarah Johnson | Network - Wireless |
+
+Provide a clean, professional response:"""
                 
                 try:
                     if self.llm_client:
-                        response = self.llm_client.generate(prompt, max_tokens=500, temperature=0.1)  # Lower temperature for factual queries
+                        response = self.llm_client.generate(prompt, max_tokens=600, temperature=0.1)
                         return response.strip()
                 except Exception as e:
                     self.logger.error(f"LLM generation failed: {e}")
             else:
-                # Enhanced response generation with source information
+                # Enhanced response generation with clean formatting
                 context_parts = []
                 for i, result in enumerate(state['search_results'][:3], 1):
                     content = result['content'][:400]
                     source = result.get('source', 'Unknown')
                     score = result.get('score', 0)
                     
-                    # Include source context for better responses
                     context_parts.append(f"Source {i} ({source}, relevance: {score:.2f}):\n{content}")
                 
                 context_text = "\n\n".join(context_parts)
                 
-                prompt = f"""Based on the following information from multiple sources, provide a helpful response to the user's query: "{state['original_query']}"
+                prompt = f"""You are a professional assistant providing clean, well-formatted responses. Answer the user's query based on the available information.
+
+Query: "{state['original_query']}"
 
 Available Information:
 {context_text}
 
-Instructions:
-- Use the source information to provide accurate, well-attributed responses
-- Reference specific sources when mentioning facts or data
-- If information comes from a specific document (like an Excel file), mention it
-- Provide a comprehensive answer that utilizes information from all relevant sources
+Response Guidelines:
+1. Provide a direct, clear answer to the user's question
+2. Use professional formatting:
+   - Tables for structured data (use | separators)
+   - Bullet points for lists
+   - Clean headings for organization
+3. Do NOT include technical metadata, source numbers, or relevance scores
+4. Do NOT show raw source snippets in your response
+5. Reference sources naturally (e.g., "Based on the incident data..." instead of "Source 1 shows...")
+6. Focus on delivering the actual information requested
 
-Please provide a clear, informative response based on the context provided."""
+Generate a clean, professional response:"""
                 
                 try:
                     if self.llm_client:
-                        response = self.llm_client.generate(prompt, max_tokens=500, temperature=0.7)
+                        response = self.llm_client.generate(prompt, max_tokens=600, temperature=0.7)
                         return response.strip()
                 except Exception as e:
                     self.logger.error(f"LLM generation failed: {e}")
         
         # Fallback response
         return self._generate_general_response(state)
-    
-    def _build_conversation_context(self, state: ConversationState) -> str:
-        """Build a summary of the conversation for context"""
-        recent_messages = state['messages'][-6:]  # Last 3 exchanges
-        
-        context_lines = []
-        for msg in recent_messages:
-            role = "User" if msg['type'] == MessageType.USER else "Assistant"
-            # Truncate long messages
-            content = msg['content']
-            if len(content) > 200:
-                content = content[:200] + "..."
-            context_lines.append(f"{role}: {content}")
-        
-        return "\n".join(context_lines)
-    
-    def _generate_no_results_contextual_response(self, state: ConversationState) -> str:
-        """Generate response when no results found for contextual query"""
-        # Get the topic from conversation
-        topic = state.get('current_topic', 'that topic')
-        
-        # Check what the user is asking for
-        original_query = state.get('original_query', '')
-        if original_query and 'tell me more' in original_query.lower():
-            return f"I've shared the information I have about {topic} from the knowledge base. I don't have additional details beyond what was already provided. Is there something specific about {topic} you'd like to know more about?"
-        else:
-            return f"I couldn't find additional information about {original_query} in the knowledge base. Could you please be more specific about what aspect you'd like to know?"
     
     def _generate_greeting_response(self, state: ConversationState) -> str:
         """Generate greeting response"""
@@ -706,10 +743,46 @@ Just ask me anything you'd like to know, and I'll do my best to provide a helpfu
     def _generate_general_response(self, state: ConversationState) -> str:
         """Generate general response when no specific context is available"""
         
-        query = state['original_query']
+        query = state.get('original_query', '')
+        conversation_history = state.get('messages', [])
         
         if not query:
             return "I'd be happy to help! Could you please tell me what you'd like to know about?"
+        
+        # Check if this might be a follow-up question even without search results
+        is_simple_followup = self._is_simple_followup_question(query, conversation_history)
+        
+        if is_simple_followup and conversation_history:
+            # Try to answer based on conversation context even without search results
+            recent_context = ""
+            for msg in conversation_history[-4:]:
+                role = "User" if msg.get('type') == MessageType.USER else "Assistant"
+                content = msg.get('content', '')[:300]
+                recent_context += f"{role}: {content}\n"
+            
+            # Use LLM to generate response based on conversation context
+            prompt = f"""The user is asking a follow-up question but no search results were found. Try to answer based on the recent conversation context.
+
+Recent Conversation:
+{recent_context}
+
+Current Question: "{query}"
+
+Instructions:
+1. If the conversation context contains relevant information to answer the question, provide a direct answer
+2. If you can identify what "these", "those", "them" refers to from the context, list those items
+3. If the context mentions numbers (like "5 documents"), try to identify what those items are
+4. Be concise and direct
+5. If you truly cannot answer from context, acknowledge this politely
+
+Provide a helpful response:"""
+            
+            try:
+                if self.llm_client:
+                    response = self.llm_client.generate(prompt, max_tokens=300, temperature=0.1)
+                    return response.strip()
+            except Exception as e:
+                self.logger.error(f"LLM generation failed for context-based response: {e}")
         
         # Generate a helpful response acknowledging the query
         return f"""I understand you're asking about "{query}". While I don't have specific information readily available on this topic right now, I'd be happy to help you in other ways. 
