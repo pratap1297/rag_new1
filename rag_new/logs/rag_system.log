@@ -2966,3 +2966,831 @@ Response headers:
 2025-07-01 18:06:15,513 - api.routes.conversation - ERROR - Failed to get ConversationManager: attempted relative import beyond top-level package
 2025-07-01 18:07:17,761 - rag_system.src.core.model_memory_manager - INFO - Cleaning up 1 idle models
 2025-07-01 18:07:18,264 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 unloaded. Current memory: 509.56MB
+2025-07-02 12:25:42,960 - root - INFO - ResourceManager initialized
+2025-07-02 12:25:42,960 - root - INFO - Initialized RAGSystem lifecycle manager
+2025-07-02 12:25:42,960 - __main__ - INFO - Initializing Managed RAG System...
+2025-07-02 12:25:42,960 - root - INFO - Starting RAGSystem...
+2025-07-02 12:25:42,960 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:25:42,962 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:25:42,962 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:25:42,962 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:25:42,962 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:25:42,962 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:25:42,962 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:25:42,962 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:25:42,962 - root - INFO - RAGSystem startup completed successfully
+2025-07-02 12:25:42,964 - root - INFO - Registered resource: config_manager
+2025-07-02 12:25:43,700 - httpx - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-07-02 12:25:43,716 - httpx - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-07-02 12:25:43,720 - root - INFO - Using existing collection: rag_documents
+2025-07-02 12:25:43,720 - root - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-07-02 12:25:43,720 - root - INFO - Registered resource: container
+2025-07-02 12:25:43,723 - monitoring.heartbeat_monitor - INFO - Heartbeat monitor initialized
+2025-07-02 12:25:43,723 - root - INFO - Registered resource: heartbeat_monitor
+2025-07-02 12:25:43,723 - root - INFO - ResourceManager initialized
+2025-07-02 12:25:43,723 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:25:43,723 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:25:43,723 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:25:43,723 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:25:43,723 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:25:43,725 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:25:43,725 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:25:43,725 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:25:43,725 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:25:43,725 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:25:43,725 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:25:43,726 - root - INFO - Registered resource: threadpool_api_operations
+2025-07-02 12:25:43,727 - root - INFO - Created managed thread pool 'api_operations' with 8 workers
+2025-07-02 12:25:43,727 - root - INFO - ✅ Heartbeat monitor set in API: <class 'monitoring.heartbeat_monitor.HeartbeatMonitor'>
+2025-07-02 12:25:43,728 - root - WARNING - ⚠️ No folder monitor instance provided to API
+2025-07-02 12:25:43,730 - storage.feedback_store - INFO - Feedback store initialized at: data\feedback_store.db
+2025-07-02 12:25:43,777 - root - INFO - ✅ Management API routes registered
+2025-07-02 12:25:43,846 - root - WARNING - ⚠️ ServiceNow API routes not available: cannot import name 'IntegrationError' from 'rag_system.src.core.error_handling' (D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\error_handling.py)
+2025-07-02 12:25:43,904 - root - WARNING - ⚠️ PowerBI and ServiceNow routers not available - skipping
+2025-07-02 12:25:43,911 - root - INFO - ✅ Enhanced folder monitoring API routes registered
+2025-07-02 12:25:43,912 - root - INFO - Progress tracker initialized
+2025-07-02 12:25:55,693 - rag_system.src.core.model_memory_manager - INFO - Model memory manager initialized - Max memory: 2048MB, Idle timeout: 300s
+2025-07-02 12:25:55,695 - rag_system.src.core.model_memory_manager - INFO - Loading model: semantic_chunker_all-MiniLM-L6-v2
+2025-07-02 12:25:55,695 - root - INFO - Loading sentence transformer: all-MiniLM-L6-v2
+2025-07-02 12:25:55,696 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-07-02 12:25:55,696 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-07-02 12:25:57,541 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 loaded in 1.85s. Current memory: 508.52MB
+2025-07-02 12:25:57,541 - root - INFO - Semantic chunker initialized with memory-managed model: all-MiniLM-L6-v2
+2025-07-02 12:25:57,541 - root - INFO - Chunker initialized with semantic chunking (model loads on demand): size=1000, overlap=200
+2025-07-02 12:25:57,719 - root - INFO - Loaded Azure AI Inference client with model: Cohere-embed-v3-english
+2025-07-02 12:25:57,720 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://azurehub1910875317.services.ai.azure.com/models/embeddings?api-version=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Type': 'application/json'
+    'Content-Length': '81'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'b4d97d93-573f-11f0-9872-000d3a9b67b4'
+    'api-key': 'REDACTED'
+    'User-Agent': 'azsdk-python-ai-inference/1.0.0b9 Python/3.12.9 (Windows-11-10.0.26100-SP0)'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-07-02 12:25:57,837 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Cache-Control': 'no-store, no-transform, must-revalidate, no-cache, max-age=0, private'
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/json'
+    'Content-Encoding': 'REDACTED'
+    'Vary': 'REDACTED'
+    'pragma': 'no-cache'
+    'apim-request-id': 'REDACTED'
+    'request-context': 'REDACTED'
+    'num_chars': 'REDACTED'
+    'num_tokens': 'REDACTED'
+    'prompt_token_len': 'REDACTED'
+    'sampling_token_len': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'Date': 'Wed, 02 Jul 2025 12:25:57 GMT'
+2025-07-02 12:25:57,842 - root - INFO - Azure embedding dimension: 1024
+2025-07-02 12:25:57,843 - root - INFO - Embedder initialized with provider: azure
+2025-07-02 12:25:57,855 - root - INFO - Progress tracker initialized
+2025-07-02 12:25:57,855 - root - INFO - DEBUG: Created processor config with keys: ['chunk_size', 'chunk_overlap', 'supported_formats', 'max_file_size_mb', 'batch_size', 'timeout', 'file_timeout']
+2025-07-02 12:25:57,855 - root - INFO - Azure AI config added to processor config
+2025-07-02 12:25:57,856 - ExcelProcessor - INFO - Excel processor initialized with Azure AI support
+2025-07-02 12:25:57,856 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ExcelProcessor
+2025-07-02 12:25:57,856 - root - INFO - Extracted Azure AI config from general config
+2025-07-02 12:25:57,949 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:25:57,949 - root - INFO - Azure AI client created successfully for PDF processing
+2025-07-02 12:25:57,950 - root - INFO - Azure CV endpoint: https://computervision1298.cognitiveservices.azure...
+2025-07-02 12:25:57,950 - root - INFO - Using EnhancedPDFProcessor with Azure AI integration
+2025-07-02 12:25:57,950 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:25:57,950 - WordProcessor - INFO - Word processor initialized
+2025-07-02 12:25:57,950 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: WordProcessor
+2025-07-02 12:25:57,951 - ImageProcessor - INFO - Image processor initialized
+2025-07-02 12:25:57,952 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ImageProcessor
+2025-07-02 12:25:57,952 - ServiceNowProcessor - INFO - ServiceNow processor initialized
+2025-07-02 12:25:57,962 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ServiceNowProcessor
+2025-07-02 12:25:57,963 - TextProcessor - INFO - Text processor initialized
+2025-07-02 12:25:57,963 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: TextProcessor
+2025-07-02 12:25:57,965 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:25:57,967 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:25:57,968 - root - INFO - Enhanced PDF Processor with Azure CV registered successfully
+2025-07-02 12:25:57,968 - root - INFO - Processor registry initialized with 7 processors
+2025-07-02 12:25:57,968 - root - INFO - Ingestion engine initialized with managed metadata
+2025-07-02 12:25:57,968 - root - ERROR - ❌ Failed to initialize progress tracker: attempted relative import beyond top-level package
+2025-07-02 12:25:57,971 - root - INFO - FastAPI application created
+2025-07-02 12:25:57,971 - __main__ - INFO - Managed RAG System initialized successfully
+2025-07-02 12:25:57,972 - __main__ - INFO - Starting managed services...
+2025-07-02 12:25:57,972 - monitoring.heartbeat_monitor - INFO - 🚫 Heartbeat monitoring is disabled
+2025-07-02 12:25:57,972 - __main__ - INFO - Heartbeat monitor started
+2025-07-02 12:25:57,973 - __main__ - INFO - Loading managed models...
+2025-07-02 12:25:57,973 - __main__ - INFO - Using AzureEmbedder - no managed model loading needed
+2025-07-02 12:25:57,973 - __main__ - INFO - All managed services started
+2025-07-02 12:25:57,973 - __main__ - INFO - Managed RAG System ready!
+2025-07-02 12:25:57,974 - __main__ - INFO - Starting managed server on 0.0.0.0:8000
+2025-07-02 12:25:58,013 - root - INFO - Registered resource: uvicorn_server
+2025-07-02 12:25:58,089 - root - INFO - 🚀 RAG System API starting up with managed resources...
+2025-07-02 12:25:58,089 - root - INFO - Registered resource: feedback_store
+2025-07-02 12:25:58,091 - root - INFO - 🛑 RAG System API shutting down - cleaning up managed resources...
+2025-07-02 12:26:00,812 - root - INFO - Final system stats: {'app_name': 'GlobalRAGSystem', 'startup_complete': True, 'shutdown_complete': False, 'thread_pools': {'main': {'max_workers': 4, 'shutdown': False}, 'io': {'max_workers': 8, 'shutdown': False}, 'compute': {'max_workers': 2, 'shutdown': False}, 'background': {'max_workers': 2, 'shutdown': False}, 'api_operations': {'max_workers': 8, 'shutdown': False}}, 'resources': {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 511.1875, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 14}, 'models': {'loaded_models': [], 'total_models': 0, 'memory_usage': {}, 'total_memory_mb': 0.0}, 'timestamp': 1751459160.812032}
+2025-07-02 12:26:00,813 - root - INFO - ✅ Managed resource cleanup initiated
+2025-07-02 12:26:00,814 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:26:00,814 - root - INFO - Shutting down RAGSystem...
+2025-07-02 12:26:01,235 - root - INFO - Pre-shutdown stats: {'total_resources': 8, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'config_manager', 'container', 'heartbeat_monitor', 'uvicorn_server'], 'memory_usage_mb': 511.3046875, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 14}
+2025-07-02 12:26:01,235 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:26:01,258 - root - INFO - Custom cleanup completed for uvicorn_server
+2025-07-02 12:26:01,258 - root - INFO - Shutting down thread pool: uvicorn_server
+2025-07-02 12:26:01,259 - root - ERROR - Error in generic cleanup for uvicorn_server: Server.shutdown() got an unexpected keyword argument 'wait'
+2025-07-02 12:26:01,259 - root - INFO - Cleaned up resource: uvicorn_server
+2025-07-02 12:26:01,259 - monitoring.heartbeat_monitor - INFO - 🛑 Stopping health monitoring...
+2025-07-02 12:26:01,260 - root - INFO - Custom cleanup completed for heartbeat_monitor
+2025-07-02 12:26:01,260 - root - INFO - Cleaned up resource: heartbeat_monitor
+2025-07-02 12:26:01,260 - root - INFO - Custom cleanup completed for container
+2025-07-02 12:26:01,260 - root - INFO - Cleaned up resource: container
+2025-07-02 12:26:01,260 - root - INFO - Cleaned up resource: config_manager
+2025-07-02 12:26:01,260 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:26:01,260 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:26:01,261 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:26:01,261 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:26:01,261 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:26:01,261 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:26:01,261 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:26:01,261 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:26:01,261 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:26:01,262 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:26:01,262 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:26:01,262 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:26:01,262 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:26:01,262 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:26:01,262 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:26:01,262 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:26:01,262 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:26:01,265 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:26:01,265 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:26:01,266 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:26:01,531 - root - INFO - Resource cleanup completed
+2025-07-02 12:26:01,800 - root - INFO - RAGSystem shutdown completed
+2025-07-02 12:26:01,801 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:26:01,801 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:26:01,801 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:26:01,803 - rag_system.src.core.model_memory_manager - INFO - Shutting down model memory manager...
+2025-07-02 12:26:02,081 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 unloaded. Current memory: 511.43MB
+2025-07-02 12:26:02,328 - rag_system.src.core.model_memory_manager - INFO - Model memory manager shutdown complete
+2025-07-02 12:26:02,332 - root - INFO - Shutting down GlobalRAGSystem...
+2025-07-02 12:26:02,681 - root - INFO - Pre-shutdown stats: {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 511.4296875, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 13}
+2025-07-02 12:26:02,682 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:26:02,682 - root - INFO - Custom cleanup completed for feedback_store
+2025-07-02 12:26:02,682 - root - INFO - Cleaned up resource: feedback_store
+2025-07-02 12:26:02,682 - root - INFO - Shutting down thread pool 'api_operations' with 8 workers
+2025-07-02 12:26:02,682 - root - INFO - Thread pool 'api_operations' shutdown completed
+2025-07-02 12:26:02,682 - root - INFO - Custom cleanup completed for threadpool_api_operations
+2025-07-02 12:26:02,682 - root - INFO - Shutting down thread pool: threadpool_api_operations
+2025-07-02 12:26:02,682 - root - INFO - Cleaned up resource: threadpool_api_operations
+2025-07-02 12:26:02,682 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:26:02,682 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:26:02,684 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:26:02,684 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:26:02,684 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:26:02,684 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:26:02,684 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:26:02,684 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:26:02,684 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:26:02,688 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:26:02,688 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:26:02,688 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:26:02,689 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:26:02,689 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:26:02,689 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:26:02,689 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:26:02,690 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:26:02,690 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:26:02,690 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:26:02,690 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:26:02,949 - root - INFO - Resource cleanup completed
+2025-07-02 12:26:03,203 - root - INFO - GlobalRAGSystem shutdown completed
+2025-07-02 12:26:03,757 - root - INFO - ResourceManager initialized
+2025-07-02 12:26:03,758 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:26:03,758 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:26:03,758 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:26:03,758 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:26:03,759 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:26:03,759 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:26:03,759 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:26:03,760 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:26:03,760 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:26:03,760 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:26:03,760 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:26:03,760 - root - INFO - Cleaned up semantic chunker model: all-MiniLM-L6-v2
+2025-07-02 12:26:15,644 - root - INFO - ResourceManager initialized
+2025-07-02 12:26:15,646 - root - INFO - Initialized RAGSystem lifecycle manager
+2025-07-02 12:26:15,647 - __main__ - INFO - Initializing Managed RAG System...
+2025-07-02 12:26:15,647 - root - INFO - Starting RAGSystem...
+2025-07-02 12:26:15,647 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:26:15,647 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:26:15,647 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:26:15,647 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:26:15,647 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:26:15,647 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:26:15,649 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:26:15,649 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:26:15,649 - root - INFO - RAGSystem startup completed successfully
+2025-07-02 12:26:15,649 - root - INFO - Registered resource: config_manager
+2025-07-02 12:26:16,384 - httpx - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-07-02 12:26:16,419 - httpx - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-07-02 12:26:16,420 - root - INFO - Using existing collection: rag_documents
+2025-07-02 12:26:16,420 - root - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-07-02 12:26:16,424 - root - INFO - Registered resource: container
+2025-07-02 12:26:16,424 - monitoring.heartbeat_monitor - INFO - Heartbeat monitor initialized
+2025-07-02 12:26:16,424 - root - INFO - Registered resource: heartbeat_monitor
+2025-07-02 12:26:16,424 - root - INFO - ResourceManager initialized
+2025-07-02 12:26:16,424 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:26:16,425 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:26:16,425 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:26:16,425 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:26:16,425 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:26:16,426 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:26:16,426 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:26:16,426 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:26:16,426 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:26:16,429 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:26:16,429 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:26:16,429 - root - INFO - Registered resource: threadpool_api_operations
+2025-07-02 12:26:16,429 - root - INFO - Created managed thread pool 'api_operations' with 8 workers
+2025-07-02 12:26:16,430 - root - INFO - ✅ Heartbeat monitor set in API: <class 'monitoring.heartbeat_monitor.HeartbeatMonitor'>
+2025-07-02 12:26:16,430 - root - WARNING - ⚠️ No folder monitor instance provided to API
+2025-07-02 12:26:16,433 - storage.feedback_store - INFO - Feedback store initialized at: data\feedback_store.db
+2025-07-02 12:26:16,456 - root - INFO - ✅ Management API routes registered
+2025-07-02 12:26:16,465 - root - WARNING - ⚠️ ServiceNow API routes not available: cannot import name 'IntegrationError' from 'rag_system.src.core.error_handling' (D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\error_handling.py)
+2025-07-02 12:26:16,487 - root - WARNING - ⚠️ PowerBI and ServiceNow routers not available - skipping
+2025-07-02 12:26:16,489 - root - INFO - ✅ Enhanced folder monitoring API routes registered
+2025-07-02 12:26:16,538 - root - INFO - Progress tracker initialized
+2025-07-02 12:26:25,168 - rag_system.src.core.model_memory_manager - INFO - Model memory manager initialized - Max memory: 2048MB, Idle timeout: 300s
+2025-07-02 12:26:25,168 - rag_system.src.core.model_memory_manager - INFO - Loading model: semantic_chunker_all-MiniLM-L6-v2
+2025-07-02 12:26:25,168 - root - INFO - Loading sentence transformer: all-MiniLM-L6-v2
+2025-07-02 12:26:25,169 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-07-02 12:26:25,169 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-07-02 12:26:26,805 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 loaded in 1.64s. Current memory: 508.81MB
+2025-07-02 12:26:26,805 - root - INFO - Semantic chunker initialized with memory-managed model: all-MiniLM-L6-v2
+2025-07-02 12:26:26,805 - root - INFO - Chunker initialized with semantic chunking (model loads on demand): size=1000, overlap=200
+2025-07-02 12:26:27,012 - root - INFO - Loaded Azure AI Inference client with model: Cohere-embed-v3-english
+2025-07-02 12:26:27,013 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://azurehub1910875317.services.ai.azure.com/models/embeddings?api-version=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Type': 'application/json'
+    'Content-Length': '81'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': 'c64f67f1-573f-11f0-b15c-000d3a9b67b4'
+    'api-key': 'REDACTED'
+    'User-Agent': 'azsdk-python-ai-inference/1.0.0b9 Python/3.12.9 (Windows-11-10.0.26100-SP0)'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-07-02 12:26:27,197 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Cache-Control': 'no-store, no-transform, must-revalidate, no-cache, max-age=0, private'
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/json'
+    'Content-Encoding': 'REDACTED'
+    'Vary': 'REDACTED'
+    'pragma': 'no-cache'
+    'apim-request-id': 'REDACTED'
+    'request-context': 'REDACTED'
+    'num_chars': 'REDACTED'
+    'num_tokens': 'REDACTED'
+    'prompt_token_len': 'REDACTED'
+    'sampling_token_len': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'Date': 'Wed, 02 Jul 2025 12:26:26 GMT'
+2025-07-02 12:26:27,201 - root - INFO - Azure embedding dimension: 1024
+2025-07-02 12:26:27,201 - root - INFO - Embedder initialized with provider: azure
+2025-07-02 12:26:27,221 - root - INFO - Progress tracker initialized
+2025-07-02 12:26:27,221 - root - INFO - DEBUG: Created processor config with keys: ['chunk_size', 'chunk_overlap', 'supported_formats', 'max_file_size_mb', 'batch_size', 'timeout', 'file_timeout']
+2025-07-02 12:26:27,221 - root - INFO - Azure AI config added to processor config
+2025-07-02 12:26:27,222 - ExcelProcessor - INFO - Excel processor initialized with Azure AI support
+2025-07-02 12:26:27,222 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ExcelProcessor
+2025-07-02 12:26:27,222 - root - INFO - Extracted Azure AI config from general config
+2025-07-02 12:26:27,321 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:26:27,321 - root - INFO - Azure AI client created successfully for PDF processing
+2025-07-02 12:26:27,322 - root - INFO - Azure CV endpoint: https://computervision1298.cognitiveservices.azure...
+2025-07-02 12:26:27,322 - root - INFO - Using EnhancedPDFProcessor with Azure AI integration
+2025-07-02 12:26:27,322 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:26:27,322 - WordProcessor - INFO - Word processor initialized
+2025-07-02 12:26:27,322 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: WordProcessor
+2025-07-02 12:26:27,322 - ImageProcessor - INFO - Image processor initialized
+2025-07-02 12:26:27,323 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ImageProcessor
+2025-07-02 12:26:27,323 - ServiceNowProcessor - INFO - ServiceNow processor initialized
+2025-07-02 12:26:27,323 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ServiceNowProcessor
+2025-07-02 12:26:27,324 - TextProcessor - INFO - Text processor initialized
+2025-07-02 12:26:27,324 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: TextProcessor
+2025-07-02 12:26:27,326 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:26:27,349 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:26:27,357 - root - INFO - Enhanced PDF Processor with Azure CV registered successfully
+2025-07-02 12:26:27,382 - root - INFO - Processor registry initialized with 7 processors
+2025-07-02 12:26:27,383 - root - INFO - Ingestion engine initialized with managed metadata
+2025-07-02 12:26:27,383 - root - ERROR - ❌ Failed to initialize progress tracker: attempted relative import beyond top-level package
+2025-07-02 12:26:27,386 - root - INFO - FastAPI application created
+2025-07-02 12:26:27,386 - __main__ - INFO - Managed RAG System initialized successfully
+2025-07-02 12:26:27,386 - __main__ - INFO - Starting managed services...
+2025-07-02 12:26:27,386 - monitoring.heartbeat_monitor - INFO - 🚫 Heartbeat monitoring is disabled
+2025-07-02 12:26:27,386 - __main__ - INFO - Heartbeat monitor started
+2025-07-02 12:26:27,386 - __main__ - INFO - Loading managed models...
+2025-07-02 12:26:27,386 - __main__ - INFO - Using AzureEmbedder - no managed model loading needed
+2025-07-02 12:26:27,387 - __main__ - INFO - All managed services started
+2025-07-02 12:26:27,387 - __main__ - INFO - Managed RAG System ready!
+2025-07-02 12:26:27,387 - __main__ - INFO - Starting managed server on 0.0.0.0:8000
+2025-07-02 12:26:27,571 - root - INFO - Registered resource: uvicorn_server
+2025-07-02 12:26:27,791 - root - INFO - 🚀 RAG System API starting up with managed resources...
+2025-07-02 12:26:27,850 - root - INFO - Registered resource: feedback_store
+2025-07-02 12:26:27,973 - root - INFO - 🛑 RAG System API shutting down - cleaning up managed resources...
+2025-07-02 12:26:29,663 - root - INFO - Final system stats: {'app_name': 'GlobalRAGSystem', 'startup_complete': True, 'shutdown_complete': False, 'thread_pools': {'main': {'max_workers': 4, 'shutdown': False}, 'io': {'max_workers': 8, 'shutdown': False}, 'compute': {'max_workers': 2, 'shutdown': False}, 'background': {'max_workers': 2, 'shutdown': False}, 'api_operations': {'max_workers': 8, 'shutdown': False}}, 'resources': {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 511.47265625, 'cpu_percent': 0.0, 'open_files': 4, 'threads': 13}, 'models': {'loaded_models': [], 'total_models': 0, 'memory_usage': {}, 'total_memory_mb': 0.0}, 'timestamp': 1751459189.6636157}
+2025-07-02 12:26:29,664 - root - INFO - ✅ Managed resource cleanup initiated
+2025-07-02 12:26:29,665 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:26:29,666 - root - INFO - Shutting down RAGSystem...
+2025-07-02 12:26:30,523 - root - INFO - Pre-shutdown stats: {'total_resources': 8, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'config_manager', 'container', 'heartbeat_monitor', 'uvicorn_server'], 'memory_usage_mb': 512.0625, 'cpu_percent': 0.0, 'open_files': 4, 'threads': 13}
+2025-07-02 12:26:30,533 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:26:30,537 - root - INFO - Custom cleanup completed for uvicorn_server
+2025-07-02 12:26:30,537 - root - INFO - Shutting down thread pool: uvicorn_server
+2025-07-02 12:26:30,537 - root - ERROR - Error in generic cleanup for uvicorn_server: Server.shutdown() got an unexpected keyword argument 'wait'
+2025-07-02 12:26:30,538 - root - INFO - Cleaned up resource: uvicorn_server
+2025-07-02 12:26:30,538 - monitoring.heartbeat_monitor - INFO - 🛑 Stopping health monitoring...
+2025-07-02 12:26:30,538 - root - INFO - Custom cleanup completed for heartbeat_monitor
+2025-07-02 12:26:30,539 - root - INFO - Cleaned up resource: heartbeat_monitor
+2025-07-02 12:26:30,539 - root - INFO - Custom cleanup completed for container
+2025-07-02 12:26:30,539 - root - INFO - Cleaned up resource: container
+2025-07-02 12:26:30,539 - root - INFO - Cleaned up resource: config_manager
+2025-07-02 12:26:30,540 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:26:30,540 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:26:30,540 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:26:30,541 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:26:30,541 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:26:30,541 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:26:30,541 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:26:30,541 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:26:30,541 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:26:30,541 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:26:30,542 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:26:30,542 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:26:30,542 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:26:30,542 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:26:30,542 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:26:30,542 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:26:30,542 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:26:30,544 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:26:30,544 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:26:30,544 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:26:31,044 - root - INFO - Resource cleanup completed
+2025-07-02 12:26:31,412 - root - INFO - RAGSystem shutdown completed
+2025-07-02 12:26:31,413 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:26:31,413 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:26:31,413 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:26:31,414 - rag_system.src.core.model_memory_manager - INFO - Shutting down model memory manager...
+2025-07-02 12:26:31,771 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 unloaded. Current memory: 512.19MB
+2025-07-02 12:26:32,165 - rag_system.src.core.model_memory_manager - INFO - Model memory manager shutdown complete
+2025-07-02 12:26:32,168 - root - INFO - Shutting down GlobalRAGSystem...
+2025-07-02 12:26:32,761 - root - INFO - Pre-shutdown stats: {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 512.19140625, 'cpu_percent': 0.0, 'open_files': 4, 'threads': 12}
+2025-07-02 12:26:32,762 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:26:32,762 - root - INFO - Custom cleanup completed for feedback_store
+2025-07-02 12:26:32,762 - root - INFO - Cleaned up resource: feedback_store
+2025-07-02 12:26:32,762 - root - INFO - Shutting down thread pool 'api_operations' with 8 workers
+2025-07-02 12:26:32,762 - root - INFO - Thread pool 'api_operations' shutdown completed
+2025-07-02 12:26:32,762 - root - INFO - Custom cleanup completed for threadpool_api_operations
+2025-07-02 12:26:32,763 - root - INFO - Shutting down thread pool: threadpool_api_operations
+2025-07-02 12:26:32,763 - root - INFO - Cleaned up resource: threadpool_api_operations
+2025-07-02 12:26:32,763 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:26:32,763 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:26:32,763 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:26:32,763 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:26:32,763 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:26:32,763 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:26:32,763 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:26:32,771 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:26:32,771 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:26:32,771 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:26:32,771 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:26:32,773 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:26:32,773 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:26:32,773 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:26:32,773 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:26:32,773 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:26:32,773 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:26:32,773 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:26:32,775 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:26:32,775 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:26:33,196 - root - INFO - Resource cleanup completed
+2025-07-02 12:26:33,626 - root - INFO - GlobalRAGSystem shutdown completed
+2025-07-02 12:26:34,500 - root - INFO - ResourceManager initialized
+2025-07-02 12:26:34,502 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:26:34,502 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:26:34,503 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:26:34,503 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:26:34,503 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:26:34,503 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:26:34,503 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:26:34,503 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:26:34,503 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:26:34,504 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:26:34,504 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:26:34,504 - root - INFO - Cleaned up semantic chunker model: all-MiniLM-L6-v2
+2025-07-02 12:29:37,820 - root - INFO - ResourceManager initialized
+2025-07-02 12:29:37,821 - root - INFO - Initialized RAGSystem lifecycle manager
+2025-07-02 12:29:37,822 - __main__ - INFO - Initializing Managed RAG System...
+2025-07-02 12:29:37,822 - root - INFO - Starting RAGSystem...
+2025-07-02 12:29:37,822 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:29:37,822 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:29:37,822 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:29:37,822 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:29:37,822 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:29:37,823 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:29:37,823 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:29:37,823 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:29:37,823 - root - INFO - RAGSystem startup completed successfully
+2025-07-02 12:29:37,824 - root - INFO - Registered resource: config_manager
+2025-07-02 12:29:38,546 - httpx - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-07-02 12:29:38,576 - httpx - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-07-02 12:29:38,577 - root - INFO - Using existing collection: rag_documents
+2025-07-02 12:29:38,577 - root - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-07-02 12:29:38,578 - root - INFO - Registered resource: container
+2025-07-02 12:29:38,578 - monitoring.heartbeat_monitor - INFO - Heartbeat monitor initialized
+2025-07-02 12:29:38,579 - root - INFO - Registered resource: heartbeat_monitor
+2025-07-02 12:29:38,579 - root - INFO - ResourceManager initialized
+2025-07-02 12:29:38,579 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:29:38,579 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:29:38,579 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:29:38,579 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:29:38,581 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:29:38,583 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:29:38,583 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:29:38,583 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:29:38,584 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:29:38,584 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:29:38,584 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:29:38,584 - root - INFO - Registered resource: threadpool_api_operations
+2025-07-02 12:29:38,584 - root - INFO - Created managed thread pool 'api_operations' with 8 workers
+2025-07-02 12:29:38,585 - root - INFO - ✅ Heartbeat monitor set in API: <class 'monitoring.heartbeat_monitor.HeartbeatMonitor'>
+2025-07-02 12:29:38,585 - root - WARNING - ⚠️ No folder monitor instance provided to API
+2025-07-02 12:29:38,590 - storage.feedback_store - INFO - Feedback store initialized at: data\feedback_store.db
+2025-07-02 12:29:38,624 - root - INFO - ✅ Management API routes registered
+2025-07-02 12:29:38,636 - root - WARNING - ⚠️ ServiceNow API routes not available: cannot import name 'IntegrationError' from 'rag_system.src.core.error_handling' (D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\error_handling.py)
+2025-07-02 12:29:38,693 - root - WARNING - ⚠️ PowerBI and ServiceNow routers not available - skipping
+2025-07-02 12:29:38,695 - root - INFO - ✅ Enhanced folder monitoring API routes registered
+2025-07-02 12:29:38,827 - root - INFO - Progress tracker initialized
+2025-07-02 12:29:46,592 - rag_system.src.core.model_memory_manager - INFO - Model memory manager initialized - Max memory: 2048MB, Idle timeout: 300s
+2025-07-02 12:29:46,594 - rag_system.src.core.model_memory_manager - INFO - Loading model: semantic_chunker_all-MiniLM-L6-v2
+2025-07-02 12:29:46,594 - root - INFO - Loading sentence transformer: all-MiniLM-L6-v2
+2025-07-02 12:29:46,594 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-07-02 12:29:46,594 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-07-02 12:29:48,836 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 loaded in 2.24s. Current memory: 509.29MB
+2025-07-02 12:29:48,837 - root - INFO - Semantic chunker initialized with memory-managed model: all-MiniLM-L6-v2
+2025-07-02 12:29:48,837 - root - INFO - Chunker initialized with semantic chunking (model loads on demand): size=1000, overlap=200
+2025-07-02 12:29:49,087 - root - INFO - Loaded Azure AI Inference client with model: Cohere-embed-v3-english
+2025-07-02 12:29:49,087 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://azurehub1910875317.services.ai.azure.com/models/embeddings?api-version=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Type': 'application/json'
+    'Content-Length': '81'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '3ec18613-5740-11f0-87d4-000d3a9b67b4'
+    'api-key': 'REDACTED'
+    'User-Agent': 'azsdk-python-ai-inference/1.0.0b9 Python/3.12.9 (Windows-11-10.0.26100-SP0)'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-07-02 12:29:49,206 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Cache-Control': 'no-store, no-transform, must-revalidate, no-cache, max-age=0, private'
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/json'
+    'Content-Encoding': 'REDACTED'
+    'Vary': 'REDACTED'
+    'pragma': 'no-cache'
+    'apim-request-id': 'REDACTED'
+    'request-context': 'REDACTED'
+    'num_chars': 'REDACTED'
+    'num_tokens': 'REDACTED'
+    'prompt_token_len': 'REDACTED'
+    'sampling_token_len': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'Date': 'Wed, 02 Jul 2025 12:29:48 GMT'
+2025-07-02 12:29:49,211 - root - INFO - Azure embedding dimension: 1024
+2025-07-02 12:29:49,213 - root - INFO - Embedder initialized with provider: azure
+2025-07-02 12:29:49,245 - root - INFO - Progress tracker initialized
+2025-07-02 12:29:49,245 - root - INFO - DEBUG: Created processor config with keys: ['chunk_size', 'chunk_overlap', 'supported_formats', 'max_file_size_mb', 'batch_size', 'timeout', 'file_timeout']
+2025-07-02 12:29:49,245 - root - INFO - Azure AI config added to processor config
+2025-07-02 12:29:49,245 - ExcelProcessor - INFO - Excel processor initialized with Azure AI support
+2025-07-02 12:29:49,246 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ExcelProcessor
+2025-07-02 12:29:49,246 - root - INFO - Extracted Azure AI config from general config
+2025-07-02 12:29:49,296 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:29:49,298 - root - INFO - Azure AI client created successfully for PDF processing
+2025-07-02 12:29:49,298 - root - INFO - Azure CV endpoint: https://computervision1298.cognitiveservices.azure...
+2025-07-02 12:29:49,300 - root - INFO - Using EnhancedPDFProcessor with Azure AI integration
+2025-07-02 12:29:49,300 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:29:49,305 - WordProcessor - INFO - Word processor initialized
+2025-07-02 12:29:49,305 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: WordProcessor
+2025-07-02 12:29:49,306 - ImageProcessor - INFO - Image processor initialized
+2025-07-02 12:29:49,306 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ImageProcessor
+2025-07-02 12:29:49,307 - ServiceNowProcessor - INFO - ServiceNow processor initialized
+2025-07-02 12:29:49,307 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ServiceNowProcessor
+2025-07-02 12:29:49,309 - TextProcessor - INFO - Text processor initialized
+2025-07-02 12:29:49,310 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: TextProcessor
+2025-07-02 12:29:49,313 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:29:49,314 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:29:49,314 - root - INFO - Enhanced PDF Processor with Azure CV registered successfully
+2025-07-02 12:29:49,314 - root - INFO - Processor registry initialized with 7 processors
+2025-07-02 12:29:49,314 - root - INFO - Ingestion engine initialized with managed metadata
+2025-07-02 12:29:49,314 - root - ERROR - ❌ Failed to initialize progress tracker: attempted relative import beyond top-level package
+2025-07-02 12:29:49,317 - root - INFO - FastAPI application created
+2025-07-02 12:29:49,319 - __main__ - INFO - Managed RAG System initialized successfully
+2025-07-02 12:29:49,319 - __main__ - INFO - Starting managed services...
+2025-07-02 12:29:49,319 - monitoring.heartbeat_monitor - INFO - 🚫 Heartbeat monitoring is disabled
+2025-07-02 12:29:49,334 - __main__ - INFO - Heartbeat monitor started
+2025-07-02 12:29:49,335 - __main__ - INFO - Loading managed models...
+2025-07-02 12:29:49,336 - __main__ - INFO - Using AzureEmbedder - no managed model loading needed
+2025-07-02 12:29:49,336 - __main__ - INFO - All managed services started
+2025-07-02 12:29:49,337 - __main__ - INFO - Managed RAG System ready!
+2025-07-02 12:29:49,337 - __main__ - INFO - Starting managed server on 0.0.0.0:8000
+2025-07-02 12:29:49,407 - root - INFO - Registered resource: uvicorn_server
+2025-07-02 12:29:49,532 - root - INFO - 🚀 RAG System API starting up with managed resources...
+2025-07-02 12:29:49,538 - root - INFO - Registered resource: feedback_store
+2025-07-02 12:30:16,599 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:30:16,610 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    container = get_dependency_container()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:32:25,171 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:32:25,171 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    container = get_dependency_container()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:32:25,174 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:32:25,174 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    container = get_dependency_container()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:35:46,833 - rag_system.src.core.model_memory_manager - INFO - Cleaning up 1 idle models
+2025-07-02 12:35:47,291 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 unloaded. Current memory: 512.42MB
+2025-07-02 12:37:34,075 - root - INFO - ResourceManager initialized
+2025-07-02 12:37:34,076 - root - INFO - Initialized RAGSystem lifecycle manager
+2025-07-02 12:37:34,076 - __main__ - INFO - Initializing Managed RAG System...
+2025-07-02 12:37:34,076 - root - INFO - Starting RAGSystem...
+2025-07-02 12:37:34,076 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:37:34,076 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:37:34,076 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:37:34,076 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:37:34,076 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:37:34,076 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:37:34,076 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:37:34,076 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:37:34,076 - root - INFO - RAGSystem startup completed successfully
+2025-07-02 12:37:34,079 - root - INFO - Registered resource: config_manager
+2025-07-02 12:37:34,666 - httpx - INFO - HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+2025-07-02 12:37:34,671 - httpx - INFO - HTTP Request: GET http://localhost:6333/collections "HTTP/1.1 200 OK"
+2025-07-02 12:37:34,673 - root - INFO - Using existing collection: rag_documents
+2025-07-02 12:37:34,673 - root - INFO - Qdrant store initialized: localhost:6333/rag_documents
+2025-07-02 12:37:34,674 - root - INFO - Registered resource: container
+2025-07-02 12:37:34,675 - monitoring.heartbeat_monitor - INFO - Heartbeat monitor initialized
+2025-07-02 12:37:34,675 - root - INFO - Registered resource: heartbeat_monitor
+2025-07-02 12:37:34,676 - root - INFO - ResourceManager initialized
+2025-07-02 12:37:34,676 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:37:34,676 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:37:34,677 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:37:34,678 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:37:34,678 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:37:34,678 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:37:34,678 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:37:34,678 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:37:34,678 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:37:34,679 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:37:34,682 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:37:34,683 - root - INFO - Registered resource: threadpool_api_operations
+2025-07-02 12:37:34,683 - root - INFO - Created managed thread pool 'api_operations' with 8 workers
+2025-07-02 12:37:34,684 - root - INFO - ✅ Heartbeat monitor set in API: <class 'monitoring.heartbeat_monitor.HeartbeatMonitor'>
+2025-07-02 12:37:34,684 - root - WARNING - ⚠️ No folder monitor instance provided to API
+2025-07-02 12:37:34,685 - storage.feedback_store - INFO - Feedback store initialized at: data\feedback_store.db
+2025-07-02 12:37:34,729 - root - INFO - ✅ Management API routes registered
+2025-07-02 12:37:34,786 - root - WARNING - ⚠️ ServiceNow API routes not available: cannot import name 'IntegrationError' from 'rag_system.src.core.error_handling' (D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\error_handling.py)
+2025-07-02 12:37:34,805 - root - WARNING - ⚠️ PowerBI and ServiceNow routers not available - skipping
+2025-07-02 12:37:34,954 - root - INFO - ✅ Enhanced folder monitoring API routes registered
+2025-07-02 12:37:34,988 - root - INFO - Progress tracker initialized
+2025-07-02 12:37:42,822 - rag_system.src.core.model_memory_manager - INFO - Model memory manager initialized - Max memory: 2048MB, Idle timeout: 300s
+2025-07-02 12:37:42,827 - rag_system.src.core.model_memory_manager - INFO - Loading model: semantic_chunker_all-MiniLM-L6-v2
+2025-07-02 12:37:42,834 - root - INFO - Loading sentence transformer: all-MiniLM-L6-v2
+2025-07-02 12:37:42,960 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-07-02 12:37:42,981 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-07-02 12:37:44,680 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 loaded in 1.85s. Current memory: 508.32MB
+2025-07-02 12:37:44,683 - root - INFO - Semantic chunker initialized with memory-managed model: all-MiniLM-L6-v2
+2025-07-02 12:37:44,683 - root - INFO - Chunker initialized with semantic chunking (model loads on demand): size=1000, overlap=200
+2025-07-02 12:37:44,835 - root - INFO - Loaded Azure AI Inference client with model: Cohere-embed-v3-english
+2025-07-02 12:37:44,835 - azure.core.pipeline.policies.http_logging_policy - INFO - Request URL: 'https://azurehub1910875317.services.ai.azure.com/models/embeddings?api-version=REDACTED'
+Request method: 'POST'
+Request headers:
+    'Content-Type': 'application/json'
+    'Content-Length': '81'
+    'Accept': 'application/json'
+    'x-ms-client-request-id': '5a52ca7a-5741-11f0-ad5e-000d3a9b67b4'
+    'api-key': 'REDACTED'
+    'User-Agent': 'azsdk-python-ai-inference/1.0.0b9 Python/3.12.9 (Windows-11-10.0.26100-SP0)'
+    'Authorization': 'REDACTED'
+A body is sent with the request
+2025-07-02 12:37:44,896 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:37:44,896 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    container = get_dependency_container()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:37:44,946 - azure.core.pipeline.policies.http_logging_policy - INFO - Response status: 200
+Response headers:
+    'Cache-Control': 'no-store, no-transform, must-revalidate, no-cache, max-age=0, private'
+    'Transfer-Encoding': 'chunked'
+    'Content-Type': 'application/json'
+    'Content-Encoding': 'REDACTED'
+    'Vary': 'REDACTED'
+    'pragma': 'no-cache'
+    'apim-request-id': 'REDACTED'
+    'request-context': 'REDACTED'
+    'num_chars': 'REDACTED'
+    'num_tokens': 'REDACTED'
+    'prompt_token_len': 'REDACTED'
+    'sampling_token_len': 'REDACTED'
+    'x-content-type-options': 'REDACTED'
+    'x-ms-region': 'REDACTED'
+    'Strict-Transport-Security': 'REDACTED'
+    'Date': 'Wed, 02 Jul 2025 12:37:44 GMT'
+2025-07-02 12:37:44,962 - root - INFO - Azure embedding dimension: 1024
+2025-07-02 12:37:44,967 - root - INFO - Embedder initialized with provider: azure
+2025-07-02 12:37:44,985 - root - INFO - Progress tracker initialized
+2025-07-02 12:37:44,985 - root - INFO - DEBUG: Created processor config with keys: ['chunk_size', 'chunk_overlap', 'supported_formats', 'max_file_size_mb', 'batch_size', 'timeout', 'file_timeout']
+2025-07-02 12:37:44,985 - root - INFO - Azure AI config added to processor config
+2025-07-02 12:37:44,986 - ExcelProcessor - INFO - Excel processor initialized with Azure AI support
+2025-07-02 12:37:44,986 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ExcelProcessor
+2025-07-02 12:37:44,987 - root - INFO - Extracted Azure AI config from general config
+2025-07-02 12:37:45,110 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:37:45,176 - root - INFO - Azure AI client created successfully for PDF processing
+2025-07-02 12:37:45,179 - root - INFO - Azure CV endpoint: https://computervision1298.cognitiveservices.azure...
+2025-07-02 12:37:45,180 - root - INFO - Using EnhancedPDFProcessor with Azure AI integration
+2025-07-02 12:37:45,304 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:37:45,334 - WordProcessor - INFO - Word processor initialized
+2025-07-02 12:37:45,363 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: WordProcessor
+2025-07-02 12:37:45,396 - ImageProcessor - INFO - Image processor initialized
+2025-07-02 12:37:45,420 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ImageProcessor
+2025-07-02 12:37:45,421 - ServiceNowProcessor - INFO - ServiceNow processor initialized
+2025-07-02 12:37:45,421 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: ServiceNowProcessor
+2025-07-02 12:37:45,422 - TextProcessor - INFO - Text processor initialized
+2025-07-02 12:37:45,422 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: TextProcessor
+2025-07-02 12:37:45,425 - rag_system.src.integrations.azure_ai.azure_client - INFO - Azure Computer Vision client initialized successfully
+2025-07-02 12:37:45,427 - rag_system.src.ingestion.processors.base_processor - INFO - Registered processor: EnhancedPDFProcessor
+2025-07-02 12:37:45,427 - root - INFO - Enhanced PDF Processor with Azure CV registered successfully
+2025-07-02 12:37:45,427 - root - INFO - Processor registry initialized with 7 processors
+2025-07-02 12:37:45,427 - root - INFO - Ingestion engine initialized with managed metadata
+2025-07-02 12:37:45,428 - root - ERROR - ❌ Failed to initialize progress tracker: attempted relative import beyond top-level package
+2025-07-02 12:37:45,430 - root - INFO - FastAPI application created
+2025-07-02 12:37:45,430 - __main__ - INFO - Managed RAG System initialized successfully
+2025-07-02 12:37:45,439 - __main__ - INFO - Starting managed services...
+2025-07-02 12:37:45,478 - monitoring.heartbeat_monitor - INFO - 🚫 Heartbeat monitoring is disabled
+2025-07-02 12:37:45,479 - __main__ - INFO - Heartbeat monitor started
+2025-07-02 12:37:45,479 - __main__ - INFO - Loading managed models...
+2025-07-02 12:37:45,479 - __main__ - INFO - Using AzureEmbedder - no managed model loading needed
+2025-07-02 12:37:45,479 - __main__ - INFO - All managed services started
+2025-07-02 12:37:45,480 - __main__ - INFO - Managed RAG System ready!
+2025-07-02 12:37:45,480 - __main__ - INFO - Starting managed server on 0.0.0.0:8000
+2025-07-02 12:37:45,610 - root - INFO - Registered resource: uvicorn_server
+2025-07-02 12:37:45,711 - root - INFO - 🚀 RAG System API starting up with managed resources...
+2025-07-02 12:37:45,770 - root - INFO - Registered resource: feedback_store
+2025-07-02 12:37:45,772 - root - INFO - 🛑 RAG System API shutting down - cleaning up managed resources...
+2025-07-02 12:37:46,256 - root - INFO - Final system stats: {'app_name': 'GlobalRAGSystem', 'startup_complete': True, 'shutdown_complete': False, 'thread_pools': {'main': {'max_workers': 4, 'shutdown': False}, 'io': {'max_workers': 8, 'shutdown': False}, 'compute': {'max_workers': 2, 'shutdown': False}, 'background': {'max_workers': 2, 'shutdown': False}, 'api_operations': {'max_workers': 8, 'shutdown': False}}, 'resources': {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 510.9765625, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 13}, 'models': {'loaded_models': [], 'total_models': 0, 'memory_usage': {}, 'total_memory_mb': 0.0}, 'timestamp': 1751459866.2567935}
+2025-07-02 12:37:46,256 - root - INFO - ✅ Managed resource cleanup initiated
+2025-07-02 12:37:46,257 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:37:46,257 - root - INFO - Shutting down RAGSystem...
+2025-07-02 12:37:46,681 - root - INFO - Pre-shutdown stats: {'total_resources': 8, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'config_manager', 'container', 'heartbeat_monitor', 'uvicorn_server'], 'memory_usage_mb': 511.25390625, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 13}
+2025-07-02 12:37:46,681 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:37:46,685 - root - INFO - Custom cleanup completed for uvicorn_server
+2025-07-02 12:37:46,685 - root - INFO - Shutting down thread pool: uvicorn_server
+2025-07-02 12:37:46,685 - root - ERROR - Error in generic cleanup for uvicorn_server: Server.shutdown() got an unexpected keyword argument 'wait'
+2025-07-02 12:37:46,685 - root - INFO - Cleaned up resource: uvicorn_server
+2025-07-02 12:37:46,685 - monitoring.heartbeat_monitor - INFO - 🛑 Stopping health monitoring...
+2025-07-02 12:37:46,686 - root - INFO - Custom cleanup completed for heartbeat_monitor
+2025-07-02 12:37:46,686 - root - INFO - Cleaned up resource: heartbeat_monitor
+2025-07-02 12:37:46,686 - root - INFO - Custom cleanup completed for container
+2025-07-02 12:37:46,686 - root - INFO - Cleaned up resource: container
+2025-07-02 12:37:46,686 - root - INFO - Cleaned up resource: config_manager
+2025-07-02 12:37:46,686 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:37:46,687 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:37:46,687 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:37:46,687 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:37:46,687 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:37:46,687 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:37:46,688 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:37:46,688 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:37:46,689 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:37:46,689 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:37:46,689 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:37:46,689 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:37:46,689 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:37:46,689 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:37:46,689 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:37:46,697 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:37:46,699 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:37:46,701 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:37:46,710 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:37:46,719 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:37:47,095 - root - INFO - Resource cleanup completed
+2025-07-02 12:37:47,404 - root - INFO - RAGSystem shutdown completed
+2025-07-02 12:37:47,404 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:37:47,405 - __main__ - INFO - Shutting down Managed RAG System...
+2025-07-02 12:37:47,405 - __main__ - INFO - Managed RAG System shutdown complete
+2025-07-02 12:37:47,405 - rag_system.src.core.model_memory_manager - INFO - Shutting down model memory manager...
+2025-07-02 12:37:47,826 - rag_system.src.core.model_memory_manager - INFO - Model semantic_chunker_all-MiniLM-L6-v2 unloaded. Current memory: 511.38MB
+2025-07-02 12:37:48,253 - rag_system.src.core.model_memory_manager - INFO - Model memory manager shutdown complete
+2025-07-02 12:37:48,257 - root - INFO - Shutting down GlobalRAGSystem...
+2025-07-02 12:37:49,333 - root - INFO - Pre-shutdown stats: {'total_resources': 6, 'resource_names': ['threadpool_main', 'threadpool_io', 'threadpool_compute', 'threadpool_background', 'threadpool_api_operations', 'feedback_store'], 'memory_usage_mb': 511.3828125, 'cpu_percent': 0.0, 'open_files': 3, 'threads': 12}
+2025-07-02 12:37:49,334 - root - INFO - Starting comprehensive resource cleanup...
+2025-07-02 12:37:49,335 - root - INFO - Custom cleanup completed for feedback_store
+2025-07-02 12:37:49,335 - root - INFO - Cleaned up resource: feedback_store
+2025-07-02 12:37:49,335 - root - INFO - Shutting down thread pool 'api_operations' with 8 workers
+2025-07-02 12:37:49,335 - root - INFO - Thread pool 'api_operations' shutdown completed
+2025-07-02 12:37:49,336 - root - INFO - Custom cleanup completed for threadpool_api_operations
+2025-07-02 12:37:49,347 - root - INFO - Shutting down thread pool: threadpool_api_operations
+2025-07-02 12:37:49,349 - root - INFO - Cleaned up resource: threadpool_api_operations
+2025-07-02 12:37:49,349 - root - INFO - Shutting down thread pool 'background' with 2 workers
+2025-07-02 12:37:49,350 - root - INFO - Thread pool 'background' shutdown completed
+2025-07-02 12:37:49,350 - root - INFO - Custom cleanup completed for threadpool_background
+2025-07-02 12:37:49,350 - root - INFO - Shutting down thread pool: threadpool_background
+2025-07-02 12:37:49,350 - root - INFO - Cleaned up resource: threadpool_background
+2025-07-02 12:37:49,351 - root - INFO - Shutting down thread pool 'compute' with 2 workers
+2025-07-02 12:37:49,351 - root - INFO - Thread pool 'compute' shutdown completed
+2025-07-02 12:37:49,351 - root - INFO - Custom cleanup completed for threadpool_compute
+2025-07-02 12:37:49,351 - root - INFO - Shutting down thread pool: threadpool_compute
+2025-07-02 12:37:49,351 - root - INFO - Cleaned up resource: threadpool_compute
+2025-07-02 12:37:49,352 - root - INFO - Shutting down thread pool 'io' with 8 workers
+2025-07-02 12:37:49,352 - root - INFO - Thread pool 'io' shutdown completed
+2025-07-02 12:37:49,352 - root - INFO - Custom cleanup completed for threadpool_io
+2025-07-02 12:37:49,352 - root - INFO - Shutting down thread pool: threadpool_io
+2025-07-02 12:37:49,354 - root - INFO - Cleaned up resource: threadpool_io
+2025-07-02 12:37:49,355 - root - INFO - Shutting down thread pool 'main' with 4 workers
+2025-07-02 12:37:49,356 - root - INFO - Thread pool 'main' shutdown completed
+2025-07-02 12:37:49,356 - root - INFO - Custom cleanup completed for threadpool_main
+2025-07-02 12:37:49,356 - root - INFO - Shutting down thread pool: threadpool_main
+2025-07-02 12:37:49,357 - root - INFO - Cleaned up resource: threadpool_main
+2025-07-02 12:37:50,825 - root - INFO - Resource cleanup completed
+2025-07-02 12:37:51,270 - root - INFO - GlobalRAGSystem shutdown completed
+2025-07-02 12:37:51,977 - root - INFO - ResourceManager initialized
+2025-07-02 12:37:51,977 - root - INFO - Initialized GlobalRAGSystem lifecycle manager
+2025-07-02 12:37:51,977 - root - INFO - Starting GlobalRAGSystem...
+2025-07-02 12:37:51,978 - root - INFO - Registered resource: threadpool_main
+2025-07-02 12:37:51,978 - root - INFO - Created managed thread pool 'main' with 4 workers
+2025-07-02 12:37:51,978 - root - INFO - Registered resource: threadpool_io
+2025-07-02 12:37:51,978 - root - INFO - Created managed thread pool 'io' with 8 workers
+2025-07-02 12:37:51,978 - root - INFO - Registered resource: threadpool_compute
+2025-07-02 12:37:51,978 - root - INFO - Created managed thread pool 'compute' with 2 workers
+2025-07-02 12:37:51,979 - root - INFO - Registered resource: threadpool_background
+2025-07-02 12:37:51,979 - root - INFO - Created managed thread pool 'background' with 2 workers
+2025-07-02 12:37:51,979 - root - INFO - GlobalRAGSystem startup completed successfully
+2025-07-02 12:37:51,979 - root - INFO - Cleaned up semantic chunker model: all-MiniLM-L6-v2
+2025-07-02 12:39:19,541 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:39:19,541 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    logger.info("New ConversationManager initialized successfully.")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:40:06,031 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:40:06,031 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    logger.info("New ConversationManager initialized successfully.")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:42:16,908 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:42:16,910 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    # Create the manager instance - using SimpleConversationManager instead of ConversationManager
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized
+2025-07-02 12:43:15,518 - api.routes.conversation - INFO - Initializing new ConversationManager...
+2025-07-02 12:43:15,518 - api.routes.conversation - ERROR - Failed to initialize ConversationManager: Dependency container not initialized
+Traceback (most recent call last):
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\api\routes\conversation.py", line 47, in get_conversation_manager
+    # Create the manager instance - using SimpleConversationManager instead of ConversationManager
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects-D\pepsi-final3\rag_new\rag_system\src\core\dependency_container.py", line 596, in get_dependency_container
+    raise RuntimeError("Dependency container not initialized")
+RuntimeError: Dependency container not initialized

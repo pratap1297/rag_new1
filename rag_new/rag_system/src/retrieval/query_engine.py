@@ -35,6 +35,33 @@ class QueryEngine:
         logging.info(f"Query engine initialized with reranker: {reranker is not None}, query enhancer: {query_enhancer is not None}")
         logging.info(f"Source diversity enabled: {self.enable_source_diversity}, weight: {self.diversity_weight}")
     
+    def count_documents(self, filters: Dict[str, Any] = None, distinct_key: str = None) -> int:
+        """Count documents matching metadata filters.
+
+        Args:
+            filters: key/value pairs all of which must match exactly (case-insensitive).
+            distinct_key: if provided, return the number of *unique* values of this field
+                           among matching documents (e.g., count distinct buildings).
+        """
+        if not self.metadata_store:
+            return 0
+        try:
+            docs_iter = self.metadata_store if isinstance(self.metadata_store, list) else self.metadata_store.values()
+            def match(doc):
+                if not filters:
+                    return True
+                for k, v in filters.items():
+                    if str(doc.get(k, '')).lower() != str(v).lower():
+                        return False
+                return True
+            if distinct_key:
+                distinct_vals = {str(doc.get(distinct_key, '')).lower() for doc in docs_iter if match(doc)}
+                return len([v for v in distinct_vals if v])
+            return sum(1 for doc in docs_iter if match(doc))
+        except Exception as e:
+            logging.warning(f"count_documents failed: {e}")
+            return 0
+
     def process_query(self, query: str, filters: Dict[str, Any] = None, 
                      top_k: int = None, conversation_context: Dict[str, Any] = None) -> Dict[str, Any]:
         """

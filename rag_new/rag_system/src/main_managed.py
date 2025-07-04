@@ -18,13 +18,32 @@ from api.main import create_api_app
 from monitoring.heartbeat_monitor import HeartbeatMonitor
 from ingestion.embedder import SentenceTransformerEmbedder
 
-# Configure logging
+# Configure logging with UTF-8 for all handlers
+# This prevents UnicodeEncodeError on Windows when logging emojis or special characters
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# File handler
+file_handler = logging.FileHandler('logs/rag_system.log', encoding='utf-8')
+file_handler.setFormatter(log_formatter)
+
+# Console handler
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setFormatter(log_formatter)
+# Attempt to set encoding for console handler, might not work on all platforms
+try:
+    console_handler.stream.reconfigure(encoding='utf-8')
+except TypeError:
+    # This can happen in environments where stdout is not reconfigurable (e.g. some IDEs)
+    pass
+except AttributeError:
+    # In case the stream object does not have reconfigure method
+    pass
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('logs/rag_system.log', encoding='utf-8')
+        file_handler,
+        console_handler
     ]
 )
 

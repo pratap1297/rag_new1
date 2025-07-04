@@ -809,27 +809,18 @@ class IngestionEngine:
                 # Try to extract from file_path
                 doc_path = self._current_metadata.get('doc_path') if hasattr(self, '_current_metadata') and self._current_metadata else None
             
-            # Find vectors to delete
+            # Find vectors to delete based on content hash
             vectors_to_delete = []
             
+            # Get the doc_hash of the incoming file
+            incoming_doc_hash = self._calculate_document_hash(Path(file_path))
+
             for vector_id, metadata in self.faiss_store.id_to_metadata.items():
                 if metadata.get('deleted', False):
                     continue
                 
-                # Check for match - metadata is already flat thanks to add_vectors
-                is_match = False
-                
-                # Priority 1: doc_path match (most reliable)
-                if doc_path and metadata.get('doc_path') == doc_path:
-                    is_match = True
-                # Priority 2: filename match
-                elif filename and metadata.get('filename') == filename:
-                    is_match = True
-                # Priority 3: file_path match
-                elif metadata.get('file_path') == file_path:
-                    is_match = True
-                
-                if is_match:
+                # Check for match based on doc_hash
+                if metadata.get('doc_hash') == incoming_doc_hash:
                     vectors_to_delete.append(vector_id)
             
             if vectors_to_delete:

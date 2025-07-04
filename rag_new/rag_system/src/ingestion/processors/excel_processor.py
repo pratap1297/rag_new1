@@ -160,6 +160,12 @@ class ExcelProcessor(BaseProcessor):
             chunks = self._create_chunks(result)
             result['chunks'] = chunks
             
+            # Close the workbook to release file handle (important on Windows)
+            try:
+                workbook.close()
+            except Exception as _close_err:
+                self.logger.debug(f"Workbook close failed: {_close_err}")
+
             self.logger.info(f"Successfully processed Excel file with {len(result['sheets'])} sheets, "
                            f"{len(result['embedded_objects'])} embedded objects, "
                            f"{len(result['images'])} images")

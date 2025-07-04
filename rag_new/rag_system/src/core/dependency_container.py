@@ -397,9 +397,20 @@ def create_query_enhancer(container: DependencyContainer):
             sys.path.insert(0, str(Path(__file__).parent.parent))
             from retrieval.query_enhancer import create_query_enhancer as create_query_enhancer_func
     
+    import os
     config_manager = container.get('config_manager')
-    query_enhancer = create_query_enhancer_func(config_manager)
-    print(f"     ✅ Query enhancer created successfully: {query_enhancer.get_enhancer_info()['enhancer_type']}")
+    enable_llm = os.getenv('ENABLE_LLM_QUERY_ENHANCER', 'false').lower() in ('1', 'true', 'yes')
+    if enable_llm:
+        try:
+            from ..retrieval.llm_query_enhancer import LLMQueryEnhancer
+        except ImportError:
+            from rag_system.src.retrieval.llm_query_enhancer import LLMQueryEnhancer
+        llm_client = container.get('llm_client')
+        query_enhancer = LLMQueryEnhancer(llm_client)
+        print("     ✅ LLMQueryEnhancer enabled via flag")
+    else:
+        query_enhancer = create_query_enhancer_func(config_manager)
+        print(f"     ✅ Query enhancer created successfully: {query_enhancer.get_enhancer_info()['enhancer_type']}")
     return query_enhancer
 
 def create_query_engine(container: DependencyContainer):
@@ -558,15 +569,23 @@ def create_ingestion_debugger(container: DependencyContainer):
     )
 
 def register_core_services(container: DependencyContainer):
-    """Register all core services"""
+    """Register all core services with the container"""
+    print("🚀 Registering core services...")
+    
+    # Register factories for core components
     container.register('config_manager', create_config_manager)
-    container.register('json_store', create_json_store)
     container.register('metadata_store', create_metadata_store)
-    container.register('log_store', create_log_store)
-    container.register('vector_store', create_vector_store)  # New unified vector store
-    container.register('faiss_store', create_faiss_store)    # Legacy compatibility
+    
+    # Register the vector store and alias it for the new conversation manager
+    vector_store_instance = create_vector_store(container)
+    container.register_instance('vector_store', vector_store_instance)
+    container.register_instance('qdrant_store', vector_store_instance)
+
     container.register('embedder', create_embedder)
     container.register('chunker', create_chunker)
+    container.register('json_store', create_json_store)
+    container.register('log_store', create_log_store)
+    container.register('faiss_store', create_faiss_store)    # Legacy compatibility
     container.register('llm_client', create_llm_client)
     container.register('reranker', create_reranker)
     container.register('query_enhancer', create_query_enhancer)

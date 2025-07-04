@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   id: string;
@@ -39,6 +40,7 @@ const HomePage: React.FC = () => {
   const [showHelpPanel, setShowHelpPanel] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -117,9 +119,9 @@ const HomePage: React.FC = () => {
   const startNewThread = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/conversation/start');
-      const newThreadId = response.data.thread_id;
-      setThreadId(newThreadId);
+      const response = await axios.post('http://localhost:8000/api/conversation/');
+      const { thread_id } = response.data;
+      setThreadId(thread_id);
       
       // Generate default thread name with timestamp
       const now = new Date();
@@ -136,7 +138,7 @@ const HomePage: React.FC = () => {
 
       // Auto-save the new thread
       const newThread: Thread = {
-        id: newThreadId,
+        id: thread_id,
         name: defaultName,
         timestamp: now,
         messageCount: 1,
@@ -148,7 +150,7 @@ const HomePage: React.FC = () => {
       const existingThreads = JSON.parse(localStorage.getItem('home-threads') || '[]');
       const updatedThreads = [newThread, ...existingThreads];
       localStorage.setItem('home-threads', JSON.stringify(updatedThreads));
-      localStorage.setItem(`home-thread-${newThreadId}`, JSON.stringify([welcomeMessage]));
+      localStorage.setItem(`home-thread-${thread_id}`, JSON.stringify([welcomeMessage]));
       setThreads(updatedThreads);
 
     } catch (error) {
@@ -329,7 +331,7 @@ const HomePage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:8000/api/conversation/message', {
+      const response = await axios.post('http://localhost:8000/api/conversation/', {
         thread_id: threadId,
         message: userMessage.text,
       });

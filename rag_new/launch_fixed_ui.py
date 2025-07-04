@@ -223,7 +223,12 @@ class FixedRAGUI:
                     filename = doc_detail.get('filename', '')
                     upload_timestamp = doc_detail.get('upload_timestamp', '')
                     source = doc_detail.get('source', 'unknown')
-                    chunks = doc_detail.get('chunks', 0)
+                    # Ensure chunks is an int to avoid TypeError during comparisons
+                    raw_chunks = doc_detail.get('chunks')
+                    try:
+                        chunks = int(raw_chunks) if raw_chunks is not None else 0
+                    except (TypeError, ValueError):
+                        chunks = 0  # Fallback safe value
                     
                     # Create registry path with better chunk handling
                     if doc_path and doc_path != '':
@@ -241,7 +246,8 @@ class FixedRAGUI:
                     # Add to registry with proper chunk grouping
                     if registry_path in documents_by_path:
                         # Update existing document entry
-                        documents_by_path[registry_path]['chunks'] += chunks if chunks > 0 else 1
+                        # Use safe integer comparison; if chunks is 0 treat as 1 for minimum count
+                        documents_by_path[registry_path]['chunks'] += chunks if chunks and chunks > 0 else 1
                         documents_by_path[registry_path]['chunk_docs'].append(doc_id)
                         # Update timestamp if newer
                         if upload_timestamp and upload_timestamp > documents_by_path[registry_path]['last_updated']:
@@ -263,7 +269,7 @@ class FixedRAGUI:
                             'last_updated': upload_timestamp or datetime.now().isoformat(),
                             'filename': display_filename,
                             'original_filename': filename,
-                            'chunks': chunks if chunks > 0 else 1,
+                            'chunks': chunks if chunks and chunks > 0 else 1,
                             'source': source or 'auto_sync',
                             'doc_id': doc_id,
                             'chunk_docs': [doc_id]
@@ -435,7 +441,11 @@ class FixedRAGUI:
                 
             except UnicodeDecodeError:
                 # If not text, use file upload endpoint
-                files = {'file': (os.path.basename(file.name), file_content, 'application/octet-stream')}
+                import mimetypes
+                mime_type, _ = mimetypes.guess_type(original_filename)
+                if not mime_type:
+                    mime_type = 'application/octet-stream'
+                files = {'file': (os.path.basename(original_filename), file_content, mime_type)}
                 data = {'metadata': json.dumps(metadata)}
                 
                 response = requests.post(f"{self.api_url}/upload", files=files, data=data, timeout=30)
@@ -461,7 +471,8 @@ class FixedRAGUI:
                     'original_filename': original_filename,  # Store original filename
                     'temp_file_path': temp_file_path,  # Store temp path for reference
                     'doc_id': api_doc_id,  # Store the document ID
-                    'chunks': result.get('chunks_created', 0),
+                    # Ensure chunks_created is an int and not None
+                     'chunks': int(result.get('chunks_created') or 0),
                     'is_update': result.get('is_update', False),
                     'old_vectors_deleted': result.get('old_vectors_deleted', 0)
                 }
@@ -736,7 +747,8 @@ class FixedRAGUI:
             # Optional fields
             if info.get('is_update'):
                 registry_text += f"   🔄 Is Update: Yes\n"
-            if info.get('old_vectors_deleted', 0) > 0:
+            old_vectors = info.get('old_vectors_deleted') or 0
+            if isinstance(old_vectors, (int, float)) and old_vectors > 0:
                 registry_text += f"   🗑️ Old Vectors Deleted: {info['old_vectors_deleted']}\n"
             
             if info.get("status") == "deleted" and "deleted_at" in info:
@@ -2143,12 +2155,13 @@ class FixedRAGUI:
                 
                 doc_text += f"   🔧 Source: {source_emoji}\n"
                 
-                if doc_info['file_size']:
-                    size_mb = doc_info['file_size'] / (1024 * 1024)
+                file_size_val = doc_info.get('file_size')
+                if isinstance(file_size_val, (int, float)) and file_size_val > 0:
+                    size_mb = file_size_val / (1024 * 1024)
                     if size_mb >= 1:
                         doc_text += f"   📏 Size: {size_mb:.2f} MB\n"
                     else:
-                        size_kb = doc_info['file_size'] / 1024
+                        size_kb = file_size_val / 1024
                         doc_text += f"   📏 Size: {size_kb:.1f} KB\n"
                 
                 if doc_info['last_updated']:

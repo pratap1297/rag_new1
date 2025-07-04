@@ -12,13 +12,22 @@ from typing import Dict, Any, Optional, List
 try:
     from dotenv import load_dotenv
     load_dotenv()
+    # Additionally attempt to load a `.env` file that resides next to the
+    # rag_system package (useful when the application is launched from the
+    # project root but the .env is stored inside rag_system/).
+    try:
+        _package_env = Path(__file__).resolve().parent.parent / ".env"
+        load_dotenv(_package_env, override=False)
+    except Exception:
+        # It's fine if the extra .env is missing
+        pass
 except ImportError:
     pass
 
 @dataclass
 class VectorStoreConfig:
     """Vector store configuration (supports both FAISS and Qdrant)"""
-    type: str = "faiss"  # "faiss" or "qdrant"
+    type: str = "qdrant"  # "faiss" or "qdrant"
     # Common settings
     dimension: int = 1024
     backup_enabled: bool = True
@@ -336,13 +345,40 @@ class ConfigManager:
         
         return getattr(self.config, component, None)
     
+    def _sanitize_config(self) -> Dict[str, Any]:
+        """Return a dict representation of the config with secrets removed so that
+        they are not persisted to disk. This prevents accidental leakage of API
+        keys that should live only in environment variables or secret stores."""
+        cfg = asdict(self.config)
+
+        # Blank out known secret fields; use defensive checks in case keys are missing
+        try:
+            cfg["llm"]["api_key"] = None
+        except Exception:
+            pass
+        try:
+            cfg["embedding"]["api_key"] = None
+        except Exception:
+            pass
+        try:
+            cfg.get("azure_ai", {})["computer_vision_key"] = None
+        except Exception:
+            pass
+        try:
+            cfg.get("azure_ai", {})["document_intelligence_key"] = None
+        except Exception:
+            pass
+
+        return cfg
+
     def save_config(self):
-        """Save current configuration to file"""
+        """Save current configuration to file, ensuring that secrets are stripped."""
         config_file = Path(self.config_path)
         config_file.parent.mkdir(parents=True, exist_ok=True)
-        
-        with open(config_file, 'w') as f:
-            json.dump(asdict(self.config), f, indent=2)
+
+        sanitized = self._sanitize_config()
+        with open(config_file, "w") as f:
+            json.dump(sanitized, f, indent=2)
     
     def update_config(self, component: str, updates: Dict[str, Any]):
         """Update specific component configuration"""

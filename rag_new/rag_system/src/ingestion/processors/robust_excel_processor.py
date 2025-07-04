@@ -47,12 +47,12 @@ class RobustExcelProcessor(BaseProcessor):
             self.logger.info("🔍 Robust Excel Processor - Debug mode enabled")
         
         # Configuration
-        self.max_file_size_mb = config.get('max_file_size_mb', 50)
+        self.max_file_size_mb = config.get('max_file_size_mb', 50) or 50  # Ensure it's not None
         self.process_images = config.get('process_images', True)
         self.process_charts = config.get('process_charts', False)
         self.include_formulas = config.get('include_formulas', False)
-        self.max_rows_per_sheet = config.get('max_rows_per_sheet', 10000)
-        self.max_cols_per_sheet = config.get('max_cols_per_sheet', 100)
+        self.max_rows_per_sheet = config.get('max_rows_per_sheet', 10000) or 10000  # Ensure it's not None
+        self.max_cols_per_sheet = config.get('max_cols_per_sheet', 100) or 100  # Ensure it's not None
         
         # Initialize Azure AI if not provided
         if not self.azure_client and config.get('azure_ai'):
@@ -144,6 +144,11 @@ class RobustExcelProcessor(BaseProcessor):
             
             # Process workbook
             result = self._process_workbook(workbook, file_path, metadata)
+            # Close workbook to release file handle (important on Windows)
+            try:
+                workbook.close()
+            except Exception as _close_err:
+                self.logger.debug(f"Workbook close failed: {_close_err}")
             
             # Processing summary
             processing_time = (datetime.now() - start_time).total_seconds()
@@ -210,12 +215,14 @@ class RobustExcelProcessor(BaseProcessor):
         if not file_path.exists():
             return {'valid': False, 'error': f"File not found: {file_path}"}
         
-        # Check file size
+        # Check file size - ensure max_file_size_mb is not None
         file_size_mb = file_path.stat().st_size / (1024 * 1024)
-        if file_size_mb > self.max_file_size_mb:
+        max_size_mb = self.max_file_size_mb or 50  # Fallback to 50MB if None
+        
+        if file_size_mb > max_size_mb:
             return {
                 'valid': False, 
-                'error': f"File too large: {file_size_mb:.1f}MB > {self.max_file_size_mb}MB"
+                'error': f"File too large: {file_size_mb:.1f}MB > {max_size_mb}MB"
             }
         
         # Check file extension

@@ -57,14 +57,19 @@ except ImportError:
 try:
     from .management_api import create_management_router
     from .verification_endpoints import router as verification_router
+    # Import the new conversation router
+    from .routes.conversation import router as conversation_router
 except ImportError:
     try:
         from rag_system.src.api.management_api import create_management_router
         from rag_system.src.api.verification_endpoints import router as verification_router
+        # Import the new conversation router
+        from rag_system.src.api.routes.conversation import router as conversation_router
     except ImportError as e:
         logging.warning(f"Could not import API routers: {e}")
         create_management_router = None
         verification_router = None
+        conversation_router = None
 
 try:
     from ..core.progress_tracker import ProgressTracker
@@ -2356,26 +2361,19 @@ Answer:"""
         logging.warning(f"⚠️ ServiceNow API routes not available: {e}")
     
     # Add conversation router
-    try:
-        try:
-            from .routes.conversation import router as conversation_router
-        except ImportError:
-            from rag_system.src.api.routes.conversation import router as conversation_router
+    if conversation_router:
         app.include_router(conversation_router, prefix="/api")
-        logging.info("✅ Conversation API routes registered")
-    except Exception as e:
-        logging.warning(f"⚠️ Conversation API routes not available: {e}")
     
     # Add verification router
     if verification_router:
-        try:
-            app.include_router(verification_router)
-            logging.info("✅ Verification API routes registered")
-        except Exception as e:
-            logging.warning(f"⚠️ Verification API routes not available: {e}")
-    else:
-        logging.warning("⚠️ Verification router not available - skipping")
-
+        app.include_router(verification_router, prefix="/verify")
+    
+    # Add other routers as needed (e.g., PowerBI, ServiceNow)
+    try:
+        from .routes import powerbi, servicenow
+    except ImportError:
+        logging.warning("⚠️ PowerBI and ServiceNow routers not available - skipping")
+    
     # Add enhanced folder monitoring router
     if enhanced_folder_router:
         try:

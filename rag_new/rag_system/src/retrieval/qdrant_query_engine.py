@@ -75,9 +75,50 @@ class QdrantQueryEngine:
     def _handle_listing_query(self, query: str) -> Dict[str, Any]:
         """Handle listing queries using Qdrant's scroll API"""
         
-        # Extract item type
+        # Extract item type (pre-defined mapping)
         item_type = self._extract_item_type(query)
-        
+
+        # -------------------------------
+        # Fallback: generic keyword listing
+        # If extract_item_type() could not map the noun to a known doc_type, treat the
+        # first significant word in the query as a generic keyword and perform a
+        # plain-text search across the whole collection.
+        # -------------------------------
+        if item_type == 'items':
+            keyword = self._extract_generic_keyword(query)
+            logging.debug(f"Fallback listing detected; keyword = {keyword}")
+
+            if not keyword:
+                return {
+                    'query': query,
+                    'response': "I couldn't identify what you want me to list.",
+                    'confidence_score': 0.1,
+                    'confidence_level': 'low',
+                    'sources': [],
+                    'total_sources': 0,
+                    'query_type': 'listing',
+                    'method': 'fallback_generic',
+                    'timestamp': datetime.now().isoformat()
+                }
+
+            # Retrieve up to 1000 items mentioning the keyword
+            results = self.qdrant_store.search(text_query=keyword, k=1000)
+
+            response = self._format_listing_response(results, keyword)
+
+            return {
+                'query': query,
+                'response': response,
+                'confidence_score': 0.75 if results else 0.2,
+                'confidence_level': 'medium' if results else 'low',
+                'sources': results,
+                'total_sources': len(results),
+                'query_type': 'listing',
+                'method': 'fallback_generic',
+                'keyword': keyword,
+                'timestamp': datetime.now().isoformat()
+            }
+
         if item_type == "incidents":
             # Get all incidents efficiently
             incidents = self.qdrant_store.list_all_incidents()
@@ -161,7 +202,31 @@ class QdrantQueryEngine:
     def _handle_aggregation_query(self, query: str) -> Dict[str, Any]:
         """Handle aggregation queries"""
         
-        # Get aggregated data
+        # Try to map to predefined item type
+        item_type = self._extract_item_type(query)
+
+        # Generic keyword fallback when item_type is unknown
+        if item_type == 'items':
+            keyword = self._extract_generic_keyword(query)
+            # hybrid_search supports searching by plain text without a vector
+            results = self.qdrant_store.hybrid_search(text_query=keyword, k=1000)
+            unique_ids = {r.get('id') or r.get('title') or r.get('record_id') for r in results if r}
+            total = len(unique_ids)
+            response = f"There are {total} {keyword} in the system." if results else f"No {keyword} found in the system."
+            return {
+                'query': query,
+                'response': response,
+                'confidence_score': 0.7 if results else 0.2,
+                'confidence_level': 'medium' if results else 'low',
+                'sources': results,
+                'total_sources': len(results),
+                'keyword': keyword,
+                'query_type': 'aggregation',
+                'method': 'fallback_generic',
+                'timestamp': datetime.now().isoformat()
+            }
+
+        # Get aggregated data by predefined types
         counts = self.qdrant_store.aggregate_by_type()
         
         # Format response
@@ -349,6 +414,18 @@ Answer:"""
         count_factor = min(len(results) / 10, 1.0)  # Normalize by expected result count
         
         return min(avg_score * count_factor, 1.0)
+
+    # ------------------------------------------------------------------
+    # Generic keyword extraction helper
+    # ------------------------------------------------------------------
+    def _extract_generic_keyword(self, query: str) -> str:
+        """Get the first significant noun-like word from the query."""
+        # Very simple heuristic: take the last word before any preposition or the end
+        tokens = re.split(r"\s+", query.strip())
+        # Remove stopwords / determiners
+        stop = {'how', 'many', 'list', 'all', 'of', 'the', 'total', 'number', 'count', 'show', 'me'}
+        candidates = [t.strip('?.,').lower() for t in tokens if t.lower() not in stop]
+        return candidates[-1] if candidates else ''
     
     def _extract_item_type(self, query: str) -> str:
         """Extract item type from query"""

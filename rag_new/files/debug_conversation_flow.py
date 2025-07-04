@@ -7,11 +7,11 @@ import sys
 from pathlib import Path
 
 # Add rag_system/src to path
-sys.path.insert(0, str(Path("rag_system/src")))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "rag_system"))
 
 def debug_conversation_flow():
     """Debug the conversation flow step by step"""
-    print("🐛 DEBUGGING CONVERSATION FLOW")
+    print("DEBUGGING CONVERSATION FLOW")
     print("=" * 60)
     
     try:
@@ -20,7 +20,7 @@ def debug_conversation_flow():
         from conversation.conversation_nodes import ConversationNodes
         from conversation.conversation_state import create_conversation_state, add_message_to_state, MessageType
         
-        print("✅ Modules imported successfully")
+        print("Modules imported successfully")
         
         # Create container and register services
         container = DependencyContainer()

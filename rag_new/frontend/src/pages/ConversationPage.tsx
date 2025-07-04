@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useNavigate } from 'react-router-dom';
 
 interface Message {
   id: string;
   text: string;
+  isUser: boolean;
   sender: 'user' | 'bot';
   timestamp: Date;
   isStreaming?: boolean;
@@ -39,6 +41,7 @@ const ConversationPage: React.FC = () => {
   const [showHelpPanel, setShowHelpPanel] = useState<boolean>(false);
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const navigate = useNavigate();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -117,9 +120,12 @@ const ConversationPage: React.FC = () => {
   const startNewThread = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/conversation/start');
-      const newThreadId = response.data.thread_id;
-      setThreadId(newThreadId);
+      const response = await axios.post('http://localhost:8000/api/conversation', {
+        thread_id: null,
+        message: null
+      });
+      const { thread_id } = response.data;
+      setThreadId(thread_id);
       
       // Generate default thread name with timestamp
       const now = new Date();
@@ -129,6 +135,7 @@ const ConversationPage: React.FC = () => {
       const welcomeMessage: Message = {
         id: Date.now().toString() + '-bot',
         text: '# 🤖 Welcome to AI Force Intelligent Support Agent\n\nHello! I\'m ready to help you with your questions. Use the controls above to customize your experience, or click the ℹ️ button for more details about my capabilities.',
+        isUser: false,
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -136,7 +143,7 @@ const ConversationPage: React.FC = () => {
 
       // Auto-save the new thread
       const newThread: Thread = {
-        id: newThreadId,
+        id: thread_id,
         name: defaultName,
         timestamp: now,
         messageCount: 1,
@@ -148,7 +155,7 @@ const ConversationPage: React.FC = () => {
       const existingThreads = JSON.parse(localStorage.getItem('conversation-threads') || '[]');
       const updatedThreads = [newThread, ...existingThreads];
       localStorage.setItem('conversation-threads', JSON.stringify(updatedThreads));
-      localStorage.setItem(`thread-${newThreadId}`, JSON.stringify([welcomeMessage]));
+      localStorage.setItem(`thread-${thread_id}`, JSON.stringify([welcomeMessage]));
       setThreads(updatedThreads);
 
     } catch (error) {
@@ -156,6 +163,7 @@ const ConversationPage: React.FC = () => {
       const errorMessage: Message = {
         id: Date.now().toString() + '-error',
         text: '⚠️ Failed to start new thread. Please ensure the backend server is running.',
+        isUser: false,
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -188,6 +196,7 @@ const ConversationPage: React.FC = () => {
     const botPlaceholder: Message = {
       id: Date.now().toString() + '-bot-streaming',
       text: '',
+      isUser: false,
       sender: 'bot',
       timestamp: new Date(),
       isStreaming: true,
@@ -206,8 +215,8 @@ const ConversationPage: React.FC = () => {
         'Accept': 'text/event-stream',
       },
       body: JSON.stringify({
-        thread_id: threadId,
-        message: userMessage.text,
+        thread_id: threadId || null,
+        message: userMessage.text || null,
       }),
     })
     .then(response => {
@@ -329,57 +338,28 @@ const ConversationPage: React.FC = () => {
     setIsLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:8000/api/conversation/message', {
+      const response = await axios.post('http://localhost:8000/api/conversation', {
         thread_id: threadId,
         message: userMessage.text,
       });
       
-      let responseText = 'No response from server';
-      let sources: any[] = [];
-      let suggestions: string[] = [];
-      let hasTable = false;
-      
-      if (response.data) {
-        if (typeof response.data === 'string') {
-          responseText = response.data;
-        } else if (response.data.response) {
-          responseText = response.data.response;
-          sources = response.data.sources || [];
-          suggestions = response.data.suggested_questions || [];
-        } else if (response.data.text) {
-          responseText = response.data.text;
-          sources = response.data.sources || [];
-          suggestions = response.data.suggested_questions || [];
-        } else if (response.data.message) {
-          responseText = response.data.message;
-          sources = response.data.sources || [];
-          suggestions = response.data.suggested_questions || [];
-        } else {
-          responseText = JSON.stringify(response.data);
-        }
-        
-        // Check for table content
-        if (responseText.includes('|') && responseText.includes('---')) {
-          hasTable = true;
-        }
-      }
-
-      const botMessage: Message = {
-        id: Date.now().toString() + '-bot',
-        text: responseText,
+      const data = response.data;
+      const assistantMessage: Message = {
+        id: data.response_id || `assistant-${Date.now()}`,
+        text: data.response,
+        isUser: false,
         sender: 'bot',
         timestamp: new Date(),
-        sources,
-        suggestions,
-        hasTable,
+        sources: data.sources || [],
+        suggestions: data.suggestions || [],
       };
-      
-      setMessages(prev => [...prev, botMessage]);
+      setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
       const errorMessage: Message = {
-        id: Date.now().toString() + '-error',
-        text: '❌ Sorry, I encountered an error. Please try again.',
+        id: `error-${Date.now()}`,
+        text: 'Error: Could not get a response from the server.',
+        isUser: false,
         sender: 'bot',
         timestamp: new Date(),
       };
@@ -395,6 +375,7 @@ const ConversationPage: React.FC = () => {
     const userMessage: Message = {
       id: Date.now().toString(),
       text: input,
+      isUser: true,
       sender: 'user',
       timestamp: new Date(),
     };
