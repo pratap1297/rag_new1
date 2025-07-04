@@ -54,3 +54,5 @@ ENV/
 /qdrant_storage/
 qdrant_storage/
 **/qdrant_storage/
+
+rag_new/pepenv/
