@@ -535,79 +535,172 @@ def create_servicenow_integration(container: DependencyContainer):
 def create_conversation_manager(container: DependencyContainer):
     """Factory for ConversationManager"""
     print(f"     🔧 Creating conversation manager...")
+    
     try:
+        from ..conversation.fresh_conversation_manager import FreshConversationManager
+        from ..conversation.fresh_conversation_state import FreshConversationStateManager
+        from ..conversation.fresh_context_manager import FreshContextManager
+        from ..conversation.fresh_memory_manager import FreshMemoryManager
+        from ..conversation.fresh_smart_router import FreshSmartRouter
+        from ..conversation.fresh_conversation_nodes import FreshConversationNodes
+        from ..conversation.fresh_conversation_graph import FreshConversationGraph
+    except ImportError:
         try:
-            from ..conversation.conversation_manager import ConversationManager
+            from rag_system.src.conversation.fresh_conversation_manager import FreshConversationManager
+            from rag_system.src.conversation.fresh_conversation_state import FreshConversationStateManager
+            from rag_system.src.conversation.fresh_context_manager import FreshContextManager
+            from rag_system.src.conversation.fresh_memory_manager import FreshMemoryManager
+            from rag_system.src.conversation.fresh_smart_router import FreshSmartRouter
+            from rag_system.src.conversation.fresh_conversation_nodes import FreshConversationNodes
+            from rag_system.src.conversation.fresh_conversation_graph import FreshConversationGraph
         except ImportError:
-            from rag_system.src.conversation.conversation_manager import ConversationManager
-        conversation_manager = ConversationManager(container)
-        print(f"     ✅ Conversation manager created successfully")
-        return conversation_manager
-    except ImportError as e:
-        print(f"     ⚠️ LangGraph not available: {e}")
-        return None
-    except Exception as e:
-        print(f"     ❌ Failed to create conversation manager: {e}")
-        return None
+            # Last fallback for when running as script
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent))
+            from conversation.fresh_conversation_manager import FreshConversationManager
+            from conversation.fresh_conversation_state import FreshConversationStateManager
+            from conversation.fresh_context_manager import FreshContextManager
+            from conversation.fresh_memory_manager import FreshMemoryManager
+            from conversation.fresh_smart_router import FreshSmartRouter
+            from conversation.fresh_conversation_nodes import FreshConversationNodes
+            from conversation.fresh_conversation_graph import FreshConversationGraph
+    
+    # Create managers
+    context_manager = FreshContextManager()
+    memory_manager = FreshMemoryManager()
+    smart_router = FreshSmartRouter(context_manager, container.get('llm_client'))
+    
+    # Register smart router in container for other components
+    container.register_instance('smart_router', smart_router)
+    
+    # Create conversation components
+    state_manager = FreshConversationStateManager(context_manager, memory_manager, smart_router)
+    nodes = FreshConversationNodes(container)
+    graph = FreshConversationGraph(nodes, state_manager)
+    
+    # Create conversation manager
+    conversation_manager = FreshConversationManager(graph, state_manager)
+    
+    print(f"     ✅ Conversation manager created successfully")
+    return conversation_manager
+
+def create_smart_router(container: DependencyContainer):
+    """Factory for FreshSmartRouter with LLM client dependency"""
+    print(f"     🔧 Creating smart router...")
+    
+    try:
+        from ..conversation.fresh_smart_router import FreshSmartRouter
+        from ..conversation.fresh_context_manager import FreshContextManager
+    except ImportError:
+        try:
+            from rag_system.src.conversation.fresh_smart_router import FreshSmartRouter
+            from rag_system.src.conversation.fresh_context_manager import FreshContextManager
+        except ImportError:
+            # Last fallback for when running as script
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent))
+            from conversation.fresh_smart_router import FreshSmartRouter
+            from conversation.fresh_context_manager import FreshContextManager
+    
+    # Create context manager
+    context_manager = FreshContextManager()
+    
+    # Get dependencies
+    llm_client = container.get('llm_client')
+    config_manager = container.get('config_manager')
+    
+    # Create smart router with dependencies
+    smart_router = FreshSmartRouter(context_manager, llm_client, config_manager)
+    
+    print(f"     ✅ Smart router created successfully with LLM enhancement")
+    return smart_router
 
 def create_ingestion_verifier(container: DependencyContainer):
-    """Factory for IngestionVerifier"""
-    from .ingestion_verification_system import IngestionVerifier
-    return IngestionVerifier(
-        ingestion_engine=container.get('ingestion_engine'),
-        query_engine=container.get('query_engine'),
-        faiss_store=container.get('vector_store')  # Using vector_store for backward compatibility
-    )
+    """Factory for ingestion verifier"""
+    print(f"     🔧 Creating ingestion verifier...")
+    
+    try:
+        from ..ingestion.ingestion_verifier import IngestionVerifier
+    except ImportError:
+        try:
+            from rag_system.src.ingestion.ingestion_verifier import IngestionVerifier
+        except ImportError:
+            # Last fallback for when running as script
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent))
+            from ingestion.ingestion_verifier import IngestionVerifier
+    
+    return IngestionVerifier(container)
 
 def create_ingestion_debugger(container: DependencyContainer):
-    """Factory for IngestionDebugger"""
-    from .ingestion_debug_tools import IngestionDebugger
-    return IngestionDebugger(
-        ingestion_engine=container.get('ingestion_engine'),
-        faiss_store=container.get('vector_store'),  # Using vector_store for backward compatibility
-        metadata_store=container.get('metadata_store')
-    )
+    """Factory for ingestion debugger"""
+    print(f"     🔧 Creating ingestion debugger...")
+    
+    try:
+        from ..ingestion.ingestion_debugger import IngestionDebugger
+    except ImportError:
+        try:
+            from rag_system.src.ingestion.ingestion_debugger import IngestionDebugger
+        except ImportError:
+            # Last fallback for when running as script
+            import sys
+            from pathlib import Path
+            sys.path.insert(0, str(Path(__file__).parent.parent))
+            from ingestion.ingestion_debugger import IngestionDebugger
+    
+    return IngestionDebugger(container)
 
 def register_core_services(container: DependencyContainer):
-    """Register all core services with the container"""
-    print("🚀 Registering core services...")
+    """Register all core services"""
+    print("🔧 Registering core services...")
     
-    # Register factories for core components
+    # Core services
     container.register('config_manager', create_config_manager)
+    container.register('json_store', create_json_store)
     container.register('metadata_store', create_metadata_store)
+    container.register('log_store', create_log_store)
     
-    # Register the vector store and alias it for the new conversation manager
-    vector_store_instance = create_vector_store(container)
-    container.register_instance('vector_store', vector_store_instance)
-    container.register_instance('qdrant_store', vector_store_instance)
-
+    # Vector and embedding services
+    container.register('vector_store', create_vector_store)
     container.register('embedder', create_embedder)
     container.register('chunker', create_chunker)
-    container.register('json_store', create_json_store)
-    container.register('log_store', create_log_store)
-    container.register('faiss_store', create_faiss_store)    # Legacy compatibility
+    
+    # LLM and query services
     container.register('llm_client', create_llm_client)
     container.register('reranker', create_reranker)
     container.register('query_enhancer', create_query_enhancer)
     container.register('query_engine', create_query_engine)
+    
+    # Conversation services
+    container.register('smart_router', create_smart_router)
+    container.register('conversation_manager', create_conversation_manager)
+    
+    # Ingestion services
     container.register('ingestion_engine', create_ingestion_engine)
     container.register('verified_ingestion_engine', create_verified_ingestion_engine)
-    container.register('servicenow_integration', create_servicenow_integration)
-    container.register('conversation_manager', create_conversation_manager)
     container.register('ingestion_verifier', create_ingestion_verifier)
     container.register('ingestion_debugger', create_ingestion_debugger)
+    
+    # Integration services
+    container.register('servicenow_integration', create_servicenow_integration)
+    
+    print("✅ Core services registered successfully")
 
-# Global container instance for API access
-_global_container = None
+# Global container instance
+_container = None
 
 def get_dependency_container() -> DependencyContainer:
     """Get the global dependency container"""
-    global _global_container
-    if _global_container is None:
-        raise RuntimeError("Dependency container not initialized")
-    return _global_container
+    global _container
+    if _container is None:
+        _container = DependencyContainer()
+        register_core_services(_container)
+    return _container
 
 def set_dependency_container(container: DependencyContainer):
     """Set the global dependency container"""
-    global _global_container
-    _global_container = container
+    global _container
+    _container = container

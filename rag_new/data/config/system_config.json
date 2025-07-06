@@ -37,9 +37,9 @@
     "api_key": "6EfFXXBeu1r1Jhn9n4bvkDUrfQUBBCzljLHA0p2eLS6Rn8rGnfB4JQQJ99BEACYeBjFXJ3w3AAAAACOGWvEr"
   },
   "llm": {
-    "provider": "groq",
-    "model_name": "meta-llama/llama-4-maverick-17b-128e-instruct",
-    "api_key": "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",
+    "provider": "azure",
+    "model_name": "Llama-4-Maverick-17B-128E-Instruct-FP8",
+    "api_key": "6EfFXXBeu1r1Jhn9n4bvkDUrfQUBBCzljLHA0p2eLS6Rn8rGnfB4JQQJ99BEACYeBjFXJ3w3AAAAACOGWvEr",
     "temperature": 0.1,
     "max_tokens": 2000
   },

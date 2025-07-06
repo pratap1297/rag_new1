@@ -147,6 +147,33 @@ class AzureAIConfig:
     enable_document_intelligence: bool = False  # Optional feature
 
 @dataclass
+class ConversationConfig:
+    """Conversation and query analysis configuration"""
+    # LLM-enhanced query analysis
+    enable_llm_query_analysis: bool = True
+    max_decomposed_queries: int = 10
+    synonym_expansion_enabled: bool = True
+    
+    # Query decomposition settings
+    enable_query_decomposition: bool = True
+    decomposition_threshold: float = 0.7  # Confidence threshold for decomposition
+    
+    # Aggregation query settings
+    enable_aggregation_detection: bool = True
+    aggregation_keywords: list = None
+    
+    # Response synthesis settings
+    enable_response_synthesis: bool = True
+    max_synthesis_context_length: int = 4000
+    
+    def __post_init__(self):
+        if self.aggregation_keywords is None:
+            self.aggregation_keywords = [
+                "how many", "count", "total", "number of", "sum", "aggregate",
+                "list all", "show all", "find all", "get all"
+            ]
+
+@dataclass
 class SystemConfig:
     """Main system configuration"""
     environment: str = "development"
@@ -165,6 +192,7 @@ class SystemConfig:
     monitoring: MonitoringConfig = None
     folder_monitoring: FolderMonitoringConfig = None
     azure_ai: AzureAIConfig = None
+    conversation: ConversationConfig = None
     
     def __post_init__(self):
         if self.vector_store is None:
@@ -189,6 +217,8 @@ class SystemConfig:
             self.folder_monitoring = FolderMonitoringConfig()
         if self.azure_ai is None:
             self.azure_ai = AzureAIConfig()
+        if self.conversation is None:
+            self.conversation = ConversationConfig()
 
 class ConfigManager:
     """Configuration manager with environment overrides"""
@@ -225,6 +255,7 @@ class ConfigManager:
         monitoring_data = data.pop('monitoring', {})
         folder_monitoring_data = data.pop('folder_monitoring', {})
         azure_ai_data = data.pop('azure_ai', {})
+        conversation_data = data.pop('conversation', {})
         
         # Remove unknown fields to prevent TypeError
         known_fields = {'environment', 'debug', 'data_dir', 'log_dir'}
@@ -243,6 +274,7 @@ class ConfigManager:
         config.monitoring = self._safe_create_config(MonitoringConfig, monitoring_data)
         config.folder_monitoring = self._safe_create_config(FolderMonitoringConfig, folder_monitoring_data)
         config.azure_ai = self._safe_create_config(AzureAIConfig, azure_ai_data)
+        config.conversation = self._safe_create_config(ConversationConfig, conversation_data)
         
         return config
     
