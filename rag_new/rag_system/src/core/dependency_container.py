@@ -180,10 +180,12 @@ def create_vector_store(container: DependencyContainer):
     
     # Determine vector store type from config
     vector_store_config = getattr(config, 'vector_store', None)
-    if vector_store_config:
+    if vector_store_config and hasattr(vector_store_config, 'type'):
         vector_store_type = vector_store_config.type
     else:
-        vector_store_type = 'faiss'  # Default fallback
+        # Default to Qdrant if not specified, and log a warning.
+        vector_store_type = 'qdrant'
+        logging.warning("Vector store type not specified in config, defaulting to Qdrant.")
     
     try:
         from .constants import get_embedding_dimension
@@ -462,7 +464,7 @@ def create_query_engine(container: DependencyContainer):
                 from retrieval.query_engine import QueryEngine
         
         return QueryEngine(
-            faiss_store=container.get('vector_store'),  # Using vector_store for backward compatibility
+            vector_store=container.get('vector_store'),
             embedder=container.get('embedder'),
             llm_client=container.get('llm_client'),
             metadata_store=container.get('metadata_store'),
@@ -487,7 +489,7 @@ def create_ingestion_engine(container: DependencyContainer):
     return IngestionEngine(
         chunker=container.get('chunker'),
         embedder=container.get('embedder'),
-        faiss_store=container.get('vector_store'),  # Using vector_store for backward compatibility
+        vector_store=container.get('vector_store'),
         metadata_store=container.get('metadata_store'),
         config_manager=container.get('config_manager')
     )

@@ -227,10 +227,10 @@ class HeartbeatMonitor:
         
         try:
             if self.container:
-                faiss_store = self.container.get('faiss_store')
+                vector_store = self.container.get('vector_store')
                 
                 # Get vector store statistics
-                stats = faiss_store.get_stats()
+                stats = vector_store.get_stats()
                 
                 # Test vector search if vectors exist
                 if stats['vector_count'] > 0:
@@ -256,7 +256,7 @@ class HeartbeatMonitor:
                     dummy_vector = [0.1] * dimension
                     search_start = time.time()
                     try:
-                        results = faiss_store.search(dummy_vector, k=min(5, stats['vector_count']))
+                        results = vector_store.search_with_metadata(dummy_vector, k=min(5, stats['vector_count']))
                         search_time = (time.time() - search_start) * 1000
                         search_successful = len(results) > 0
                     except Exception:
@@ -292,7 +292,7 @@ class HeartbeatMonitor:
         response_time = (time.time() - start_time) * 1000
         
         return ComponentHealth(
-            name="Vector Store (FAISS)",
+            name="Vector Store (Qdrant)",
             status=status,
             response_time_ms=response_time,
             last_check=datetime.now().isoformat(),
@@ -453,7 +453,7 @@ class HeartbeatMonitor:
                 services = self.container.list_services()
                 expected_services = [
                     'config_manager', 'json_store', 'metadata_store', 'log_store',
-                    'faiss_store', 'embedder', 'chunker', 'llm_client',
+                    'vector_store', 'embedder', 'chunker', 'llm_client',
                     'query_engine', 'ingestion_engine'
                 ]
                 
@@ -688,8 +688,8 @@ class HeartbeatMonitor:
             vector_count = 0
             if self.container:
                 try:
-                    faiss_store = self.container.get('faiss_store')
-                    stats = faiss_store.get_stats()
+                    vector_store = self.container.get('vector_store')
+                    stats = vector_store.get_stats()
                     vector_count = stats.get('vector_count', 0)
                 except Exception:
                     pass

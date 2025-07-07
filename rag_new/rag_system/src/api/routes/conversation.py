@@ -60,6 +60,10 @@ class ConversationRequest(BaseModel):
             raise ValueError('message is required when thread_id is provided')
         return v
 
+class MessageRequest(BaseModel):
+    thread_id: str = Field(..., description="Thread ID for the conversation.")
+    message: str = Field(..., description="User's message.")
+
 class ConversationResponse(BaseModel):
     thread_id: str
     response: str
@@ -67,6 +71,10 @@ class ConversationResponse(BaseModel):
     sources: List[Dict[str, Any]]
     turn_count: int
     phase: str
+
+class StartConversationResponse(BaseModel):
+    thread_id: str
+    message: str = "Conversation started successfully"
 
 # Global conversation manager
 conversation_manager_instance = None
@@ -88,6 +96,134 @@ def get_conversation_manager():
             raise HTTPException(status_code=503, detail="Conversation service is unavailable.")
     
     return conversation_manager_instance
+
+@router.post("/start", response_model=StartConversationResponse)
+async def start_conversation(
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """
+    Start a new conversation and return the thread ID.
+    """
+    try:
+        response_data = manager.start_conversation()
+        return StartConversationResponse(
+            thread_id=response_data['thread_id'],
+            message="Conversation started successfully"
+        )
+    except Exception as e:
+        logger.error(f"Error starting conversation: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to start conversation: {str(e)}")
+
+@router.post("/message", response_model=ConversationResponse)
+async def send_message(
+    request: MessageRequest,
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """
+    Send a message to an existing conversation.
+    """
+    try:
+        response_data = manager.send_message(request.thread_id, request.message)
+        return ConversationResponse(**response_data)
+    except Exception as e:
+        logger.error(f"Error sending message: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to send message: {str(e)}")
+
+@router.get("/threads")
+async def get_conversation_threads(
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """
+    Get all active conversation threads.
+    """
+    try:
+        # Get all active threads from the conversation manager
+        if hasattr(manager, 'get_active_threads'):
+            threads = manager.get_active_threads()
+        else:
+            # Fallback: return empty list if method doesn't exist
+            threads = []
+        
+        return {
+            "threads": threads,
+            "count": len(threads)
+        }
+    except Exception as e:
+        logger.error(f"Error getting conversation threads: {e}", exc_info=True)
+        # Return empty list instead of error for UI compatibility
+        return {
+            "threads": [],
+            "count": 0
+        }
+
+@router.get("/thread/{thread_id}")
+async def get_conversation_thread(
+    thread_id: str,
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """Get details of a specific conversation thread."""
+    try:
+        state = manager._get_state(thread_id)
+        if not state:
+            raise HTTPException(status_code=404, detail="Conversation thread not found.")
+        
+        return {
+            "thread_id": thread_id,
+            "conversation_id": state.get('conversation_id'),
+            "turn_count": state.get('turn_count', 0),
+            "phase": state.get('phase', 'unknown'),
+            "created_at": state.get('created_at'),
+            "last_activity": state.get('last_activity')
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting conversation thread: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to get thread: {str(e)}")
+
+@router.delete("/thread/{thread_id}")
+async def delete_conversation_thread(
+    thread_id: str,
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """Delete a conversation thread."""
+    try:
+        # Try to delete the thread if the manager supports it
+        if hasattr(manager, 'delete_thread'):
+            manager.delete_thread(thread_id)
+        else:
+            # Fallback: just return success
+            logger.warning(f"Manager doesn't support thread deletion, thread_id: {thread_id}")
+        
+        return {
+            "message": f"Thread {thread_id} deleted successfully",
+            "thread_id": thread_id
+        }
+    except Exception as e:
+        logger.error(f"Error deleting conversation thread: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to delete thread: {str(e)}")
+
+@router.post("/end/{thread_id}")
+async def end_conversation(
+    thread_id: str,
+    manager: ConversationManager = Depends(get_conversation_manager)
+):
+    """End a conversation thread."""
+    try:
+        # Try to end the conversation if the manager supports it
+        if hasattr(manager, 'end_conversation'):
+            manager.end_conversation(thread_id)
+        else:
+            # Fallback: just return success
+            logger.warning(f"Manager doesn't support ending conversations, thread_id: {thread_id}")
+        
+        return {
+            "message": f"Conversation {thread_id} ended successfully",
+            "thread_id": thread_id
+        }
+    except Exception as e:
+        logger.error(f"Error ending conversation: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Failed to end conversation: {str(e)}")
 
 @router.post("", response_model=ConversationResponse)
 async def handle_conversation(

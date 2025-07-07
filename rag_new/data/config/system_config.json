@@ -1,117 +1,56 @@
 {
   "environment": "development",
-  "debug": true,
+  "debug": false,
   "data_dir": "data",
   "log_dir": "logs",
   "vector_store": {
     "type": "qdrant",
-    "dimension": 1024,
-    "backup_enabled": true,
-    "backup_interval": 3600,
-    "faiss_index_path": "data/vectors/faiss_index.bin",
-    "index_type": "flat",
-    "nprobe": 10,
-    "enable_gpu": false,
     "url": "localhost:6333",
     "collection_name": "rag_documents",
+    "dimension": 1024,
     "on_disk_storage": true,
-    "distance": "cosine"
-  },
-  "database": {
-    "faiss_index_path": "data/vectors/faiss_index.bin",
-    "metadata_path": "data/metadata",
-    "backup_path": "data/backups",
-    "max_backup_count": 5,
+    "distance": "cosine",
     "backup_enabled": true,
-    "backup_interval": 3600,
-    "index_type": "IVFFlat",
-    "nprobe": 10,
-    "enable_gpu": false
+    "backup_interval": 3600
   },
   "embedding": {
     "provider": "azure",
     "model_name": "Cohere-embed-v3-english",
     "dimension": 1024,
-    "batch_size": 100,
-    "device": "cpu",
-    "api_key": "6EfFXXBeu1r1Jhn9n4bvkDUrfQUBBCzljLHA0p2eLS6Rn8rGnfB4JQQJ99BEACYeBjFXJ3w3AAAAACOGWvEr"
+    "batch_size": 96,
+    "device": "cpu"
   },
   "llm": {
     "provider": "azure",
     "model_name": "Llama-4-Maverick-17B-128E-Instruct-FP8",
-    "api_key": "6EfFXXBeu1r1Jhn9n4bvkDUrfQUBBCzljLHA0p2eLS6Rn8rGnfB4JQQJ99BEACYeBjFXJ3w3AAAAACOGWvEr",
     "temperature": 0.1,
-    "max_tokens": 2000
+    "max_tokens": 1000
+  },
+  "retrieval": {
+    "top_k": 5,
+    "similarity_threshold": 0.7,
+    "rerank_top_k": 3,
+    "enable_reranking": true
   },
   "api": {
     "host": "0.0.0.0",
     "port": 8000,
     "workers": 1,
     "reload": false,
-    "cors_origins": null,
-    "health_check_timeout": 10.0,
-    "stats_timeout": 10.0,
-    "llm_test_timeout": 15.0
+    "cors_origins": ["*"]
   },
   "ingestion": {
     "chunk_size": 1000,
     "chunk_overlap": 200,
-    "supported_formats": null,
     "max_file_size_mb": 100,
-    "batch_size": 50,
+    "batch_size": 10,
     "timeout": 300.0,
     "file_timeout": 600.0
-  },
-  "retrieval": {
-    "top_k": 8,
-    "similarity_threshold": 0.15,
-    "rerank_top_k": 5,
-    "enable_reranking": true
   },
   "monitoring": {
     "enable_metrics": true,
     "metrics_port": 9090,
     "log_level": "INFO",
     "log_format": "json"
-  },
-  "folder_monitoring": {
-    "enabled": true,
-    "check_interval_seconds": 60,
-    "monitored_folders": [],
-    "supported_extensions": [
-      ".txt",
-      ".md",
-      ".pdf",
-      ".docx",
-      ".doc",
-      ".json",
-      ".csv",
-      ".xlsx",
-      ".xls",
-      ".xlsm",
-      ".xlsb",
-      ".jpg",
-      ".jpeg",
-      ".png",
-      ".gif",
-      ".bmp",
-      ".tiff",
-      ".tif",
-      ".webp",
-      ".svg"
-    ],
-    "max_file_size_mb": 100,
-    "auto_ingest": true,
-    "recursive": true
-  },
-  "azure_ai": {
-    "computer_vision_endpoint": "https://computervision1298.cognitiveservices.azure.com/",
-    "computer_vision_key": "FSf3hSW3ogphcme0MgMMKZNTzkQTXo6sNikmlyUhSqahBHgnoaOFJQQJ99BFACYeBjFXJ3w3AAAFACOGPuhx",
-    "document_intelligence_endpoint": "",
-    "document_intelligence_key": "",
-    "max_image_size_mb": 4,
-    "ocr_language": "en",
-    "enable_handwriting": true,
-    "enable_document_intelligence": false
   }
-}
+} 

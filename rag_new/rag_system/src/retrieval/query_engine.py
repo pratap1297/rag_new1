@@ -17,8 +17,8 @@ except ImportError:
 class QueryEngine:
     """Main query processing engine with conversation awareness"""
     
-    def __init__(self, faiss_store, embedder, llm_client, metadata_store, config_manager, reranker=None, query_enhancer=None):
-        self.faiss_store = faiss_store
+    def __init__(self, vector_store, embedder, llm_client, metadata_store, config_manager, reranker=None, query_enhancer=None):
+        self.vector_store = vector_store
         self.embedder = embedder
         self.llm_client = llm_client
         self.metadata_store = metadata_store
@@ -113,7 +113,7 @@ class QueryEngine:
                 
                 # Search for similar chunks (get more results for diversity)
                 search_k = max(top_k * 3, 20) if self.enable_source_diversity else top_k
-                search_results = self.faiss_store.search_with_metadata(
+                search_results = self.vector_store.search_with_metadata(
                     query_vector=query_embedding,
                     k=search_k
                 )

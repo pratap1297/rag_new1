@@ -340,7 +340,7 @@ def create_api_app(container, monitoring=None, heartbeat_monitor_instance=None, 
             try:
                 # Get components directly from container
                 embedder = container.get('embedder')
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 llm_client = container.get('llm_client')
                 metadata_store = container.get('metadata_store')
                 
@@ -350,9 +350,9 @@ def create_api_app(container, monitoring=None, heartbeat_monitor_instance=None, 
                 except Exception as e:
                     raise Exception(f"Failed to generate embedding: {str(e)}")
                 
-                # Search FAISS index with proper metadata formatting
+                # Search vector store with proper metadata formatting
                 try:
-                    search_results = faiss_store.search_with_metadata(query_embedding, k=max_results)
+                    search_results = vector_store.search_with_metadata(query_embedding, k=max_results)
                 except Exception as e:
                     raise Exception(f"Failed to search vectors: {str(e)}")
                 
@@ -361,7 +361,7 @@ def create_api_app(container, monitoring=None, heartbeat_monitor_instance=None, 
                 sources = []
                 
                 for result in search_results:
-                    # Extract text and metadata from FAISS result
+                    # Extract text and metadata from vector store result
                     text = result.get('text', '')
                     score = result.get('similarity_score', 0.0)
                     doc_id = result.get('doc_id', 'unknown')
@@ -779,17 +779,17 @@ Answer:"""
                 health_status['components']['embedder'] = {'status': 'error', 'error': str(e)}
                 health_status['issues'].append(f"Embedder error: {e}")
             
-            # Test FAISS store
+            # Test vector store
             try:
-                faiss_store = container.get('faiss_store')
-                stats = faiss_store.get_stats()
+                vector_store = container.get('vector_store')
+                stats = vector_store.get_stats()
                 health_status['components']['faiss_store'] = {
                     'status': 'healthy',
                     'vector_count': stats.get('vector_count', 0)
                 }
             except Exception as e:
                 health_status['components']['faiss_store'] = {'status': 'error', 'error': str(e)}
-                health_status['issues'].append(f"FAISS store error: {e}")
+                health_status['issues'].append(f"Vector store error: {e}")
             
             # Test LLM client
             try:
@@ -832,23 +832,23 @@ Answer:"""
         try:
             # Get stats with timeout
             def _get_stats():
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 metadata_store = container.get('metadata_store')
                 embedder = container.get('embedder')
                 
-                faiss_stats = faiss_store.get_stats()
+                faiss_stats = vector_store.get_stats()
                 metadata_stats = metadata_store.get_stats()
                 
                 # Get unique documents
                 unique_docs = set()
-                for vector_id, metadata in faiss_store.id_to_metadata.items():
+                for vector_id, metadata in vector_store.id_to_metadata.items():
                     if not metadata.get('deleted', False):
                         doc_id = metadata.get('doc_id', 'unknown')
                         unique_docs.add(doc_id)
                 
                 # Enhanced stats
                 enhanced_stats = {
-                    'faiss_store': faiss_stats,
+                    'vector_store': faiss_stats,
                     'metadata_store': metadata_stats,
                     'timestamp': time.time(),
                     'total_vectors': faiss_stats.get('active_vectors', 0),
@@ -884,13 +884,13 @@ Answer:"""
         """Get list of all documents in the vector store"""
         try:
             def _get_documents():
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 
                 # Get unique documents
                 unique_docs = set()
                 doc_details = {}
                 
-                for vector_id, metadata in faiss_store.id_to_metadata.items():
+                for vector_id, metadata in vector_store.id_to_metadata.items():
                     # Safely handle None metadata
                     if metadata is None:
                         metadata = {}
@@ -1451,12 +1451,12 @@ Answer:"""
     async def delete_document(doc_path: str):
         """Delete a specific document and its vectors from the system"""
         try:
-            faiss_store = container.get('faiss_store')
+            vector_store = container.get('vector_store')
             metadata_store = container.get('metadata_store')
             
             # Find vectors associated with this document
             vectors_to_delete = []
-            for vector_id, metadata in faiss_store.id_to_metadata.items():
+            for vector_id, metadata in vector_store.id_to_metadata.items():
                 if (not metadata.get('deleted', False) and 
                     metadata.get('doc_path') == doc_path):
                     vectors_to_delete.append(vector_id)
@@ -1470,7 +1470,7 @@ Answer:"""
                 }
             
             # Delete the vectors
-            deleted_count = faiss_store.delete_vectors(vectors_to_delete)
+            deleted_count = vector_store.delete_vectors(vectors_to_delete)
             
             return {
                 "status": "success",
@@ -1488,28 +1488,28 @@ Answer:"""
     async def clear_vector_store():
         """Clear all vectors and documents from the system"""
         try:
-            faiss_store = container.get('faiss_store')
+            vector_store = container.get('vector_store')
             metadata_store = container.get('metadata_store')
             
             # Get stats before clearing
-            stats_before = faiss_store.get_stats()
+            stats_before = vector_store.get_stats()
             vectors_before = stats_before.get('active_vectors', 0)
             
             # Get document count before clearing
             documents_before = len(set(
                 metadata.get('doc_id', 'unknown') 
-                for metadata in faiss_store.id_to_metadata.values()
+                for metadata in vector_store.id_to_metadata.values()
                 if not metadata.get('deleted', False)
             ))
             
             # Get chunk count before clearing
             chunks_before = len([
-                metadata for metadata in faiss_store.id_to_metadata.values()
+                metadata for metadata in vector_store.id_to_metadata.values()
                 if not metadata.get('deleted', False)
             ])
             
             # Clear the FAISS store
-            faiss_store.clear_index()
+            vector_store.clear_index()
             
             # Clear metadata store if it has a clear method
             try:
@@ -1543,8 +1543,8 @@ Answer:"""
                 
                 # Add additional metrics if available
                 try:
-                    faiss_store = container.get('faiss_store')
-                    stats = faiss_store.get_stats()
+                    vector_store = container.get('vector_store')
+                    stats = vector_store.get_stats()
                     metrics.update({
                         'vector_store_metrics': stats
                     })
@@ -1708,11 +1708,11 @@ Answer:"""
             page_size = 20
         try:
             def _get_vectors():
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 metadata_store = container.get('metadata_store')
                 
                 # Get all vector metadata
-                all_metadata = faiss_store.get_all_metadata()
+                all_metadata = vector_store.get_all_metadata()
                 
                 # Apply filters
                 filtered_metadata = []
@@ -1832,10 +1832,10 @@ Answer:"""
         """Get detailed information about a specific vector"""
         try:
             def _get_vector_details():
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 
                 # Get vector metadata
-                metadata = faiss_store.get_metadata(vector_id)
+                metadata = vector_store.get_metadata(vector_id)
                 if not metadata:
                     return {
                         'success': False,
@@ -1870,7 +1870,7 @@ Answer:"""
                 # Find similar vectors
                 try:
                     if 'embedding' in metadata:
-                        similar_results = faiss_store.search_with_metadata(metadata['embedding'], k=6)
+                        similar_results = vector_store.search_with_metadata(metadata['embedding'], k=6)
                         similar_vectors = []
                         for result in similar_results[1:]:  # Skip the first one (itself)
                             similar_vectors.append({
@@ -1915,14 +1915,14 @@ Answer:"""
         try:
             def _search_vectors():
                 query_engine = container.get('query_engine')
-                faiss_store = container.get('faiss_store')
+                vector_store = container.get('vector_store')
                 embedder = container.get('embedder')
                 
                 # Generate query embedding
                 query_embedding = embedder.embed_text(query)
                 
                 # Search vectors
-                search_results = faiss_store.search_with_metadata(query_embedding, k=k*2)  # Get more for filtering
+                search_results = vector_store.search_with_metadata(query_embedding, k=k*2)  # Get more for filtering
                 
                 # Filter results
                 filtered_results = []
@@ -2123,8 +2123,8 @@ Answer:"""
                 
                 # Time vector search
                 search_start = time.time()
-                faiss_store = container.get('faiss_store')
-                search_results = faiss_store.search_with_metadata(query_embedding, k=max_results)
+                vector_store = container.get('vector_store')
+                search_results = vector_store.search_with_metadata(query_embedding, k=max_results)
                 component_times['search'] = time.time() - search_start
                 
                 # Time LLM generation (if sources found)
@@ -2223,8 +2223,8 @@ Answer:"""
                 process_memory = process.memory_info()
                 
                 # Vector store statistics
-                faiss_store = container.get('faiss_store')
-                vector_stats = faiss_store.get_stats() if hasattr(faiss_store, 'get_stats') else {}
+                vector_store = container.get('vector_store')
+                vector_stats = vector_store.get_stats() if hasattr(vector_store, 'get_stats') else {}
                 
                 return {
                     'system_resources': {

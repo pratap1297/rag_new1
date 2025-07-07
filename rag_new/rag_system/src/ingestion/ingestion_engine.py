@@ -25,10 +25,10 @@ from ..ingestion.progress_integration import ProgressTrackedIngestion
 class IngestionEngine:
     """Main document ingestion engine with progress tracking"""
     
-    def __init__(self, chunker, embedder, faiss_store, metadata_store, config_manager, progress_tracker: Optional[ProgressTracker] = None):
+    def __init__(self, chunker, embedder, vector_store, metadata_store, config_manager, progress_tracker: Optional[ProgressTracker] = None):
         self.chunker = chunker
         self.embedder = embedder
-        self.faiss_store = faiss_store
+        self.vector_store = vector_store
         self.metadata_store = metadata_store
         self.config_manager = config_manager
         self.config = config_manager.get_config()
@@ -429,7 +429,7 @@ class IngestionEngine:
                             }
                             chunk_metadata_list.append(fallback_meta)
                     
-                    vector_ids = self.faiss_store.add_vectors(embeddings, chunk_metadata_list)
+                    vector_ids = self.vector_store.add_vectors(embeddings, chunk_metadata_list)
                     final_file_metadata = {
                         **file_metadata,
                         'chunk_count': len(validated_chunks),
@@ -491,7 +491,7 @@ class IngestionEngine:
                         }
                         chunk_metadata_list.append(fallback_meta)
                 
-                vector_ids = self.faiss_store.add_vectors(embeddings, chunk_metadata_list)
+                vector_ids = self.vector_store.add_vectors(embeddings, chunk_metadata_list)
                 final_file_metadata = {
                     **file_metadata,
                     'chunk_count': len(validated_chunks),
@@ -664,9 +664,8 @@ class IngestionEngine:
                                         storage_metadata = self.metadata_manager.prepare_for_storage(merged_metadata)
                                         chunk_metadata_list.append(storage_metadata)
                                     
-                                    # Add to vector store (using the actual vector store - Qdrant or FAISS)
-                                    vector_store = getattr(self, 'qdrant_store', None) or getattr(self, 'vector_store', None) or self.faiss_store
-                                    vector_ids = vector_store.add_vectors(embeddings, chunk_metadata_list)
+                                    # Add to vector store
+                                    vector_ids = self.vector_store.add_vectors(embeddings, chunk_metadata_list)
                                     
                                     # Get doc_id for response
                                     doc_id = chunk_metadata_list[0].get('doc_id', 'json_document') if chunk_metadata_list else 'json_document'
@@ -778,8 +777,8 @@ class IngestionEngine:
                     }
                     chunk_metadata_list.append(fallback_meta)
             
-            # Add to FAISS store
-            vector_ids = self.faiss_store.add_vectors(embeddings, chunk_metadata_list)
+            # Add to vector store
+            vector_ids = self.vector_store.add_vectors(embeddings, chunk_metadata_list)
             
             # Get doc_id for response
             doc_id = chunk_metadata_list[0].get('doc_id', 'text_document') if chunk_metadata_list else 'text_document'
@@ -815,7 +814,7 @@ class IngestionEngine:
             # Get the doc_hash of the incoming file
             incoming_doc_hash = self._calculate_document_hash(Path(file_path))
 
-            for vector_id, metadata in self.faiss_store.id_to_metadata.items():
+            for vector_id, metadata in self.vector_store.id_to_metadata.items():
                 if metadata.get('deleted', False):
                     continue
                 
@@ -824,7 +823,7 @@ class IngestionEngine:
                     vectors_to_delete.append(vector_id)
             
             if vectors_to_delete:
-                self.faiss_store.delete_vectors(vectors_to_delete)
+                self.vector_store.delete_vectors(vectors_to_delete)
                 return len(vectors_to_delete)
                 
             return 0
@@ -1113,7 +1112,7 @@ class IngestionEngine:
             vectors_to_delete = []
             
             # Get all vector metadata and find matches
-            for vector_id, metadata in self.faiss_store.id_to_metadata.items():
+            for vector_id, metadata in self.vector_store.id_to_metadata.items():
                 if metadata.get('deleted', False):
                     continue
                 
@@ -1151,7 +1150,7 @@ class IngestionEngine:
             
             if vectors_to_delete:
                 # Delete the vectors
-                self.faiss_store.delete_vectors(vectors_to_delete)
+                self.vector_store.delete_vectors(vectors_to_delete)
                 logging.info(f"Successfully deleted {len(vectors_to_delete)} vectors for file: {file_path}")
                 
                 return {
@@ -1194,10 +1193,10 @@ class IngestionEngine:
             file_stats = self.metadata_store.collection_stats('files_metadata')
             stats['total_files'] = file_stats.get('count', 0)
         
-        # Get FAISS stats
-        faiss_info = self.faiss_store.get_index_info()
-        stats['total_vectors'] = faiss_info.get('ntotal', 0)
-        stats['active_vectors'] = faiss_info.get('active_vectors', 0)
+        # Get vector store stats
+        vector_store_info = self.vector_store.get_stats()
+        stats['total_vectors'] = vector_store_info.get('vector_count', 0)
+        stats['active_vectors'] = vector_store_info.get('vector_count', 0)
         
         return stats
     
