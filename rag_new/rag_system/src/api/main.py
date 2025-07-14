@@ -9,6 +9,7 @@ from typing import Dict, Any, Optional, List
 import logging
 import asyncio
 import time
+import uuid
 from datetime import datetime
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeoutError
@@ -33,8 +34,8 @@ try:
     from .models.requests import QueryRequest, UploadRequest
     from .models.responses import QueryResponse, UploadResponse, HealthResponse
 except ImportError:
-    from .models.requests import QueryRequest, UploadRequest
-from .models.responses import QueryResponse, UploadResponse, HealthResponse
+    from models.requests import QueryRequest, UploadRequest
+    from models.responses import QueryResponse, UploadResponse, HealthResponse
 
 try:
     from ..core.error_handling import RAGSystemError, QueryError, EmbeddingError, LLMError
@@ -334,7 +335,7 @@ def create_api_app(container, monitoring=None, heartbeat_monitor_instance=None, 
                 issues=[str(e)]
             )
     
-    async def _process_query_async(query_text: str, max_results: int = 3) -> Dict[str, Any]:
+    async def _process_query_async(query_text: str, max_results: int = 5) -> Dict[str, Any]:
         """Process query asynchronously with timeout and proper error handling"""
         def _process_query():
             try:
@@ -430,7 +431,24 @@ Answer:"""
         start_time = time.time()
         try:
             query_text = request.get("query", "").strip()
-            max_results = min(int(request.get("max_results", 3)), 10)  # Limit max results
+            max_results = min(int(request.get("max_results", 5)), 10)  # Limit max results
+            
+            # Intelligent query detection for incident listing
+            query_lower = query_text.lower()
+            incident_listing_patterns = [
+                r'\b(how many|count|number of|total)\s+(incidents?|tickets?)\b',
+                r'\b(all|list|show|get|display)\s+(incidents?|tickets?)\b',
+                r'\b(incidents?|tickets?)\s+(in|of|from)\s+(the\s+)?system\b',
+                r'\b(what\s+are\s+the\s+)?(incidents?|tickets?)\b'
+            ]
+            
+            import re
+            is_incident_listing = any(re.search(pattern, query_lower) for pattern in incident_listing_patterns)
+            
+            # Increase max_results for incident listing queries
+            if is_incident_listing:
+                max_results = min(max_results, 20)  # Allow up to 20 for incident listings
+                logging.info(f"Detected incident listing query, increasing max_results to {max_results}")
             
             if not query_text:
                 return JSONResponse({
@@ -441,8 +459,38 @@ Answer:"""
                     }
                 }, status_code=400)
             
-            # Process query using async function
-            result = await _process_query_async(query_text, max_results)
+            # Check if this is a request for all incidents and use dedicated method
+            if is_incident_listing and any(pattern in query_lower for pattern in ['all incidents', 'list all incidents', 'show all incidents']):
+                try:
+                    vector_store = container.get('vector_store')
+                    if hasattr(vector_store, 'list_all_incidents'):
+                        incidents = vector_store.list_all_incidents()
+                        
+                        # Format response for all incidents
+                        incident_summaries = []
+                        for incident in incidents:
+                            incident_summaries.append(f"**{incident.get('id', 'Unknown')}**: {incident.get('first_mention', 'No description')[:100]}...")
+                        
+                        response_text = f"There are **{len(incidents)} incidents** in the system:\n\n" + "\n\n".join(incident_summaries)
+                        
+                        result = {
+                            "response": response_text,
+                            "response_id": str(uuid.uuid4()),
+                            "sources": incidents,
+                            "query": query_text,
+                            "context_used": len(incidents),
+                            "query_type": "incident_listing",
+                            "total_incidents": len(incidents)
+                        }
+                    else:
+                        # Fallback to regular query processing
+                        result = await _process_query_async(query_text, max_results)
+                except Exception as e:
+                    logging.warning(f"Failed to use dedicated incident listing, falling back to regular query: {e}")
+                    result = await _process_query_async(query_text, max_results)
+            else:
+                # Process query using async function
+                result = await _process_query_async(query_text, max_results)
             
             # Log performance data
             total_time = time.time() - start_time
@@ -589,9 +637,21 @@ Answer:"""
                     return result
                     
                 finally:
-                    # Clean up temporary file
+                    # Clean up temporary file with retry for Windows file locking issues
                     if os.path.exists(tmp_file_path):
-                        os.unlink(tmp_file_path)
+                        import time
+                        max_retries = 3
+                        for attempt in range(max_retries):
+                            try:
+                                os.unlink(tmp_file_path)
+                                break
+                            except OSError as e:
+                                if attempt < max_retries - 1:
+                                    logging.warning(f"File deletion attempt {attempt + 1} failed: {e}, retrying...")
+                                    time.sleep(0.5)  # Wait 500ms before retry
+                                else:
+                                    logging.warning(f"Could not delete temporary file after {max_retries} attempts: {e}")
+                                    # Don't raise the error - file will be cleaned up by OS eventually
                         
             except Exception as e:
                 logging.error(f"File upload processing error: {e}")
@@ -2104,7 +2164,7 @@ Answer:"""
         """Test query performance with detailed timing"""
         try:
             query_text = request.get('query', 'test query')
-            max_results = request.get('max_results', 3)
+            max_results = request.get('max_results', 5)
             
             # Start timing
             start_time = time.time()
@@ -2349,6 +2409,23 @@ Answer:"""
     else:
         logging.warning("⚠️ Management router not available - skipping")
     
+    # Add synchronized management API router
+    try:
+        from .sync_management_api import create_sync_management_router
+        sync_management_router = create_sync_management_router(container)
+        app.include_router(sync_management_router)
+        logging.info("✅ Synchronized Management API routes registered")
+    except ImportError:
+        try:
+            from rag_system.src.api.sync_management_api import create_sync_management_router
+            sync_management_router = create_sync_management_router(container)
+            app.include_router(sync_management_router)
+            logging.info("✅ Synchronized Management API routes registered")
+        except Exception as e:
+            logging.warning(f"⚠️ Synchronized Management API routes not available: {e}")
+    except Exception as e:
+        logging.warning(f"⚠️ Synchronized Management API routes not available: {e}")
+    
     # Add ServiceNow API router
     try:
         try:
@@ -2360,9 +2437,40 @@ Answer:"""
     except Exception as e:
         logging.warning(f"⚠️ ServiceNow API routes not available: {e}")
     
-    # Add conversation router
+    # Add conversation router with /api prefix (existing)
     if conversation_router:
         app.include_router(conversation_router, prefix="/api")
+    
+    # Add conversation endpoints directly without /api prefix (new)
+    if conversation_router:
+        # Create a new router without prefix for direct access
+        from fastapi import APIRouter
+        direct_conversation_router = APIRouter()
+        
+        # Copy all routes from conversation_router to direct_conversation_router
+        for route in conversation_router.routes:
+            # Create a new route with the same path but without the /conversation prefix
+            if hasattr(route, 'path') and route.path.startswith('/conversation'):
+                # Remove the /conversation prefix to make it direct
+                direct_path = route.path.replace('/conversation', '')
+                if direct_path == '':
+                    direct_path = '/'
+                
+                # Create a new route with the same methods and handler
+                new_route = type(route)(
+                    path=direct_path,
+                    endpoint=route.endpoint,
+                    methods=route.methods,
+                    name=route.name,
+                    include_in_schema=route.include_in_schema,
+                    response_class=route.response_class,
+                    tags=route.tags
+                )
+                direct_conversation_router.routes.append(new_route)
+        
+        # Include the direct conversation router
+        app.include_router(direct_conversation_router)
+        logging.info("✅ Direct conversation routes registered (without /api prefix)")
     
     # Add verification router
     if verification_router:

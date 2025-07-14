@@ -43,7 +43,7 @@ class RAGSystemUI:
         except requests.exceptions.RequestException as e:
             return f"❌ Connection Error: {str(e)}", "error"
     
-    def query_rag_system(self, query: str, max_results: int = 3) -> Tuple[str, str, str]:
+    def query_rag_system(self, query: str, max_results: int = 5) -> Tuple[str, str, str]:
         """Query the RAG system and return response with sources"""
         if not query.strip():
             return "Please enter a query.", "", ""
@@ -330,7 +330,7 @@ def create_gradio_interface():
                         max_results = gr.Slider(
                             minimum=1,
                             maximum=10,
-                            value=3,
+                            value=5,
                             step=1,
                             label="Maximum Results"
                         )

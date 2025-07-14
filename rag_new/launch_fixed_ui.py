@@ -3816,7 +3816,7 @@ The LangGraph conversation system is not currently available. This could be due 
         except Exception as e:
             return f"❌ **Error getting performance metrics:** {str(e)}"
     
-    def test_query_performance(self, query: str, max_results: int = 3) -> str:
+    def test_query_performance(self, query: str, max_results: int = 5) -> str:
         """Test query performance with detailed timing breakdown"""
         try:
             if not query.strip():
@@ -4138,6 +4138,117 @@ def create_fixed_interface():
             padding: 4px 8px;
         }
     }
+    
+    /* Query response scrollbar styles */
+    .query-response-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        background: #ffffff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.5;
+    }
+    
+    .query-response-container::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .query-response-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 6px;
+    }
+    
+    .query-response-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 6px;
+        border: 2px solid #f1f1f1;
+    }
+    
+    .query-response-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    /* For Firefox */
+    .query-response-container {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+    
+    /* Sources and analysis containers */
+    .sources-container, .analysis-container {
+        max-height: 350px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        background: #f8f9fa;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.4;
+    }
+    
+    .sources-container::-webkit-scrollbar, .analysis-container::-webkit-scrollbar {
+        width: 10px;
+    }
+    
+    .sources-container::-webkit-scrollbar-track, .analysis-container::-webkit-scrollbar-track {
+        background: #e9ecef;
+        border-radius: 5px;
+    }
+    
+    .sources-container::-webkit-scrollbar-thumb, .analysis-container::-webkit-scrollbar-thumb {
+        background: #6c757d;
+        border-radius: 5px;
+        border: 1px solid #e9ecef;
+    }
+    
+    .sources-container::-webkit-scrollbar-thumb:hover, .analysis-container::-webkit-scrollbar-thumb:hover {
+        background: #495057;
+    }
+    
+    /* For Firefox */
+    .sources-container, .analysis-container {
+        scrollbar-width: thin;
+        scrollbar-color: #6c757d #e9ecef;
+    }
+    
+    /* Vector search display - taller container */
+    .vector-search-container {
+        max-height: 600px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        background: #ffffff;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.5;
+    }
+    
+    .vector-search-container::-webkit-scrollbar {
+        width: 12px;
+    }
+    
+    .vector-search-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 6px;
+    }
+    
+    .vector-search-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 6px;
+        border: 2px solid #f1f1f1;
+    }
+    
+    .vector-search-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+    
+    /* For Firefox */
+    .vector-search-container {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
     """
     
     with gr.Blocks(css=css, title="AI Force Intelligent Support Agent") as interface:
@@ -4232,7 +4343,7 @@ def create_fixed_interface():
                         document_registry_display = gr.Markdown(
                             label="Active Documents",
                             value=ui._format_document_registry(),
-                            height=600
+                            elem_classes=["vector-search-container"]
                         )
                         
                         refresh_registry_btn = gr.Button("🔄 Refresh Registry")
@@ -4322,19 +4433,23 @@ def create_fixed_interface():
                 # Query Results
                 with gr.Row():
                     with gr.Column():
-                        query_answer = gr.Textbox(
+                        query_answer = gr.Markdown(
                             label="🤖 AI Response",
-                            lines=6,
-                            interactive=False
+                            value="Query results will appear here...",
+                            elem_classes=["query-response-container"]
                         )
                     
                     with gr.Column():
                         query_sources = gr.Markdown(
-                            label="📚 Sources & Citations"
+                            label="📚 Sources & Citations",
+                            value="Sources will appear here...",
+                            elem_classes=["sources-container"]
                         )
                 
                 query_lifecycle_analysis = gr.Markdown(
-                    label="🔍 Document Lifecycle Analysis"
+                    label="🔍 Document Lifecycle Analysis",
+                    value="Analysis will appear here...",
+                    elem_classes=["analysis-container"]
                 )
                 
                 # Feedback Section
@@ -4529,7 +4644,8 @@ def create_fixed_interface():
                         
                         monitor_status_display = gr.Markdown(
                             label="Current Status",
-                            value="📴 **Monitoring Status:** Inactive"
+                            value="📴 **Monitoring Status:** Inactive",
+                            elem_classes=["sources-container"]
                         )
                         
                         # Real-time refresh controls
@@ -4546,7 +4662,8 @@ def create_fixed_interface():
                         
                         file_status_display = gr.Markdown(
                             value="*Click 'Refresh Status' to see file processing details*",
-                            visible=True
+                            visible=True,
+                            elem_classes=["sources-container"]
                         )
                         
                         with gr.Row():
@@ -4558,7 +4675,8 @@ def create_fixed_interface():
                         
                         monitored_folders_display = gr.Markdown(
                             value="*Click 'Refresh Folders' to see monitored folders*",
-                            visible=True
+                            visible=True,
+                            elem_classes=["sources-container"]
                         )
                         
                         with gr.Row():
@@ -5977,7 +6095,7 @@ def create_fixed_interface():
                                 vector_search_display = gr.Markdown(
                                     label="Advanced Search Results",
                                     value="🔎 Enter a search query and click 'Search Vectors' for detailed analysis...",
-                                    height=600
+                                    elem_classes=["vector-search-container"]
                                 )
                             
                             with gr.Column(scale=1):

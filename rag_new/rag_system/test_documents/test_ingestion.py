@@ -130,7 +130,7 @@ def ingest_file_document(file_path, metadata=None):
         print(f"   ❌ Error: {e}")
         return None
 
-def test_query(query, max_results=3):
+def test_query(query, max_results=5):
     """Test querying the RAG system"""
     try:
         payload = {
